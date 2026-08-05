@@ -715,7 +715,8 @@ export const I18N = {
     // ── Staff invite flow ──
     "users.invite.action": "Отправить приглашение",
     "users.invite.title": "Ссылка-приглашение",
-    "users.invite.desc": "Передайте эту ссылку сотруднику: по ней он задаст пароль и войдёт в панель.",
+    "users.invite.desc":
+      "Передайте эту ссылку сотруднику: по ней он задаст пароль и войдёт в панель.",
     "users.invite.linkLabel": "Ссылка-приглашение",
     "users.invite.copy": "Копировать",
     "users.invite.copied": "Скопировано",
@@ -723,7 +724,8 @@ export const I18N = {
     "users.invite.sent": "Ссылка также отправлена на {email}.",
     "users.reset.action": "Сбросить пароль",
     "users.reset.title": "Сброс пароля",
-    "users.reset.warn": "текущий пароль будет очищен, сотрудник выйдет со всех устройств и задаст новый пароль по ссылке.",
+    "users.reset.warn":
+      "текущий пароль будет очищен, сотрудник выйдет со всех устройств и задаст новый пароль по ссылке.",
     "accept.title": "Активация аккаунта",
     "accept.subtitle": "Задайте пароль, чтобы войти в панель продавца",
     "accept.passwordLabel": "Новый пароль",
@@ -1460,7 +1462,8 @@ export const I18N = {
     // ── Staff invite flow ──
     "users.invite.action": "Send invite",
     "users.invite.title": "Invite link",
-    "users.invite.desc": "Share this link with the staff member — they set a password and sign in.",
+    "users.invite.desc":
+      "Share this link with the staff member — they set a password and sign in.",
     "users.invite.linkLabel": "Invite link",
     "users.invite.copy": "Copy",
     "users.invite.copied": "Copied",
@@ -1468,7 +1471,8 @@ export const I18N = {
     "users.invite.sent": "The link was also sent to {email}.",
     "users.reset.action": "Reset password",
     "users.reset.title": "Reset password",
-    "users.reset.warn": "the current password is cleared, the member is signed out everywhere, and sets a new password via the link.",
+    "users.reset.warn":
+      "the current password is cleared, the member is signed out everywhere, and sets a new password via the link.",
     "accept.title": "Activate your account",
     "accept.subtitle": "Set a password to sign in to the seller panel",
     "accept.passwordLabel": "New password",

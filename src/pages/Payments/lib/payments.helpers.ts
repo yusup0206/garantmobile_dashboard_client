@@ -1,35 +1,25 @@
 import type { FilterTab } from "@/components/common/FilterTabs";
-import type { TKey } from "@/i18n/dict";
-import { PAYMENT_STATUS } from "@/data/payments.mock";
-import { money } from "@/lib/format";
-import type { Payment, PaymentMethod } from "@/services/payments/payments.types";
+import type { PaymentType } from "@/services/payments/payments.types";
 import type { StatusMeta } from "@/components/common/StatusBadge";
 
-export const METHOD_LABEL: Record<PaymentMethod, TKey> = {
-  card: "Карта",
-  cash: "Наличные",
-  transfer: "Перевод",
+export type PaymentRow = PaymentType & {
+  statusMeta: StatusMeta;
+  activeText: string;
 };
 
-export type PaymentRow = Payment & {
-  meta: StatusMeta;
-  methodLabel: TKey;
-  amountFmt: string;
-};
-
-export function toRow(p: Payment): PaymentRow {
+export function toRow(pt: PaymentType): PaymentRow {
+  const active = String(pt.isActive) === "true";
   return {
-    ...p,
-    meta: PAYMENT_STATUS[p.st],
-    methodLabel: METHOD_LABEL[p.method],
-    amountFmt: money(p.amount),
+    ...pt,
+    statusMeta: active
+      ? { labelKey: "status.active", fg: "#1f6b49", bg: "#e9f4ee", dot: "#2f8b63" }
+      : { labelKey: "status.inactive", fg: "#6d7c74", bg: "#eef2f0", dot: "#9aa8a1" },
+    activeText: active ? "Активен" : "Неактивен",
   };
 }
 
 export const FILTER_TABS: FilterTab[] = [
   { key: "all", label: "filter.all" },
-  { key: "paid", label: "payments.filter.paid" },
-  { key: "pending", label: "payments.filter.pending" },
-  { key: "failed", label: "payments.filter.failed" },
-  { key: "refund", label: "payments.filter.refund" },
+  { key: "active", label: "status.active" },
+  { key: "inactive", label: "status.inactive" },
 ];

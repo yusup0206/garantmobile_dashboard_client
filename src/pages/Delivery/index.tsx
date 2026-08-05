@@ -1,32 +1,59 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
+import { Plus, Search } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 import { usePagination } from "@/lib/usePagination";
-import { useDelivery, useUpdateShipmentStatus } from "@/services/delivery/useDelivery";
-import type { DeliveryStatusKey } from "@/services/delivery/delivery.types";
+import {
+  useDelivery,
+  useCreateDeliveryType,
+  useUpdateDeliveryType,
+  useDeleteDeliveryType,
+} from "@/services/delivery/useDelivery";
+import type { DeliveryType, DeliveryTypeInput } from "@/services/delivery/delivery.types";
 
 import { DeliveryTable } from "./ui/DeliveryTable";
-import { toRow, FILTER_TABS, STATUS_OPTIONS } from "./lib/delivery.helpers";
+import { DeliveryFormDialog } from "./ui/DeliveryFormDialog";
+import { toRow, FILTER_TABS } from "./lib/delivery.helpers";
 
 export default function DeliveryPage() {
   const t = useT();
-  const { data, isLoading, isError, refetch } = useDelivery();
-  const updateStatus = useUpdateShipmentStatus();
-  // URL state: /delivery?status=transit — shareable & survives refresh.
   const [params, setParams] = useSearchParams();
   const filter = params.get("status") ?? "all";
+  const [search, setSearch] = useState("");
+
+  const queryParams = useMemo(() => {
+    const p: { search?: string; isActive?: boolean } = {};
+    if (search.trim()) p.search = search.trim();
+    if (filter === "active") p.isActive = true;
+    if (filter === "inactive") p.isActive = false;
+    return p;
+  }, [filter, search]);
+
+  const { data, isLoading, isError, refetch } = useDelivery(queryParams);
+  const createDelivery = useCreateDeliveryType();
+  const updateDelivery = useUpdateDeliveryType();
+  const deleteDelivery = useDeleteDeliveryType();
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<DeliveryType | null>(null);
+  const [deleting, setDeleting] = useState<DeliveryType | null>(null);
+
+  const deliveryTypes = useMemo(() => data?.deliveryTypes ?? [], [data?.deliveryTypes]);
 
   const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
-  }, [data, filter]);
+    return deliveryTypes.map(toRow);
+  }, [deliveryTypes]);
 
   const pg = usePagination(rows, 8, filter);
 
@@ -34,13 +61,64 @@ export default function DeliveryPage() {
     setParams(key === "all" ? {} : { status: key }, { replace: true });
   }
 
+  function openAdd() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(dt: DeliveryType) {
+    setEditing(dt);
+    setFormOpen(true);
+  }
+
+  function submitForm(values: DeliveryTypeInput) {
+    if (editing) {
+      updateDelivery.mutate(
+        { id: editing.id, input: values },
+        { onSuccess: () => setFormOpen(false) },
+      );
+    } else {
+      createDelivery.mutate(
+        { input: values },
+        { onSuccess: () => setFormOpen(false) },
+      );
+    }
+  }
+
+  function confirmDelete() {
+    if (!deleting) return;
+    deleteDelivery.mutate(
+      { id: deleting.id },
+      { onSuccess: () => setDeleting(null) },
+    );
+  }
+
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title={t("page.delivery.title")}
         subtitle={t("page.delivery.subtitle")}
-        action={<FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />}
+        action={
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="mr-2 h-4 w-4" />
+            {t("common.add")}
+          </Button>
+        }
       />
+
+      {/* Standard filter controls card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+
+        <div className="w-full sm:w-72">
+          <Input
+            placeholder="Поиск способов доставки…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-10 text-sm"
+          />
+        </div>
+      </Card>
 
       {isLoading ? (
         <LoadingState />
@@ -52,10 +130,8 @@ export default function DeliveryPage() {
         <>
           <DeliveryTable
             rows={pg.slice}
-            options={STATUS_OPTIONS}
-            onStatus={(id, st) =>
-              updateStatus.mutate({ id, st: st as DeliveryStatusKey })
-            }
+            onEdit={openEdit}
+            onDelete={setDeleting}
           />
           <Pagination
             page={pg.page}
@@ -66,6 +142,29 @@ export default function DeliveryPage() {
           />
         </>
       )}
+
+      <DeliveryFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        deliveryType={editing}
+        onSubmit={submitForm}
+        pending={createDelivery.isPending || updateDelivery.isPending}
+      />
+
+      <ConfirmDialog
+        open={deleting !== null}
+        onOpenChange={(open) => !open && setDeleting(null)}
+        title="Удалить способ доставки?"
+        description={
+          deleting
+            ? `«${deleting.titleRu || deleting.titleTk}» ${t("common.deleteWarnM")}`
+            : undefined
+        }
+        confirmLabel={t("common.delete")}
+        danger
+        pending={deleteDelivery.isPending}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
