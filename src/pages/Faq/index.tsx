@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Filter } from "lucide-react";
+import { Plus, Filter, Search } from "lucide-react";
 import { useT } from "@/i18n/useT";
 
 import { PageHeader } from "@/components/common/PageHeader";
@@ -97,7 +97,7 @@ export default function FaqPage() {
         }
       />
 
-      {/* Filter controls bar */}
+      {/* Standard filter controls card */}
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">

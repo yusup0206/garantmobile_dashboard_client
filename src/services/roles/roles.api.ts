@@ -7,35 +7,55 @@ import type {
   CreateRoleDto,
   EditRoleDto,
   DeleteRoleResponse,
+  GetRolesParams,
 } from "./roles.types";
 
-export function getAllRoles(lang?: string): Promise<RoleResponse[]> {
+export function getAllRoles(params?: GetRolesParams): Promise<RoleResponse[]> {
   if (isApiEnabled()) {
-    return apiClient<any>("/roles/all", {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.set("page", String(params.page));
+    if (params?.pageSize !== undefined) query.set("pageSize", String(params.pageSize));
+    if (params?.search) query.set("search", params.search);
+
+    const queryString = query.toString();
+    const endpoint = `/roles/all${queryString ? `?${queryString}` : ""}`;
+
+    return apiClient<unknown>(endpoint, {
       token: authToken(),
       headers: {
-        "Accept-Language": lang || "tk",
+        "Accept-Language": params?.lang || "tk",
       },
-    }).then((res) => {
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.data?.roles)) return res.data.roles;
-      if (Array.isArray(res?.roles)) return res.roles;
-      if (Array.isArray(res?.data)) return res.data;
-      if (Array.isArray(res?.items)) return res.items;
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      if (Array.isArray(r)) return r as RoleResponse[];
+      if (Array.isArray((r?.data as Record<string, unknown>)?.roles))
+        return (r.data as Record<string, unknown>).roles as RoleResponse[];
+      if (Array.isArray(r?.roles)) return r.roles as RoleResponse[];
+      if (Array.isArray(r?.data)) return r.data as RoleResponse[];
+      if (Array.isArray(r?.items)) return r.items as RoleResponse[];
       return [];
     });
   }
-  return mockDelay(MOCK_ROLES);
+
+  let filtered = [...MOCK_ROLES];
+  if (params?.search) {
+    const q = params.search.toLowerCase();
+    filtered = filtered.filter((r) => r.name.toLowerCase().includes(q));
+  }
+  return mockDelay(filtered);
 }
 
 export function getRoleById(id: string, lang?: string): Promise<RoleResponse> {
   if (isApiEnabled()) {
-    return apiClient<any>(`/roles/details/${id}`, {
+    return apiClient<unknown>(`/roles/details/${id}`, {
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as RoleResponse;
+    });
   }
   const role = MOCK_ROLES.find((r) => r.id === id);
   if (!role) return Promise.reject(new Error("Role not found"));
@@ -44,14 +64,17 @@ export function getRoleById(id: string, lang?: string): Promise<RoleResponse> {
 
 export function createRole(data: CreateRoleDto, lang?: string): Promise<RoleResponse> {
   if (isApiEnabled()) {
-    return apiClient<any>("/roles/create", {
+    return apiClient<unknown>("/roles/create", {
       method: "POST",
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
       body: JSON.stringify(data),
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as RoleResponse;
+    });
   }
   const newRole: RoleResponse = {
     ...data,
@@ -64,14 +87,17 @@ export function createRole(data: CreateRoleDto, lang?: string): Promise<RoleResp
 
 export function editRole(id: string, data: EditRoleDto, lang?: string): Promise<RoleResponse> {
   if (isApiEnabled()) {
-    return apiClient<any>(`/roles/edit/${id}`, {
+    return apiClient<unknown>(`/roles/edit/${id}`, {
       method: "POST",
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
       body: JSON.stringify(data),
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as RoleResponse;
+    });
   }
   const index = MOCK_ROLES.findIndex((r) => r.id === id);
   if (index !== -1) {

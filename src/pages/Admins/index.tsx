@@ -47,7 +47,7 @@ export default function AdminsPage() {
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [deleting, setDeleting] = useState<AdminUser | null>(null);
 
-  const admins = data?.admins ?? [];
+  const admins = useMemo(() => data?.admins ?? [], [data?.admins]);
 
   const rows = useMemo(() => {
     return admins.map(toAdminRow);
@@ -102,10 +102,11 @@ export default function AdminsPage() {
         }
       />
 
-      <Card className="p-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+      {/* Standard filter controls card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
 
-        <div className="w-full sm:w-64">
+        <div className="w-full sm:w-72">
           <Input
             placeholder="Поиск (имя, телефон)..."
             value={search}

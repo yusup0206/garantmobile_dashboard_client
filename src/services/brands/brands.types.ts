@@ -1,12 +1,35 @@
-export type BrandStatus = "active" | "inactive";
-
-export type Brand = {
-  id: number;
-  name: string;
-  country: string;
-  products: number;
-  st: BrandStatus;
+export type BrandTag = {
+  id: string;
+  nameTk: string;
+  nameRu: string;
+  brandId: string;
 };
 
-/** Payload for create/update — everything except id and the derived products count. */
-export type BrandInput = Omit<Brand, "id" | "products">;
+export type Brand = {
+  id: string;
+  name: string;
+  logo?: string;
+  description?: string;
+  homepageShow: boolean;
+  sortOrder: number;
+  tags?: BrandTag[];
+};
+
+export type BrandInput = {
+  name: string;
+  logo?: string;
+  description?: string;
+  homepageShow: boolean;
+  sortOrder: number;
+};
+
+export type GetBrandsParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+};
+
+export type GetBrandsResponse = {
+  count: number;
+  brands: Brand[];
+};

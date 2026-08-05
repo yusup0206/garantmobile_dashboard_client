@@ -26,18 +26,20 @@ export function getAllFaq(params?: GetFaqParams): Promise<FaqEntry[]> {
     const queryString = query.toString();
     const endpoint = `/faq/all${queryString ? `?${queryString}` : ""}`;
 
-    return apiClient<any>(endpoint, {
+    return apiClient<unknown>(endpoint, {
       token: authToken(),
       headers: {
         "Accept-Language": params?.lang || "tk",
       },
-    }).then((res) => {
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.data?.faqs)) return res.data.faqs;
-      if (Array.isArray(res?.faqs)) return res.faqs;
-      if (Array.isArray(res?.data)) return res.data;
-      if (Array.isArray(res?.items)) return res.items;
-      if (Array.isArray(res?.faq)) return res.faq;
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      if (Array.isArray(r)) return r as FaqEntry[];
+      const dataObj = r?.data as Record<string, unknown>;
+      if (Array.isArray(dataObj?.faqs)) return dataObj.faqs as FaqEntry[];
+      if (Array.isArray(r?.faqs)) return r.faqs as FaqEntry[];
+      if (Array.isArray(r?.data)) return r.data as FaqEntry[];
+      if (Array.isArray(r?.items)) return r.items as FaqEntry[];
+      if (Array.isArray(r?.faq)) return r.faq as FaqEntry[];
       return [];
     });
   }

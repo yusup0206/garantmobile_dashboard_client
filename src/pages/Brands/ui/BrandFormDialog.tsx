@@ -7,26 +7,23 @@ import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/cn";
-import type { Brand, BrandInput, BrandStatus } from "@/services/brands/brands.types";
-import { BRAND_STATUS } from "../lib/brands.helpers";
+import type { Brand, BrandInput } from "@/services/brands/brands.types";
 import { brandSchema, type BrandFormValues } from "../lib/brand.schema";
 
 type BrandFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** When set, the dialog edits this brand; otherwise it creates a new one. */
   brand?: Brand | null;
   onSubmit: (values: BrandInput) => void;
   pending?: boolean;
 };
 
-const STATUS_ORDER: BrandStatus[] = ["active", "inactive"];
-
 const EMPTY: BrandFormValues = {
   name: "",
-  country: "",
-  st: "active",
+  logo: "",
+  description: "",
+  homepageShow: true,
+  sortOrder: 0,
 };
 
 export function BrandFormDialog({
@@ -41,29 +38,26 @@ export function BrandFormDialog({
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
     formState: { errors },
   } = useForm<BrandFormValues>({
     resolver: zodResolver(brandSchema),
     defaultValues: EMPTY,
   });
 
-  // Reset the fields each time the dialog opens (add vs edit).
   useEffect(() => {
     if (!open) return;
     reset(
       brand
         ? {
             name: brand.name,
-            country: brand.country,
-            st: brand.st,
+            logo: brand.logo ?? "",
+            description: brand.description ?? "",
+            homepageShow: brand.homepageShow ?? false,
+            sortOrder: brand.sortOrder ?? 0,
           }
         : EMPTY,
     );
   }, [open, brand, reset]);
-
-  const st = watch("st");
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -79,34 +73,44 @@ export function BrandFormDialog({
             <Input {...register("name")} invalid={!!errors.name} placeholder="Apple" />
           </Field>
 
-          <Field label={t("form.country")} error={errors.country?.message ? t(errors.country?.message as TKey) : undefined}>
+          <Field label="Логотип (URL)">
             <Input
-              {...register("country")}
-              invalid={!!errors.country}
-              placeholder="США"
+              {...register("logo")}
+              placeholder="https://example.com/logo.png"
             />
           </Field>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-ink/70">{t("form.status")}</label>
-            <div className="inline-flex w-fit rounded-xl border border-line bg-canvas p-1">
-              {STATUS_ORDER.map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setValue("st", key)}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
-                    st === key ? "bg-brand text-white" : "text-muted hover:text-ink",
-                  )}
-                >
-                  {t(BRAND_STATUS[key].labelKey)}
-                </button>
-              ))}
-            </div>
+          <Field label="Описание">
+            <textarea
+              {...register("description")}
+              rows={3}
+              className="w-full rounded-xl border border-line bg-canvas p-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+              placeholder="Краткое описание бренда…"
+            />
+          </Field>
+
+          <Field label="Порядок сортировки">
+            <Input
+              type="number"
+              min={0}
+              {...register("sortOrder")}
+              invalid={!!errors.sortOrder}
+            />
+          </Field>
+
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="homepageShow"
+              {...register("homepageShow")}
+              className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
+            />
+            <label htmlFor="homepageShow" className="text-sm font-medium text-ink cursor-pointer">
+              Показывать на главной странице
+            </label>
           </div>
 
-          <div className="mt-2 flex justify-end gap-2">
+          <div className="mt-4 flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>

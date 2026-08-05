@@ -37,6 +37,13 @@ export type DeleteRoleResponse = {
   deleted: boolean;
 };
 
+export type GetRolesParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  lang?: string;
+};
+
 export const ALL_PERMISSIONS: PermissionName[] = [
   "orders",
   "clients",

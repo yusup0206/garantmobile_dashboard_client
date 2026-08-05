@@ -20,23 +20,25 @@ export function getAllAdmins(params?: GetAdminsParams): Promise<{ count: number;
     const queryString = query.toString();
     const endpoint = `/admins/all${queryString ? `?${queryString}` : ""}`;
 
-    return apiClient<any>(endpoint, {
+    return apiClient<unknown>(endpoint, {
       token: authToken(),
       headers: {
         "Accept-Language": params?.lang || "tk",
       },
-    }).then((res) => {
-      if (res?.admins && Array.isArray(res.admins)) {
-        return { count: res.count ?? res.admins.length, admins: res.admins };
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      if (r?.admins && Array.isArray(r.admins)) {
+        return { count: (r.count as number) ?? (r.admins as AdminUser[]).length, admins: r.admins as AdminUser[] };
       }
-      if (res?.data?.admins && Array.isArray(res.data.admins)) {
-        return { count: res.data.count ?? res.data.admins.length, admins: res.data.admins };
+      const dataObj = r?.data as Record<string, unknown>;
+      if (dataObj?.admins && Array.isArray(dataObj.admins)) {
+        return { count: (dataObj.count as number) ?? (dataObj.admins as AdminUser[]).length, admins: dataObj.admins as AdminUser[] };
       }
-      if (Array.isArray(res)) {
-        return { count: res.length, admins: res };
+      if (Array.isArray(r)) {
+        return { count: r.length, admins: r as AdminUser[] };
       }
-      if (Array.isArray(res?.data)) {
-        return { count: res.data.length, admins: res.data };
+      if (Array.isArray(r?.data)) {
+        return { count: (r.data as AdminUser[]).length, admins: r.data as AdminUser[] };
       }
       return { count: 0, admins: [] };
     });
@@ -70,12 +72,15 @@ export function getAllAdmins(params?: GetAdminsParams): Promise<{ count: number;
 
 export function getAdminById(id: string, lang?: string): Promise<AdminUser> {
   if (isApiEnabled()) {
-    return apiClient<any>(`/admins/details/${id}`, {
+    return apiClient<unknown>(`/admins/details/${id}`, {
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as AdminUser;
+    });
   }
   return mockDelay({
     id,
@@ -89,14 +94,17 @@ export function getAdminById(id: string, lang?: string): Promise<AdminUser> {
 
 export function createAdmin(data: CreateAdminDto, lang?: string): Promise<AdminUser> {
   if (isApiEnabled()) {
-    return apiClient<any>("/admins/create", {
+    return apiClient<unknown>("/admins/create", {
       method: "POST",
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
       body: JSON.stringify(data),
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as AdminUser;
+    });
   }
   return mockDelay({
     ...data,
@@ -107,14 +115,17 @@ export function createAdmin(data: CreateAdminDto, lang?: string): Promise<AdminU
 
 export function editAdmin(id: string, data: EditAdminDto, lang?: string): Promise<AdminUser> {
   if (isApiEnabled()) {
-    return apiClient<any>(`/admins/edit/${id}`, {
+    return apiClient<unknown>(`/admins/edit/${id}`, {
       method: "PUT",
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
       body: JSON.stringify(data),
-    }).then((res) => res?.data || res);
+    }).then((res: unknown) => {
+      const r = res as Record<string, unknown>;
+      return (r?.data || r) as AdminUser;
+    });
   }
   return mockDelay({
     ...data,

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Shield, Edit2, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Shield, Edit2, Trash2, ChevronDown, Search } from "lucide-react";
 import { useT } from "@/i18n/useT";
 
 import { PageHeader } from "@/components/common/PageHeader";
@@ -23,12 +23,13 @@ import { RoleModal } from "./ui/RoleModal";
 
 export default function RolesPage() {
   const t = useT();
-  const { data: roles = [], isLoading, isError, refetch } = useRoles();
+  const [search, setSearch] = useState("");
+
+  const { data: roles = [], isLoading, isError, refetch } = useRoles({ search });
   const createMutation = useCreateRole();
   const editMutation = useEditRole();
   const deleteMutation = useDeleteRole();
 
-  const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<RoleResponse | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -104,7 +105,12 @@ export default function RolesPage() {
         }
       />
 
-      <Card className="p-4">
+      {/* Standard filter controls card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
+          <Search className="h-4 w-4" />
+          <span>Gözleg:</span>
+        </div>
         <div className="w-full sm:w-72">
           <Input
             placeholder="Поиск по названию роли..."

@@ -6,18 +6,18 @@ import {
   editRole,
   deleteRole,
 } from "./roles.api";
-import type { CreateRoleDto, EditRoleDto } from "./roles.types";
+import type { CreateRoleDto, EditRoleDto, GetRolesParams } from "./roles.types";
 
 export const rolesKeys = {
   all: ["roles"] as const,
-  list: (lang?: string) => [...rolesKeys.all, "list", lang] as const,
+  list: (params?: GetRolesParams) => [...rolesKeys.all, "list", params] as const,
   detail: (id: string, lang?: string) => [...rolesKeys.all, "detail", id, lang] as const,
 };
 
-export function useRoles(lang?: string) {
+export function useRoles(params?: GetRolesParams) {
   return useQuery({
-    queryKey: rolesKeys.list(lang),
-    queryFn: () => getAllRoles(lang),
+    queryKey: rolesKeys.list(params),
+    queryFn: () => getAllRoles(params),
   });
 }
 
