@@ -1,0 +1,61 @@
+/* GarantMobile design tokens (Tailwind v4).
+ *
+ * Colours are exposed to Tailwind via `@theme inline`, so every `bg-surface`,
+ * `text-ink`, … utility resolves to a plain CSS variable (`--c-*`). Those
+ * variables are redefined under `:root[data-theme="dark"]`, so switching the
+ * attribute reskins the whole app with no utility changes. Fonts/radii don't
+ * change per theme, so they stay in a normal `@theme` block. */
+@theme {
+  --font-display: "Manrope", system-ui, sans-serif;
+  --font-sans: "Golos Text", system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+@theme inline {
+  --color-brand: var(--c-brand);
+  --color-brand-dark: var(--c-brand-dark);
+  --color-brand-soft: var(--c-brand-soft);
+  --color-brand-ink: var(--c-brand-ink);
+
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-line: var(--c-line);
+  --color-surface: var(--c-surface);
+  --color-canvas: var(--c-canvas);
+}
+
+:root {
+  --c-brand: #2f8b63;
+  --c-brand-dark: #1c5a3f;
+  --c-brand-soft: #eef6f1;
+  --c-brand-ink: #12513d;
+
+  --c-ink: #17251f;
+  --c-muted: #6d7c74;
+  --c-faint: #9aa8a1;
+  --c-line: #e7ece9;
+  --c-surface: #ffffff;
+  --c-canvas: #eef2f0;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --c-brand: #37a074;
+  --c-brand-dark: #2f8b63;
+  --c-brand-soft: #16271e;
+  --c-brand-ink: #cfe9db;
+
+  --c-ink: #e7efe9;
+  --c-muted: #9aaaa1;
+  --c-faint: #6f817a;
+  --c-line: #253029;
+  --c-surface: #17211c;
+  --c-canvas: #0f1713;
+
+  color-scheme: dark;
+}

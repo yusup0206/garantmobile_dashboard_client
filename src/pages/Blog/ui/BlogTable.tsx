@@ -1,0 +1,73 @@
+import { Pencil, Trash2 } from "lucide-react";
+import { useT } from "@/i18n/useT";
+import { useLangStore } from "@/store/i18n.store";
+import { compact, fmt } from "@/lib/format";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import type { BlogRow } from "../lib/blog.helpers";
+
+type BlogTableProps = {
+  rows: BlogRow[];
+  onEdit: (row: BlogRow) => void;
+  onDelete: (row: BlogRow) => void;
+};
+
+export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
+  const t = useT();
+  const lang = useLangStore((s) => s.lang);
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+      <table className="w-full border-collapse text-left text-sm">
+        <thead>
+          <tr className="border-b border-line bg-canvas/60 text-xs uppercase tracking-wide text-muted">
+            <th className="px-5 py-3 font-semibold">{t("form.heading")}</th>
+            <th className="px-5 py-3 font-semibold">{t("form.author")}</th>
+            <th className="px-5 py-3 font-semibold">{t("form.date")}</th>
+            <th className="px-5 py-3 text-right font-semibold">{t("form.views")}</th>
+            <th className="px-5 py-3 font-semibold">{t("form.status")}</th>
+            <th className="px-5 py-3 text-right font-semibold">{t("common.actions")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr
+              key={r.id}
+              className="border-b border-line last:border-0 hover:bg-canvas/40"
+            >
+              <td className="max-w-xs px-5 py-3.5 font-display font-bold text-ink">
+                {r.title}
+              </td>
+              <td className="whitespace-nowrap px-5 py-3.5 text-ink">{r.author}</td>
+              <td className="whitespace-nowrap px-5 py-3.5 text-muted">{r.date}</td>
+              <td className="whitespace-nowrap px-5 py-3.5 text-right font-display font-bold text-ink">
+                {r.views >= 1e4 ? compact(r.views, lang) : fmt(r.views, lang)}
+              </td>
+              <td className="px-5 py-3.5">
+                <StatusBadge meta={r.meta} />
+              </td>
+              <td className="px-5 py-3.5">
+                <div className="flex justify-end gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(r)}
+                    className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
+                    aria-label={"Редактировать " + r.title}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(r)}
+                    className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
+                    aria-label={"Удалить " + r.title}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

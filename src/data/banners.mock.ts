@@ -1,0 +1,68 @@
+import type { Banner } from "@/services/banners/banners.types";
+
+const img = (id: string): string =>
+  `https://images.unsplash.com/photo-${id}?w=900&q=80&auto=format&fit=crop`;
+
+/** Демо-баннеры (ADR-004) — зеркалят промо главной витрины. */
+export const BANNERS: Banner[] = [
+  {
+    id: "b-1",
+    placement: "home",
+    order: 1,
+    img: img("1592750475338-74b7b21085ab"),
+    kicker: { ru: "СМАРТФОНЫ", tm: "SMARTFONLAR" },
+    title: { ru: "Флагманы 2026 года", tm: "2026-njy ýylyň flagmanlary" },
+    ctaLabel: { ru: "Выбрать", tm: "Saýlamak" },
+    to: "/catalog?cat=smartphones",
+    overlay: "brand",
+    startsAt: null,
+    endsAt: null,
+    st: "active",
+    clicks: 4820,
+  },
+  {
+    id: "b-2",
+    placement: "home",
+    order: 2,
+    img: img("1505740420928-5e560c06d30e"),
+    kicker: { ru: "АУДИО", tm: "AUDIO" },
+    title: { ru: "Звук без проводов", tm: "Simsiz ses" },
+    ctaLabel: { ru: "Слушать", tm: "Diňlemek" },
+    to: "/catalog?cat=audio",
+    overlay: "dark",
+    startsAt: null,
+    endsAt: null,
+    st: "active",
+    clicks: 3140,
+  },
+  {
+    id: "b-3",
+    placement: "category",
+    order: 1,
+    img: img("1496181133206-80ce9b88a853"),
+    kicker: { ru: "НОУТБУКИ", tm: "NOUTBUKLAR" },
+    title: { ru: "Скидки на ноутбуки", tm: "Noutbuklara arzanladyş" },
+    ctaLabel: { ru: "Смотреть", tm: "Görmek" },
+    to: "/catalog?cat=laptops",
+    overlay: "brand",
+    startsAt: null,
+    endsAt: null,
+    st: "paused",
+    clicks: 1890,
+  },
+  {
+    id: "b-4",
+    placement: "checkout",
+    order: 1,
+    img: img("1556656793-08538906a9f8"),
+    kicker: { ru: "РАССРОЧКА", tm: "BÖLÜP TÖLEG" },
+    title: { ru: "0-0-12 при оформлении", tm: "Resmileşdirende 0-0-12" },
+    ctaLabel: { ru: "Подробнее", tm: "Giňişleýin" },
+    to: "/pay",
+    overlay: "dark",
+    startsAt: null,
+    endsAt: null,
+    st: "draft",
+    clicks: 0,
+  },
+];

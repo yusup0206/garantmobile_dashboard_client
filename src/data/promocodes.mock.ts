@@ -1,0 +1,98 @@
+/**
+ * Mock data layer — ported from the prototype's data dictionary.
+ * In production, feature APIs (services/*) would return this shape from a backend.
+ */
+import type { Promocode } from "@/services/promocodes/promocodes.types";
+
+export const PROMOCODES: Promocode[] = [
+  {
+    code: "SUMMER15",
+    kind: "percent",
+    value: 15,
+    used: 842,
+    limit: 2000,
+    period: "1 – 31 июл",
+    st: "active",
+  },
+  {
+    code: "GARANT2026",
+    kind: "fixed",
+    value: 5000,
+    used: 318,
+    limit: 1000,
+    period: "1 янв – 31 дек",
+    st: "active",
+  },
+  {
+    code: "WELCOME",
+    kind: "percent",
+    value: 10,
+    used: 1560,
+    limit: 5000,
+    period: "Бессрочно",
+    st: "active",
+  },
+  {
+    code: "NOWRUZ",
+    kind: "percent",
+    value: 20,
+    used: 640,
+    limit: 640,
+    period: "20 – 22 мар",
+    st: "expired",
+  },
+  {
+    code: "BLACK50",
+    kind: "fixed",
+    value: 50000,
+    used: 0,
+    limit: 300,
+    period: "28 – 30 ноя",
+    st: "scheduled",
+  },
+  {
+    code: "STUDENT12",
+    kind: "percent",
+    value: 12,
+    used: 274,
+    limit: 1500,
+    period: "1 сен – 31 окт",
+    st: "scheduled",
+  },
+  {
+    code: "AKGAM7",
+    kind: "percent",
+    value: 7,
+    used: 921,
+    limit: 3000,
+    period: "1 – 31 июл",
+    st: "active",
+  },
+  {
+    code: "FIRST3000",
+    kind: "fixed",
+    value: 3000,
+    used: 488,
+    limit: 800,
+    period: "10 июн – 10 июл",
+    st: "active",
+  },
+  {
+    code: "MAY9",
+    kind: "percent",
+    value: 9,
+    used: 512,
+    limit: 512,
+    period: "1 – 9 май",
+    st: "expired",
+  },
+  {
+    code: "AUTUMN25",
+    kind: "fixed",
+    value: 25000,
+    used: 0,
+    limit: 400,
+    period: "1 – 30 сен",
+    st: "scheduled",
+  },
+];

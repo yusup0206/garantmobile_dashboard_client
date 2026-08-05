@@ -1,0 +1,124 @@
+/**
+ * Mock data layer — ported from the prototype's data dictionary.
+ * In production, feature APIs (services/*) would return this shape from a backend.
+ */
+import type { Preorder, PreorderStatusKey } from "@/services/preorders/preorders.types";
+import type { StatusMeta } from "@/components/common/StatusBadge";
+
+export const PREORDER_STATUS: Record<PreorderStatusKey, StatusMeta> = {
+  new: { labelKey: "status.preorder.new", fg: "#1f5f8b", bg: "#e6f1f8", dot: "#3b91d6" },
+  prepay: { labelKey: "status.preorder.prepay", fg: "#a86a1f", bg: "#fbf1e2", dot: "#e0a144" },
+  ready: { labelKey: "status.preorder.ready", fg: "#1f6b49", bg: "#e9f4ee", dot: "#2f8b63" },
+  done: { labelKey: "status.preorder.done", fg: "#6d7c74", bg: "#eef2f0", dot: "#9aa8a1" },
+};
+
+export const PREORDERS: Preorder[] = [
+  {
+    num: "№ PRE-3041",
+    date: "4 июл",
+    product: "iPhone 15 Pro Max 256 ГБ",
+    customer: "Айна Бердиева",
+    prepay: 10000,
+    total: 34500,
+    st: "new",
+  },
+  {
+    num: "№ PRE-3040",
+    date: "4 июл",
+    product: "Samsung Galaxy S24 Ultra",
+    customer: "Довлет Ходжаев",
+    prepay: 8000,
+    total: 28900,
+    st: "prepay",
+  },
+  {
+    num: "№ PRE-3039",
+    date: "3 июл",
+    product: 'MacBook Air M3 13"',
+    customer: "Гулзар Реджепова",
+    prepay: 15000,
+    total: 29800,
+    st: "ready",
+  },
+  {
+    num: "№ PRE-3038",
+    date: "3 июл",
+    product: 'iPad Air 11" M2',
+    customer: "Мерген Аннаев",
+    prepay: 5000,
+    total: 17800,
+    st: "done",
+  },
+  {
+    num: "№ PRE-3037",
+    date: "3 июл",
+    product: "iPhone 15 128 ГБ",
+    customer: "Огулджан Оразова",
+    prepay: 9000,
+    total: 27900,
+    st: "prepay",
+  },
+  {
+    num: "№ PRE-3036",
+    date: "2 июл",
+    product: "PlayStation 5 Slim",
+    customer: "Батыр Гельдиев",
+    prepay: 4000,
+    total: 12600,
+    st: "new",
+  },
+  {
+    num: "№ PRE-3035",
+    date: "2 июл",
+    product: 'Samsung QLED 55" 4K',
+    customer: "Джерен Атаева",
+    prepay: 3500,
+    total: 11200,
+    st: "ready",
+  },
+  {
+    num: "№ PRE-3034",
+    date: "1 июл",
+    product: "Apple Watch Series 9",
+    customer: "Сердар Курбанов",
+    prepay: 2000,
+    total: 6300,
+    st: "done",
+  },
+  {
+    num: "№ PRE-3033",
+    date: "1 июл",
+    product: "Sony WH-1000XM5",
+    customer: "Лейли Мурадова",
+    prepay: 1500,
+    total: 5900,
+    st: "new",
+  },
+  {
+    num: "№ PRE-3032",
+    date: "30 июн",
+    product: "AirPods Pro 2",
+    customer: "Реджеп Ниязов",
+    prepay: 1200,
+    total: 4720,
+    st: "prepay",
+  },
+  {
+    num: "№ PRE-3031",
+    date: "30 июн",
+    product: "Xiaomi Redmi Note 13",
+    customer: "Максат Розыев",
+    prepay: 1800,
+    total: 6300,
+    st: "ready",
+  },
+  {
+    num: "№ PRE-3030",
+    date: "29 июн",
+    product: "Samsung Galaxy Watch 6",
+    customer: "Дженнет Сапарова",
+    prepay: 2200,
+    total: 6850,
+    st: "done",
+  },
+];
