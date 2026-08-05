@@ -33,7 +33,7 @@ const BannersPage = lazy(() => import("@/pages/Banners"));
 const BlogPage = lazy(() => import("@/pages/Blog"));
 const WarrantyPage = lazy(() => import("@/pages/Warranty"));
 const FaqPage = lazy(() => import("@/pages/Faq"));
-const UsersPage = lazy(() => import("@/pages/Users"));
+const AdminsPage = lazy(() => import("@/pages/Admins"));
 const RolesPage = lazy(() => import("@/pages/Roles"));
 const AuditPage = lazy(() => import("@/pages/Audit"));
 const NotificationsPage = lazy(() => import("@/pages/Notifications"));
@@ -83,7 +83,7 @@ export const router = createBrowserRouter([
           { path: "/blog", element: withSuspense(<BlogPage />) },
           { path: "/warranty", element: withSuspense(<WarrantyPage />) },
           { path: "/faq", element: withSuspense(<FaqPage />) },
-          { path: "/users", element: withSuspense(<UsersPage />) },
+          { path: "/admins", element: withSuspense(<AdminsPage />) },
           { path: "/roles", element: withSuspense(<RolesPage />) },
           { path: "/audit", element: withSuspense(<AuditPage />) },
           { path: "/notifications", element: withSuspense(<NotificationsPage />) },

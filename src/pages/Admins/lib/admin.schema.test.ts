@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { userSchema } from "./user.schema";
+import { adminSchema } from "./admin.schema";
 
-describe("userSchema", () => {
+describe("adminSchema", () => {
   it("accepts a valid staff member", () => {
-    const res = userSchema.safeParse({
+    const res = adminSchema.safeParse({
       name: "Ага Мурадов",
       email: "aga@garantmobile.tm",
       role: "manager",
@@ -14,7 +14,7 @@ describe("userSchema", () => {
 
   it("rejects an invalid e-mail", () => {
     expect(
-      userSchema.safeParse({
+      adminSchema.safeParse({
         name: "Ага Мурадов",
         email: "not-an-email",
         role: "manager",
@@ -25,7 +25,7 @@ describe("userSchema", () => {
 
   it("rejects an unknown role", () => {
     expect(
-      userSchema.safeParse({
+      adminSchema.safeParse({
         name: "Ага Мурадов",
         email: "aga@garantmobile.tm",
         role: "ceo",

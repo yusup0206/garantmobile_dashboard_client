@@ -20,11 +20,11 @@ import {
 } from "@/services/users/useUsers";
 import type { AdminUser, CreateAdminDto, EditAdminDto, AdminStatus } from "@/services/users/users.types";
 
-import { UsersTable } from "./ui/UsersTable";
-import { UserFormDialog } from "./ui/UserFormDialog";
-import { toAdminRow, FILTER_TABS } from "./lib/users.helpers";
+import { AdminsTable } from "./ui/AdminsTable";
+import { AdminFormDialog } from "./ui/AdminFormDialog";
+import { toAdminRow, FILTER_TABS } from "./lib/admins.helpers";
 
-export default function UsersPage() {
+export default function AdminsPage() {
   const t = useT();
 
   const [params, setParams] = useSearchParams();
@@ -122,14 +122,14 @@ export default function UsersPage() {
       ) : rows.length === 0 ? (
         <EmptyState title={t("users.empty")} />
       ) : (
-        <UsersTable
+        <AdminsTable
           rows={rows}
           onEdit={openEdit}
           onDelete={setDeleting}
         />
       )}
 
-      <UserFormDialog
+      <AdminFormDialog
         open={formOpen}
         onOpenChange={setFormOpen}
         user={editing}

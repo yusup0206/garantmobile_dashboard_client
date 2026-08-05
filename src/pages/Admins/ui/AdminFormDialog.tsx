@@ -11,7 +11,7 @@ import type {
   AdminStatus,
 } from "@/services/users/users.types";
 
-type UserFormDialogProps = {
+type AdminFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user?: AdminUser | null;
@@ -19,13 +19,13 @@ type UserFormDialogProps = {
   pending?: boolean;
 };
 
-export function UserFormDialog({
+export function AdminFormDialog({
   open,
   onOpenChange,
   user,
   onSubmit,
   pending,
-}: UserFormDialogProps) {
+}: AdminFormDialogProps) {
   const { data: roles = [] } = useRoles();
 
   const [name, setName] = useState("");

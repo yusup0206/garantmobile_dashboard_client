@@ -1,19 +1,19 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useT } from "@/i18n/useT";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import type { AdminRow } from "../lib/users.helpers";
+import type { AdminRow } from "../lib/admins.helpers";
 
-type UsersTableProps = {
+type AdminsTableProps = {
   rows: AdminRow[];
   onEdit?: (row: AdminRow) => void;
   onDelete?: (row: AdminRow) => void;
 };
 
-export function UsersTable({
+export function AdminsTable({
   rows,
   onEdit,
   onDelete,
-}: UsersTableProps) {
+}: AdminsTableProps) {
   const t = useT();
   const canWrite = Boolean(onEdit || onDelete);
 

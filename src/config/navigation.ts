@@ -106,7 +106,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "nav.group.system",
     items: [
-      { label: "nav.users", to: "/users", icon: UserCog, permission: "staff:read" },
+      { label: "nav.admins", to: "/admins", icon: UserCog, permission: "staff:read" },
       { label: "nav.roles", to: "/roles", icon: ShieldCheck },
       { label: "nav.audit", to: "/audit", icon: History, permission: "audit:read" },
       { label: "nav.notifications", to: "/notifications", icon: Bell },
