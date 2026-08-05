@@ -2,27 +2,25 @@ import { apiClient, mockDelay } from "@/services/api/apiClient";
 import { isApiEnabled } from "@/config/env";
 import { authToken } from "@/services/api/authToken";
 import type {
-  BlogPost,
-  CreateBlogPostDto,
-  EditBlogPostDto,
-  GetBlogParams,
-  GetBlogResponse,
-  DeleteBlogResponse,
-} from "./blog.types";
+  Tag,
+  TagInput,
+  GetTagsParams,
+  GetTagsResponse,
+  DeleteTagResponse,
+} from "./tags.types";
 
-let store: BlogPost[] = [];
+let store: Tag[] = [];
 
-export async function getPosts(params?: GetBlogParams): Promise<GetBlogResponse> {
+export async function getTags(params?: GetTagsParams): Promise<GetTagsResponse> {
   if (isApiEnabled()) {
     const query = new URLSearchParams();
     if (params?.page !== undefined) query.set("page", String(params.page));
     if (params?.pageSize !== undefined) query.set("pageSize", String(params.pageSize));
     if (params?.search) query.set("search", params.search);
-    if (params?.tagId) query.set("tagId", params.tagId);
-    if (params?.status) query.set("status", params.status);
+    if (params?.brandId) query.set("brandId", params.brandId);
 
     const queryString = query.toString();
-    const endpoint = `/blogs/all${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/tags/all${queryString ? `?${queryString}` : ""}`;
 
     return apiClient<unknown>(endpoint, {
       token: authToken(),
@@ -32,72 +30,67 @@ export async function getPosts(params?: GetBlogParams): Promise<GetBlogResponse>
     }).then((res: unknown) => {
       const r = res as Record<string, unknown>;
       const dataObj = r?.data as Record<string, unknown>;
-      if (dataObj?.blogs && Array.isArray(dataObj.blogs)) {
+      if (dataObj?.tags && Array.isArray(dataObj.tags)) {
         return {
-          count: (dataObj.count as number) ?? (dataObj.blogs as BlogPost[]).length,
-          blogs: dataObj.blogs as BlogPost[],
+          count: (dataObj.count as number) ?? (dataObj.tags as Tag[]).length,
+          tags: dataObj.tags as Tag[],
         };
       }
-      if (r?.blogs && Array.isArray(r.blogs)) {
+      if (r?.tags && Array.isArray(r.tags)) {
         return {
-          count: (r.count as number) ?? (r.blogs as BlogPost[]).length,
-          blogs: r.blogs as BlogPost[],
+          count: (r.count as number) ?? (r.tags as Tag[]).length,
+          tags: r.tags as Tag[],
         };
       }
       if (Array.isArray(r)) {
-        return { count: r.length, blogs: r as BlogPost[] };
+        return { count: r.length, tags: r as Tag[] };
       }
       if (Array.isArray(r?.data)) {
-        return { count: (r.data as BlogPost[]).length, blogs: r.data as BlogPost[] };
+        return { count: (r.data as Tag[]).length, tags: r.data as Tag[] };
       }
-      return { count: 0, blogs: [] };
+      return { count: 0, tags: [] };
     });
   }
 
   let filtered = [...store];
-  if (params?.status) {
-    filtered = filtered.filter((p) => p.status === params.status);
+  if (params?.brandId) {
+    filtered = filtered.filter((t) => t.brandId === params.brandId);
   }
   if (params?.search) {
     const q = params.search.toLowerCase();
     filtered = filtered.filter(
-      (p) =>
-        p.titleRu?.toLowerCase().includes(q) ||
-        p.titleTk?.toLowerCase().includes(q) ||
-        p.teaserRu?.toLowerCase().includes(q) ||
-        p.teaserTk?.toLowerCase().includes(q),
+      (t) =>
+        t.nameRu?.toLowerCase().includes(q) ||
+        t.nameTk?.toLowerCase().includes(q),
     );
   }
 
   return mockDelay({
     count: filtered.length,
-    blogs: filtered,
+    tags: filtered,
   });
 }
 
-export async function getPostById(id: string, lang?: string): Promise<BlogPost> {
+export async function getTagById(id: string, lang?: string): Promise<Tag> {
   if (isApiEnabled()) {
-    return apiClient<unknown>(`/blogs/details/${id}`, {
+    return apiClient<unknown>(`/tags/details/${id}`, {
       token: authToken(),
       headers: {
         "Accept-Language": lang || "tk",
       },
     }).then((res: unknown) => {
       const r = res as Record<string, unknown>;
-      return (r?.data || r) as BlogPost;
+      return (r?.data || r) as Tag;
     });
   }
-  const found = store.find((p) => p.id === id);
+  const found = store.find((t) => t.id === id);
   if (!found) throw new Error("error.notFound");
   return mockDelay({ ...found });
 }
 
-export async function createPost(
-  input: CreateBlogPostDto,
-  lang?: string,
-): Promise<BlogPost> {
+export async function createTag(input: TagInput, lang?: string): Promise<Tag> {
   if (isApiEnabled()) {
-    return apiClient<unknown>("/blogs/create", {
+    return apiClient<unknown>("/tags/create", {
       method: "POST",
       token: authToken(),
       headers: {
@@ -106,24 +99,24 @@ export async function createPost(
       body: JSON.stringify(input),
     }).then((res: unknown) => {
       const r = res as Record<string, unknown>;
-      return (r?.data || r) as BlogPost;
+      return (r?.data || r) as Tag;
     });
   }
-  const post: BlogPost = {
+  const tag: Tag = {
     ...input,
-    id: `blog_${Date.now()}`,
+    id: `tag_${Date.now()}`,
   };
-  store = [post, ...store];
-  return mockDelay({ ...post });
+  store = [tag, ...store];
+  return mockDelay({ ...tag });
 }
 
-export async function updatePost(
+export async function updateTag(
   id: string,
-  input: EditBlogPostDto,
+  input: TagInput,
   lang?: string,
-): Promise<BlogPost> {
+): Promise<Tag> {
   if (isApiEnabled()) {
-    return apiClient<unknown>(`/blogs/edit/${id}`, {
+    return apiClient<unknown>(`/tags/edit/${id}`, {
       method: "PUT",
       token: authToken(),
       headers: {
@@ -132,18 +125,18 @@ export async function updatePost(
       body: JSON.stringify(input),
     }).then((res: unknown) => {
       const r = res as Record<string, unknown>;
-      return (r?.data || r) as BlogPost;
+      return (r?.data || r) as Tag;
     });
   }
-  store = store.map((p) => (p.id === id ? { ...p, ...input } : p));
-  const updated = store.find((p) => p.id === id);
+  store = store.map((t) => (t.id === id ? { ...t, ...input } : t));
+  const updated = store.find((t) => t.id === id);
   if (!updated) throw new Error("error.notFound");
   return mockDelay({ ...updated });
 }
 
-export async function deletePost(id: string, lang?: string): Promise<DeleteBlogResponse> {
+export async function deleteTag(id: string, lang?: string): Promise<DeleteTagResponse> {
   if (isApiEnabled()) {
-    return apiClient<DeleteBlogResponse>(`/blogs/delete/${id}`, {
+    return apiClient<DeleteTagResponse>(`/tags/delete/${id}`, {
       method: "DELETE",
       token: authToken(),
       headers: {
@@ -151,6 +144,6 @@ export async function deletePost(id: string, lang?: string): Promise<DeleteBlogR
       },
     });
   }
-  store = store.filter((p) => p.id !== id);
+  store = store.filter((t) => t.id !== id);
   return mockDelay({ deleted: true });
 }

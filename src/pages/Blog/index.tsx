@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
@@ -11,6 +11,8 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 import { usePagination } from "@/lib/usePagination";
 import {
   useBlog,
@@ -18,7 +20,7 @@ import {
   useUpdatePost,
   useDeletePost,
 } from "@/services/blog/useBlog";
-import type { Post, PostInput } from "@/services/blog/blog.types";
+import type { BlogPost, CreateBlogPostDto, BlogStatus } from "@/services/blog/blog.types";
 
 import { BlogTable } from "./ui/BlogTable";
 import { PostFormDialog } from "./ui/PostFormDialog";
@@ -26,23 +28,31 @@ import { toRow, FILTER_TABS } from "./lib/blog.helpers";
 
 export default function BlogPage() {
   const t = useT();
-  const { data, isLoading, isError, refetch } = useBlog();
+  const [params, setParams] = useSearchParams();
+  const filter = params.get("status") ?? "all";
+  const [search, setSearch] = useState("");
+
+  const queryParams = useMemo(() => {
+    const p: { status?: BlogStatus; search?: string } = {};
+    if (filter !== "all") p.status = filter as BlogStatus;
+    if (search.trim()) p.search = search.trim();
+    return p;
+  }, [filter, search]);
+
+  const { data, isLoading, isError, refetch } = useBlog(queryParams);
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
   const deletePost = useDeletePost();
 
-  // URL state: /blog?status=draft — shareable & survives refresh.
-  const [params, setParams] = useSearchParams();
-  const filter = params.get("status") ?? "all";
-
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Post | null>(null);
-  const [deleting, setDeleting] = useState<Post | null>(null);
+  const [editing, setEditing] = useState<BlogPost | null>(null);
+  const [deleting, setDeleting] = useState<BlogPost | null>(null);
+
+  const posts = useMemo(() => data?.blogs ?? [], [data?.blogs]);
 
   const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
-  }, [data, filter]);
+    return posts.map(toRow);
+  }, [posts]);
 
   const pg = usePagination(rows, 8, filter);
 
@@ -55,42 +65,59 @@ export default function BlogPage() {
     setFormOpen(true);
   }
 
-  function openEdit(post: Post) {
+  function openEdit(post: BlogPost) {
     setEditing(post);
     setFormOpen(true);
   }
 
-  function submitForm(values: PostInput) {
+  function submitForm(values: CreateBlogPostDto) {
     if (editing) {
       updatePost.mutate(
         { id: editing.id, input: values },
         { onSuccess: () => setFormOpen(false) },
       );
     } else {
-      createPost.mutate(values, { onSuccess: () => setFormOpen(false) });
+      createPost.mutate(
+        { input: values },
+        { onSuccess: () => setFormOpen(false) },
+      );
     }
   }
 
   function confirmDelete() {
     if (!deleting) return;
-    deletePost.mutate(deleting.id, { onSuccess: () => setDeleting(null) });
+    deletePost.mutate(
+      { id: deleting.id },
+      { onSuccess: () => setDeleting(null) },
+    );
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title={t("page.blog.title")}
         subtitle={t("page.blog.subtitle")}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
-            <Button size="sm" onClick={openAdd}>
-              <Plus className="h-4 w-4" />
-              {t("common.add")}
-            </Button>
-          </div>
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="mr-2 h-4 w-4" />
+            {t("common.add")}
+          </Button>
         }
       />
+
+      {/* Standard filter controls card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+
+        <div className="w-full sm:w-72">
+          <Input
+            placeholder="Поиск по статьям…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-10 text-sm"
+          />
+        </div>
+      </Card>
 
       {isLoading ? (
         <LoadingState />
@@ -125,7 +152,7 @@ export default function BlogPage() {
         title={t("blog.confirm.title")}
         description={
           deleting
-            ? `«${deleting.title}» ${t("common.deleteWarnF")}`
+            ? `«${deleting.titleRu || deleting.titleTk}» ${t("common.deleteWarnF")}`
             : undefined
         }
         confirmLabel={t("common.delete")}

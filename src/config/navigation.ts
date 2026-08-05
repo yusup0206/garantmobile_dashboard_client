@@ -21,6 +21,7 @@ import {
   Image,
   Images,
   Newspaper,
+  Tag,
   ShieldCheck,
   HelpCircle,
   UserCog,
@@ -94,6 +95,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "nav.promocodes", to: "/promocodes", icon: TicketPercent },
       { label: "nav.banners", to: "/banners", icon: Image },
       { label: "nav.blog", to: "/blog", icon: Newspaper },
+      { label: "nav.tags", to: "/tags", icon: Tag },
     ],
   },
   {

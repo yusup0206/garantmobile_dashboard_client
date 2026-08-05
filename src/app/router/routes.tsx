@@ -31,6 +31,7 @@ const HeroSlidesPage = lazy(() => import("@/pages/HeroSlides"));
 const PromocodesPage = lazy(() => import("@/pages/Promocodes"));
 const BannersPage = lazy(() => import("@/pages/Banners"));
 const BlogPage = lazy(() => import("@/pages/Blog"));
+const TagsPage = lazy(() => import("@/pages/Tags"));
 const WarrantyPage = lazy(() => import("@/pages/Warranty"));
 const FaqPage = lazy(() => import("@/pages/Faq"));
 const AdminsPage = lazy(() => import("@/pages/Admins"));
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
           { path: "/promocodes", element: withSuspense(<PromocodesPage />) },
           { path: "/banners", element: withSuspense(<BannersPage />) },
           { path: "/blog", element: withSuspense(<BlogPage />) },
+          { path: "/tags", element: withSuspense(<TagsPage />) },
           { path: "/warranty", element: withSuspense(<WarrantyPage />) },
           { path: "/faq", element: withSuspense(<FaqPage />) },
           { path: "/admins", element: withSuspense(<AdminsPage />) },

@@ -6,28 +6,36 @@ import { useT } from "@/i18n/useT";
 import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { POST_STATUS } from "@/data/blog.mock";
-import type { Post, PostInput, PostStatusKey } from "@/services/blog/blog.types";
+import { useTags } from "@/services/tags/useTags";
+import type { BlogPost, CreateBlogPostDto, BlogStatus } from "@/services/blog/blog.types";
 import { postSchema, type PostFormValues } from "../lib/post.schema";
 
 type PostFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** When set, the dialog edits this post; otherwise it creates a new one. */
-  post?: Post | null;
-  onSubmit: (values: PostInput) => void;
+  post?: BlogPost | null;
+  onSubmit: (values: CreateBlogPostDto) => void;
   pending?: boolean;
 };
 
-const STATUS_ORDER: PostStatusKey[] = ["published", "draft", "scheduled"];
+const STATUS_ORDER: BlogStatus[] = ["published", "draft"];
 
 const EMPTY: PostFormValues = {
-  title: "",
-  author: "",
-  date: "",
-  st: "published",
+  titleRu: "",
+  titleTk: "",
+  teaserRu: "",
+  teaserTk: "",
+  descriptionRu: "",
+  descriptionTk: "",
+  publishedAt: new Date().toISOString(),
+  readingTime: 0,
+  cover: "",
+  tagId: "",
+  status: "draft",
 };
 
 export function PostFormDialog({
@@ -38,6 +46,9 @@ export function PostFormDialog({
   pending,
 }: PostFormDialogProps) {
   const t = useT();
+  const { data: tagsData, isLoading: tagsLoading } = useTags();
+  const tags = tagsData?.tags ?? [];
+
   const {
     register,
     handleSubmit,
@@ -50,26 +61,32 @@ export function PostFormDialog({
     defaultValues: EMPTY,
   });
 
-  // Reset the fields each time the dialog opens (add vs edit).
   useEffect(() => {
     if (!open) return;
     reset(
       post
         ? {
-            title: post.title,
-            author: post.author,
-            date: post.date,
-            st: post.st,
+            titleRu: post.titleRu ?? "",
+            titleTk: post.titleTk ?? "",
+            teaserRu: post.teaserRu ?? "",
+            teaserTk: post.teaserTk ?? "",
+            descriptionRu: post.descriptionRu ?? "",
+            descriptionTk: post.descriptionTk ?? "",
+            publishedAt: post.publishedAt ?? new Date().toISOString(),
+            readingTime: post.readingTime ?? 0,
+            cover: post.cover ?? "",
+            tagId: post.tagId ?? "",
+            status: post.status ?? "draft",
           }
         : EMPTY,
     );
   }, [open, post, reset]);
 
-  const st = watch("st");
+  const status = watch("status");
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content className="max-w-md">
+      <Dialog.Content className="max-w-lg">
         <Dialog.Title>
           {post ? t("blog.dialog.edit") : t("blog.dialog.new")}
         </Dialog.Title>
@@ -77,28 +94,85 @@ export function PostFormDialog({
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
-          className="mt-4 flex flex-col gap-3"
+          className="mt-4 flex max-h-[75vh] flex-col gap-3 overflow-y-auto pr-1"
         >
-          <Field label={t("form.heading")} error={errors.title?.message ? t(errors.title?.message as TKey) : undefined}>
-            <Input
-              {...register("title")}
-              invalid={!!errors.title}
-              placeholder="Как выбрать смартфон в 2026"
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Заголовок (RU)" error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
+              <Input
+                {...register("titleRu")}
+                invalid={!!errors.titleRu}
+                placeholder="Обзор смартфона"
+              />
+            </Field>
+            <Field label="Заголовок (TK)" error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
+              <Input
+                {...register("titleTk")}
+                invalid={!!errors.titleTk}
+                placeholder="Smartfon syny"
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Тизер / Краткое (RU)">
+              <Input
+                {...register("teaserRu")}
+                placeholder="Краткое описание на русском"
+              />
+            </Field>
+            <Field label="Тизер / Краткое (TK)">
+              <Input
+                {...register("teaserTk")}
+                placeholder="Gysgaça mazmuny türkmençe"
+              />
+            </Field>
+          </div>
+
+          <Field label="Полный текст (RU)">
+            <textarea
+              {...register("descriptionRu")}
+              rows={3}
+              className="w-full rounded-xl border border-line bg-canvas p-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+              placeholder="Полная статья на русском…"
+            />
+          </Field>
+
+          <Field label="Полный текст (TK)">
+            <textarea
+              {...register("descriptionTk")}
+              rows={3}
+              className="w-full rounded-xl border border-line bg-canvas p-2.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+              placeholder="Doly makala türkmençe…"
             />
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label={t("form.author")} error={errors.author?.message ? t(errors.author?.message as TKey) : undefined}>
+            <Field label="Обложка (URL)">
               <Input
-                {...register("author")}
-                invalid={!!errors.author}
-                placeholder="Мердан Аннаев"
+                {...register("cover")}
+                placeholder="https://example.com/image.png"
               />
             </Field>
-            <Field label={t("form.date")} error={errors.date?.message ? t(errors.date?.message as TKey) : undefined}>
-              <Input {...register("date")} invalid={!!errors.date} placeholder="3 июл" />
+            <Field label="Время чтения (мин)">
+              <Input
+                type="number"
+                min={0}
+                {...register("readingTime")}
+                invalid={!!errors.readingTime}
+              />
             </Field>
           </div>
+
+          <Field label="Тег">
+            <Select {...register("tagId")} disabled={tagsLoading}>
+              <option value="">— Без тега —</option>
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.nameRu || tag.nameTk}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-ink/70">{t("form.status")}</label>
@@ -107,10 +181,10 @@ export function PostFormDialog({
                 <button
                   key={key}
                   type="button"
-                  onClick={() => setValue("st", key)}
+                  onClick={() => setValue("status", key)}
                   className={cn(
                     "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
-                    st === key ? "bg-brand text-white" : "text-muted hover:text-ink",
+                    status === key ? "bg-brand text-white" : "text-muted hover:text-ink",
                   )}
                 >
                   {t(POST_STATUS[key].labelKey)}
@@ -119,7 +193,7 @@ export function PostFormDialog({
             </div>
           </div>
 
-          <div className="mt-2 flex justify-end gap-2">
+          <div className="mt-4 flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>

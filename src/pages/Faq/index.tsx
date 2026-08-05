@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Filter, Search } from "lucide-react";
+import { Plus, Filter } from "lucide-react";
 import { useT } from "@/i18n/useT";
 
 import { PageHeader } from "@/components/common/PageHeader";
@@ -11,12 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
-import {
-  useFaq,
-  useCreateFaq,
-  useEditFaq,
-  useDeleteFaq,
-} from "@/services/faq/useFaq";
+import { useFaq, useCreateFaq, useEditFaq, useDeleteFaq } from "@/services/faq/useFaq";
 import type { FaqEntry, CreateFaqDto, GetFaqParams } from "@/services/faq/faq.types";
 
 import { FaqItem } from "./ui/FaqItem";
