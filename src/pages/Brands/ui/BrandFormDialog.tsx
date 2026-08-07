@@ -7,6 +7,7 @@ import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import type { Brand, BrandInput } from "@/services/brands/brands.types";
 import { brandSchema, type BrandFormValues } from "../lib/brand.schema";
 
@@ -38,11 +39,15 @@ export function BrandFormDialog({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<BrandFormValues>({
     resolver: zodResolver(brandSchema),
     defaultValues: EMPTY,
   });
+
+  const logo = watch("logo");
 
   useEffect(() => {
     if (!open) return;
@@ -73,12 +78,11 @@ export function BrandFormDialog({
             <Input {...register("name")} invalid={!!errors.name} placeholder="Apple" />
           </Field>
 
-          <Field label="Логотип (URL)">
-            <Input
-              {...register("logo")}
-              placeholder="https://example.com/logo.png"
-            />
-          </Field>
+          <ImageUpload
+            label="Логотип"
+            value={logo}
+            onChange={(url) => setValue("logo", url, { shouldValidate: true })}
+          />
 
           <Field label="Описание">
             <textarea

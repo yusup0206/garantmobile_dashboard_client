@@ -8,6 +8,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { cn } from "@/lib/cn";
 import { POST_STATUS } from "@/data/blog.mock";
 import { useTags } from "@/services/tags/useTags";
@@ -60,6 +61,8 @@ export function PostFormDialog({
     resolver: zodResolver(postSchema),
     defaultValues: EMPTY,
   });
+
+  const cover = watch("cover");
 
   useEffect(() => {
     if (!open) return;
@@ -147,12 +150,11 @@ export function PostFormDialog({
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Обложка (URL)">
-              <Input
-                {...register("cover")}
-                placeholder="https://example.com/image.png"
-              />
-            </Field>
+            <ImageUpload
+              label="Обложка"
+              value={cover}
+              onChange={(url) => setValue("cover", url, { shouldValidate: true })}
+            />
             <Field label="Время чтения (мин)">
               <Input
                 type="number"

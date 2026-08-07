@@ -7,6 +7,7 @@ import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import type { DeliveryType, DeliveryTypeInput } from "@/services/delivery/delivery.types";
 import { deliveryTypeSchema, type DeliveryTypeFormValues } from "../lib/delivery.schema";
 
@@ -45,11 +46,15 @@ export function DeliveryFormDialog({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<DeliveryTypeFormValues>({
     resolver: zodResolver(deliveryTypeSchema),
     defaultValues: EMPTY,
   });
+
+  const icon = watch("icon");
 
   useEffect(() => {
     if (!open) return;
@@ -131,9 +136,11 @@ export function DeliveryFormDialog({
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Иконка (URL)">
-              <Input {...register("icon")} placeholder="https://example.com/icon.png" />
-            </Field>
+            <ImageUpload
+              label="Иконка"
+              value={icon}
+              onChange={(url) => setValue("icon", url, { shouldValidate: true })}
+            />
             <Field label="Порядок сортировки">
               <Input type="number" min={0} {...register("sortOrder")} />
             </Field>

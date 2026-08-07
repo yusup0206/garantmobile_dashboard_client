@@ -7,6 +7,7 @@ import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import type { PaymentType, PaymentTypeInput } from "@/services/payments/payments.types";
 import { paymentTypeSchema, type PaymentTypeFormValues } from "../lib/payments.schema";
 
@@ -43,11 +44,15 @@ export function PaymentFormDialog({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<PaymentTypeFormValues>({
     resolver: zodResolver(paymentTypeSchema),
     defaultValues: EMPTY,
   });
+
+  const icon = watch("icon");
 
   useEffect(() => {
     if (!open) return;
@@ -118,9 +123,11 @@ export function PaymentFormDialog({
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Иконка (URL)">
-              <Input {...register("icon")} placeholder="https://example.com/icon.png" />
-            </Field>
+            <ImageUpload
+              label="Иконка"
+              value={icon}
+              onChange={(url) => setValue("icon", url, { shouldValidate: true })}
+            />
             <Field label="Порядок сортировки">
               <Input type="number" min={0} {...register("sortOrder")} />
             </Field>
