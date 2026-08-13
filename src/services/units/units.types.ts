@@ -1,15 +1,27 @@
-export type UnitKind = "store" | "warehouse" | "service";
-
-export type UnitStatus = "open" | "closed";
-
 export type Unit = {
-  id: number;
-  name: string;
-  city: string;
-  kind: UnitKind;
-  staff: number;
-  st: UnitStatus;
+  id: string;
+  nameTk: string;
+  nameRu: string;
+  shortName: string;
+  isDefault: boolean;
 };
 
-/** Payload for create/update — everything except the server-assigned id. */
+/** Payload for create/update unit */
 export type UnitInput = Omit<Unit, "id">;
+
+export type GetUnitsParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  lang?: string;
+};
+
+export type GetUnitsResponse = {
+  count: number;
+  units: Unit[];
+};
+
+export type DeleteUnitResponse = {
+  deleted: boolean;
+};
+

@@ -5,12 +5,47 @@
 import type { Unit } from "@/services/units/units.types";
 
 export const UNITS: Unit[] = [
-  { id: 1, name: "Гарант Центр", city: "Ашхабад", kind: "store", staff: 18, st: "open" },
-  { id: 2, name: "Беркарар", city: "Ашхабад", kind: "store", staff: 14, st: "open" },
-  { id: 3, name: "Оптовый", city: "Ашхабад", kind: "warehouse", staff: 9, st: "open" },
-  { id: 4, name: "Сервис-центр", city: "Ашхабад", kind: "service", staff: 7, st: "open" },
-  { id: 5, name: "Магазин", city: "Дашогуз", kind: "store", staff: 11, st: "open" },
-  { id: 6, name: "Гарант Мары", city: "Мары", kind: "store", staff: 10, st: "closed" },
-  { id: 7, name: "Склад", city: "Туркменабат", kind: "warehouse", staff: 6, st: "open" },
-  { id: 8, name: "Сервис", city: "Балканабат", kind: "service", staff: 4, st: "open" },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k1",
+    nameTk: "Sany",
+    nameRu: "Штука",
+    shortName: "шт",
+    isDefault: true,
+  },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k2",
+    nameTk: "Kilogramm",
+    nameRu: "Килограмм",
+    shortName: "кг",
+    isDefault: false,
+  },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k3",
+    nameTk: "Metr",
+    nameRu: "Метр",
+    shortName: "м",
+    isDefault: false,
+  },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k4",
+    nameTk: "Litr",
+    nameRu: "Литр",
+    shortName: "л",
+    isDefault: false,
+  },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k5",
+    nameTk: "Guty",
+    nameRu: "Коробка",
+    shortName: "кор",
+    isDefault: false,
+  },
+  {
+    id: "clg1x0z5e0000v6l3f4b7j2k6",
+    nameTk: "Toplum",
+    nameRu: "Комплект",
+    shortName: "компл",
+    isDefault: false,
+  },
 ];
+
