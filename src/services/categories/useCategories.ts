@@ -5,20 +5,25 @@ import {
   getCategories,
   updateCategory,
 } from "./categories.api";
-import type { CategoryInput } from "./categories.types";
+import type { CategoryInput, GetCategoriesParams } from "./categories.types";
 
 export const categoriesKeys = {
   all: ["categories"] as const,
+  list: (params?: GetCategoriesParams) => ["categories", "list", params] as const,
 };
 
-export function useCategories() {
-  return useQuery({ queryKey: categoriesKeys.all, queryFn: getCategories });
+export function useCategories(params?: GetCategoriesParams) {
+  return useQuery({
+    queryKey: categoriesKeys.list(params),
+    queryFn: () => getCategories(params),
+  });
 }
 
 export function useCreateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: CategoryInput) => createCategory(input),
+    mutationFn: ({ input, lang }: { input: CategoryInput; lang?: string }) =>
+      createCategory(input, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: categoriesKeys.all }),
   });
 }
@@ -26,8 +31,15 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, input }: { id: number; input: CategoryInput }) =>
-      updateCategory(id, input),
+    mutationFn: ({
+      id,
+      input,
+      lang,
+    }: {
+      id: string;
+      input: CategoryInput;
+      lang?: string;
+    }) => updateCategory(id, input, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: categoriesKeys.all }),
   });
 }
@@ -35,7 +47,8 @@ export function useUpdateCategory() {
 export function useDeleteCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => deleteCategory(id),
+    mutationFn: ({ id, lang }: { id: string; lang?: string }) =>
+      deleteCategory(id, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: categoriesKeys.all }),
   });
 }

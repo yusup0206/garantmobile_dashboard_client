@@ -1,12 +1,38 @@
-export type CategoryStatus = "active" | "hidden";
-
 export type Category = {
-  id: number;
-  name: string;
+  id: string;
+  nameTk: string;
+  nameRu: string;
   slug: string;
-  products: number;
-  st: CategoryStatus;
+  icon?: string;
+  productQuantity?: number;
+  actualQuantity?: number;
+  sortOrder?: number;
+  homepageShow?: boolean;
 };
 
-/** Payload for create/update — products is a derived count, not user-set. */
-export type CategoryInput = Omit<Category, "id" | "products">;
+/** Payload for create / update */
+export type CategoryInput = {
+  nameTk: string;
+  nameRu: string;
+  slug: string;
+  icon?: string;
+  homepageShow?: boolean;
+  sortOrder?: number;
+};
+
+export type GetCategoriesParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  homepageShow?: boolean;
+  lang?: string;
+};
+
+export type GetCategoriesResponse = {
+  count: number;
+  categories: Category[];
+};
+
+export type DeleteCategoryResponse = {
+  deleted: boolean;
+};

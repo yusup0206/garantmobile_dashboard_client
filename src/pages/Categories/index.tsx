@@ -31,7 +31,7 @@ export default function CategoriesPage() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState<Category | null>(null);
 
-  const cards = useMemo(() => (data ?? []).map(toView), [data]);
+  const cards = useMemo(() => (data?.categories ?? []).map(toView), [data]);
 
   function openAdd() {
     setEditing(null);
@@ -105,7 +105,7 @@ export default function CategoriesPage() {
         title={t("categories.confirm.title")}
         description={
           deleting
-            ? `«${deleting.name}» ${t("common.deleteWarnF")}`
+            ? `«${deleting.nameRu || deleting.nameTk}» ${t("common.deleteWarnF")}`
             : undefined
         }
         confirmLabel={t("common.delete")}

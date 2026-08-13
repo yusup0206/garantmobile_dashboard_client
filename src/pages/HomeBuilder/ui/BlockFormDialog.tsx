@@ -122,7 +122,7 @@ export function BlockFormDialog({
               onChange={changeCategory}
               options={[
                 { value: "", label: t("home.form.categoryNone") },
-                ...categories.map((c) => ({ value: String(c.id), label: c.name })),
+                ...categories.map((c) => ({ value: String(c.id), label: c.nameRu || c.nameTk })),
               ]}
             />
           </Field>

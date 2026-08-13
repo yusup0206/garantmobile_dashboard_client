@@ -7,13 +7,12 @@ import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { cn } from "@/lib/cn";
 import type {
   Category,
   CategoryInput,
-  CategoryStatus,
 } from "@/services/categories/categories.types";
-import { CATEGORY_STATUS } from "../lib/categories.helpers";
 import { categorySchema, type CategoryFormValues } from "../lib/category.schema";
 
 type CategoryFormDialogProps = {
@@ -25,12 +24,13 @@ type CategoryFormDialogProps = {
   pending?: boolean;
 };
 
-const STATUS_ORDER: CategoryStatus[] = ["active", "hidden"];
-
 const EMPTY: CategoryFormValues = {
-  name: "",
+  nameTk: "",
+  nameRu: "",
   slug: "",
-  st: "active",
+  icon: "",
+  homepageShow: true,
+  sortOrder: 0,
 };
 
 export function CategoryFormDialog({
@@ -59,15 +59,18 @@ export function CategoryFormDialog({
     reset(
       category
         ? {
-            name: category.name,
+            nameTk: category.nameTk,
+            nameRu: category.nameRu,
             slug: category.slug,
-            st: category.st,
+            icon: category.icon ?? "",
+            homepageShow: category.homepageShow ?? false,
+            sortOrder: category.sortOrder ?? 0,
           }
         : EMPTY,
     );
   }, [open, category, reset]);
 
-  const st = watch("st");
+  const icon = watch("icon");
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -81,35 +84,48 @@ export function CategoryFormDialog({
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex flex-col gap-3"
         >
-          <Field label={t("form.name")} error={errors.name?.message ? t(errors.name?.message as TKey) : undefined}>
-            <Input
-              {...register("name")}
-              invalid={!!errors.name}
-              placeholder="Смартфоны"
-            />
-          </Field>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field label="Название (RU)" error={errors.nameRu?.message ? t(errors.nameRu?.message as TKey) : undefined}>
+              <Input
+                {...register("nameRu")}
+                invalid={!!errors.nameRu}
+                placeholder="Смартфоны"
+              />
+            </Field>
+            <Field label="Название (TK)" error={errors.nameTk?.message ? t(errors.nameTk?.message as TKey) : undefined}>
+              <Input
+                {...register("nameTk")}
+                invalid={!!errors.nameTk}
+                placeholder="Smartfonlar"
+              />
+            </Field>
+          </div>
 
           <Field label="Slug" error={errors.slug?.message ? t(errors.slug?.message as TKey) : undefined}>
             <Input {...register("slug")} invalid={!!errors.slug} placeholder="phones" />
           </Field>
+          
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ImageUpload
+              label="Иконка"
+              value={icon}
+              onChange={(url) => setValue("icon", url, { shouldValidate: true })}
+            />
+            <Field label="Порядок сортировки">
+              <Input type="number" min={0} {...register("sortOrder")} />
+            </Field>
+          </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-ink/70">{t("form.status")}</label>
-            <div className="inline-flex w-fit rounded-xl border border-line bg-canvas p-1">
-              {STATUS_ORDER.map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setValue("st", key)}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
-                    st === key ? "bg-brand text-white" : "text-muted hover:text-ink",
-                  )}
-                >
-                  {t(CATEGORY_STATUS[key].labelKey)}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="homepageShow"
+              {...register("homepageShow")}
+              className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
+            />
+            <label htmlFor="homepageShow" className="text-sm font-medium text-ink cursor-pointer">
+              Показывать на главной странице
+            </label>
           </div>
 
           <div className="mt-2 flex justify-end gap-2">

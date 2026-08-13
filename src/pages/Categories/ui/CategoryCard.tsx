@@ -16,14 +16,14 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
   return (
     <Card className="flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-display text-base font-bold text-ink">{category.name}</h3>
+        <h3 className="font-display text-base font-bold text-ink">{category.nameRu || category.nameTk}</h3>
         <div className="flex items-center gap-1">
           <StatusBadge meta={category.meta} />
           <button
             type="button"
             onClick={() => onEdit(category)}
             className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-            aria-label={"Редактировать " + category.name}
+            aria-label={"Редактировать " + (category.nameRu || category.nameTk)}
           >
             <Pencil className="h-4 w-4" />
           </button>
@@ -31,13 +31,13 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
             type="button"
             onClick={() => onDelete(category)}
             className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-            aria-label={"Удалить " + category.name}
+            aria-label={"Удалить " + (category.nameRu || category.nameTk)}
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>
-      <p className="text-sm text-muted">{plural(category.products, "plural.product")}</p>
+      <p className="text-sm text-muted">{plural(category.productQuantity ?? 0, "plural.product")}</p>
     </Card>
   );
 }

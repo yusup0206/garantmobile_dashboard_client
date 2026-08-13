@@ -208,9 +208,9 @@ export function ProductFormDialog({
                 disabled={categoriesLoading}
               >
                 <option value="">{categoriesLoading ? t("common.loading") : "—"}</option>
-                {categories?.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
+                {categories?.categories?.map((c) => (
+                  <option key={c.id} value={c.nameRu || c.nameTk}>
+                    {c.nameRu || c.nameTk}
                   </option>
                 ))}
               </Select>
