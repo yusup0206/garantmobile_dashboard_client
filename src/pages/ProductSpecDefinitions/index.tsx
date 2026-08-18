@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useT } from "@/i18n/useT";
 import { useLangStore } from "@/store/i18n.store";
-import { Edit2, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronRight, Edit2, Plus, Search, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingState } from "@/components/common/LoadingState";
@@ -27,6 +28,7 @@ import { ProductSpecDefinitionFormDialog } from "./ui/ProductSpecDefinitionFormD
 import { Table } from "@/components/ui/Table";
 
 export default function ProductSpecDefinitionsPage() {
+  const navigate = useNavigate();
   const t = useT();
   const lang = useLangStore((s) => s.lang);
   const [search, setSearch] = useState("");
@@ -118,10 +120,23 @@ export default function ProductSpecDefinitionsPage() {
             </Table.Header>
             <Table.Body>
               {definitions.map((item) => (
-                <Table.Row key={item.id}>
-                  <Table.Cell className="px-6 py-4 font-medium text-ink">{nameOf(item)}</Table.Cell>
+                <Table.Row
+                  key={item.id}
+                  className="cursor-pointer transition-colors hover:bg-canvas/60"
+                  onClick={() => navigate(`/product-spec-definitions/${item.id}`)}
+                >
+                  <Table.Cell className="px-6 py-4 font-medium text-ink">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold hover:text-brand transition-colors">
+                        {nameOf(item)}
+                      </span>
+                    </div>
+                  </Table.Cell>
                   <Table.Cell className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div
+                      className="flex items-center justify-end gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
@@ -137,6 +152,14 @@ export default function ProductSpecDefinitionsPage() {
                         title="Удалить"
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/product-spec-definitions/${item.id}`)}
+                        title="Открыть значения"
+                      >
+                        <ChevronRight className="h-4 w-4 text-muted" />
                       </Button>
                     </div>
                   </Table.Cell>

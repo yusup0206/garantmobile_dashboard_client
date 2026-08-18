@@ -19,6 +19,12 @@ const TradeinPage = lazy(() => import("@/pages/Tradein"));
 const ProductSpecDefinitionsPage = lazy(
   () => import("@/pages/ProductSpecDefinitions"),
 );
+const ProductSpecDefinitionDetailPage = lazy(
+  () =>
+    import(
+      "@/pages/ProductSpecDefinitions/ProductSpecDefinitionDetail"
+    ),
+);
 const CatalogPage = lazy(() => import("@/pages/Catalog"));
 const ProductsPage = lazy(() => import("@/pages/Products"));
 const InventoryPage = lazy(() => import("@/pages/Inventory"));
@@ -73,6 +79,10 @@ export const router = createBrowserRouter([
           {
             path: "/product-spec-definitions",
             element: withSuspense(<ProductSpecDefinitionsPage />),
+          },
+          {
+            path: "/product-spec-definitions/:id",
+            element: withSuspense(<ProductSpecDefinitionDetailPage />),
           },
           { path: "/catalog", element: withSuspense(<CatalogPage />) },
           { path: "/products", element: withSuspense(<ProductsPage />) },
