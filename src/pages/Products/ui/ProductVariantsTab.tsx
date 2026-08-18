@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
-import { Edit2, Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { ChevronRight, Edit2, Plus, Trash2, Image as ImageIcon } from "lucide-react";
 import { getImageUrl } from "@/lib/imageUrl";
 
 import { LoadingState } from "@/components/common/LoadingState";
@@ -20,6 +20,7 @@ import {
 import type { ProductVariant } from "@/services/productVariants/productVariants.types";
 
 import { ProductVariantFormDialog } from "./ProductVariantFormDialog";
+import { ProductVariantOptionValuesPanel } from "./ProductVariantOptionValuesPanel";
 import type { ProductVariantFormValues } from "../lib/productVariant.schema";
 
 type ProductVariantsTabProps = {
@@ -45,6 +46,8 @@ export function ProductVariantsTab({ productId }: ProductVariantsTabProps) {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProductVariant | null>(null);
   const [deleting, setDeleting] = useState<ProductVariant | null>(null);
+  // null = show list, non-null = show that variant's option-values panel
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
 
   function openAdd() {
     setEditing(null);
@@ -96,6 +99,17 @@ export function ProductVariantsTab({ productId }: ProductVariantsTabProps) {
     });
   }
 
+  // ── Detail panel ────────────────────────────────────────────────────────
+  if (selectedVariant) {
+    return (
+      <ProductVariantOptionValuesPanel
+        variant={selectedVariant}
+        productId={productId}
+        onBack={() => setSelectedVariant(null)}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -136,7 +150,11 @@ export function ProductVariantsTab({ productId }: ProductVariantsTabProps) {
             </Table.Header>
             <Table.Body>
               {variants.map((v) => (
-                <Table.Row key={v.id}>
+                <Table.Row
+                  key={v.id}
+                  className="cursor-pointer hover:bg-canvas/60 transition-colors"
+                  onClick={() => setSelectedVariant(v)}
+                >
                   <Table.Cell>
                     <div className="flex items-center gap-1.5">
                       {v.photos && v.photos.length > 0 ? (
@@ -185,7 +203,10 @@ export function ProductVariantsTab({ productId }: ProductVariantsTabProps) {
                     </span>
                   </Table.Cell>
                   <Table.Cell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div
+                      className="flex items-center justify-end gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
@@ -201,6 +222,14 @@ export function ProductVariantsTab({ productId }: ProductVariantsTabProps) {
                         title="Удалить"
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedVariant(v)}
+                        title="Опции варианта"
+                      >
+                        <ChevronRight className="h-4 w-4 text-muted" />
                       </Button>
                     </div>
                   </Table.Cell>
