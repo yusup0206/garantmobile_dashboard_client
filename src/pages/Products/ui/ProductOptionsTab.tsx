@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useLangStore } from "@/store/i18n.store";
-import { Edit2, Plus, Trash2, Settings2 } from "lucide-react";
+import { ChevronRight, Edit2, Plus, Trash2, Settings2 } from "lucide-react";
 
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
@@ -20,6 +20,7 @@ import {
 import type { ProductOption } from "@/services/productOptions/productOptions.types";
 
 import { ProductOptionFormDialog } from "./ProductOptionFormDialog";
+import { ProductOptionValuesPanel } from "./ProductOptionValuesPanel";
 import type { ProductOptionFormValues } from "../lib/productOption.schema";
 
 type ProductOptionsTabProps = {
@@ -49,6 +50,8 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProductOption | null>(null);
   const [deleting, setDeleting] = useState<ProductOption | null>(null);
+  // null = show list, non-null = show that option's values panel
+  const [selectedOption, setSelectedOption] = useState<ProductOption | null>(null);
 
   function nameOf(item: ProductOption) {
     return (lang as string) === "tm"
@@ -100,6 +103,17 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
     });
   }
 
+  // ── If an option is selected, show its values panel ──────────────────────
+  if (selectedOption) {
+    return (
+      <ProductOptionValuesPanel
+        option={selectedOption}
+        onBack={() => setSelectedOption(null)}
+      />
+    );
+  }
+
+  // ── Options list ─────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -137,7 +151,11 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
             </Table.Header>
             <Table.Body>
               {options.map((opt, index) => (
-                <Table.Row key={opt.id}>
+                <Table.Row
+                  key={opt.id}
+                  className="cursor-pointer hover:bg-canvas/60 transition-colors"
+                  onClick={() => setSelectedOption(opt)}
+                >
                   <Table.Cell className="text-muted tabular-nums">
                     {index + 1}
                   </Table.Cell>
@@ -155,7 +173,10 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
                     {opt.sortOrder}
                   </Table.Cell>
                   <Table.Cell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div
+                      className="flex items-center justify-end gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
@@ -171,6 +192,14 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
                         title="Удалить"
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedOption(opt)}
+                        title="Значения опции"
+                      >
+                        <ChevronRight className="h-4 w-4 text-muted" />
                       </Button>
                     </div>
                   </Table.Cell>
