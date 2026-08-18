@@ -157,9 +157,10 @@ export default function ProductSpecDefinitionsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => navigate(`/product-spec-definitions/${item.id}`)}
+                        className="bg-brand-soft text-brand-dark hover:bg-brand hover:text-white"
                         title="Открыть значения"
                       >
-                        <ChevronRight className="h-4 w-4 text-muted" />
+                        <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
                   </Table.Cell>

@@ -21,7 +21,7 @@ export function useProductSpecValues(params?: GetProductSpecValuesParams) {
   return useQuery({
     queryKey: productSpecValuesKeys.list(params),
     queryFn: () => getProductSpecValues(params),
-    enabled: !!params?.specId,
+    enabled: params ? (params.specId !== undefined ? !!params.specId : true) : true,
   });
 }
 

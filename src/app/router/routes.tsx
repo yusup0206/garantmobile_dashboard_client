@@ -27,6 +27,9 @@ const ProductSpecDefinitionDetailPage = lazy(
 );
 const CatalogPage = lazy(() => import("@/pages/Catalog"));
 const ProductsPage = lazy(() => import("@/pages/Products"));
+const ProductDetailPage = lazy(
+  () => import("@/pages/Products/ProductDetailPage"),
+);
 const InventoryPage = lazy(() => import("@/pages/Inventory"));
 const CategoriesPage = lazy(() => import("@/pages/Categories"));
 const BrandsPage = lazy(() => import("@/pages/Brands"));
@@ -86,6 +89,10 @@ export const router = createBrowserRouter([
           },
           { path: "/catalog", element: withSuspense(<CatalogPage />) },
           { path: "/products", element: withSuspense(<ProductsPage />) },
+          {
+            path: "/products/:id",
+            element: withSuspense(<ProductDetailPage />),
+          },
           { path: "/inventory", element: withSuspense(<InventoryPage />) },
           { path: "/categories", element: withSuspense(<CategoriesPage />) },
           { path: "/brands", element: withSuspense(<BrandsPage />) },
