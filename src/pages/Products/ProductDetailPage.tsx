@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Layers, Sliders } from "lucide-react";
+import { ArrowLeft, Layers, Settings2, Sliders } from "lucide-react";
 import { useLangStore } from "@/store/i18n.store";
 import { useProductDetail } from "@/services/products/useProducts";
 import { LoadingState } from "@/components/common/LoadingState";
@@ -8,8 +8,9 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { Card } from "@/components/ui/Card";
 import { ProductSpecsTab } from "./ui/ProductSpecsTab";
 import { ProductVariantsTab } from "./ui/ProductVariantsTab";
+import { ProductOptionsTab } from "./ui/ProductOptionsTab";
 
-type TabKey = "specs" | "variants";
+type TabKey = "specs" | "variants" | "options";
 
 export default function ProductDetailPage() {
   const { id: productId } = useParams<{ id: string }>();
@@ -35,6 +36,7 @@ export default function ProductDetailPage() {
   const tabs: { key: TabKey; label: string; icon: typeof Sliders }[] = [
     { key: "specs", label: "Характеристики", icon: Sliders },
     { key: "variants", label: "Варианты товара", icon: Layers },
+    { key: "options", label: "Опции товара", icon: Settings2 },
   ];
 
   if (isLoading) return <LoadingState />;
@@ -93,6 +95,7 @@ export default function ProductDetailPage() {
       <div>
         {activeTab === "specs" && <ProductSpecsTab productId={productId} />}
         {activeTab === "variants" && <ProductVariantsTab productId={productId} />}
+        {activeTab === "options" && <ProductOptionsTab productId={productId} />}
       </div>
     </div>
   );
