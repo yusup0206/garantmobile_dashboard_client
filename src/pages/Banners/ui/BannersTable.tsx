@@ -4,6 +4,7 @@ import { useLangStore } from "@/store/i18n.store";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { Table } from "@/components/ui/Table";
+import { getImageUrl } from "@/lib/imageUrl";
 import type { BannerRow } from "../lib/banners.helpers";
 
 type BannersTableProps = {
@@ -41,7 +42,7 @@ export function BannersTable({ rows, onEdit, onDelete }: BannersTableProps) {
                 <div className="flex items-center gap-3">
                   {r.img ? (
                     <img
-                      src={r.img}
+                      src={getImageUrl(r.img)}
                       alt=""
                       className="h-9 w-14 shrink-0 rounded-md border border-line object-cover"
                     />

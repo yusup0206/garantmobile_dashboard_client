@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, type DragEvent, type ChangeEvent } from "react";
 import { uploadImage } from "@/services/files/files.api";
+import { getImageUrl } from "@/lib/imageUrl";
 import { cn } from "@/lib/cn";
 
 type ImageUploadProps = {
@@ -115,7 +116,7 @@ export function ImageUpload({
         {value ? (
           <div className="relative flex w-full flex-col items-center gap-2 p-3">
             <img
-              src={value}
+              src={getImageUrl(value)}
               alt="preview"
               className="max-h-32 max-w-full rounded-lg object-contain shadow-sm"
             />

@@ -1,6 +1,7 @@
 import { Pencil, Trash2, Home, Hash } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
+import { getImageUrl } from "@/lib/imageUrl";
 import type { Brand } from "@/services/brands/brands.types";
 import type { BrandView } from "../lib/brands.helpers";
 
@@ -16,7 +17,7 @@ export function BrandCard({ brand, onEdit, onDelete }: BrandCardProps) {
       <div className="flex items-start gap-3">
         {brand.logo ? (
           <img
-            src={brand.logo}
+            src={getImageUrl(brand.logo)}
             alt={brand.name}
             className="h-12 w-12 shrink-0 rounded-xl object-contain p-1 border border-line bg-white"
           />

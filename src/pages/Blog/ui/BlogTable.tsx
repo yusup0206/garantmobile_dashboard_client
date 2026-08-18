@@ -2,6 +2,7 @@ import { Pencil, Trash2, Clock, Tag } from "lucide-react";
 import { useT } from "@/i18n/useT";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { Table } from "@/components/ui/Table";
+import { getImageUrl } from "@/lib/imageUrl";
 import type { BlogRow } from "../lib/blog.helpers";
 
 type BlogTableProps = {
@@ -32,7 +33,7 @@ export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
               <div className="flex items-center gap-3">
                 {r.cover ? (
                   <img
-                    src={r.cover}
+                    src={getImageUrl(r.cover)}
                     alt={r.titleRu || r.titleTk}
                     className="h-10 w-10 shrink-0 rounded-lg object-cover border border-line"
                   />

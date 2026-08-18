@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useT } from "@/i18n/useT";
 import { uploadImage } from "@/services/files/files.api";
+import { getImageUrl } from "@/lib/imageUrl";
 
 type ImageUploadFieldProps = {
   value: string;
@@ -74,7 +75,7 @@ export function ImageUploadField({
       {error ? <p className="text-xs text-red-600">{t("upload.err")}</p> : null}
       {value.trim() ? (
         <img
-          src={value}
+          src={getImageUrl(value)}
           alt=""
           className="h-24 w-full rounded-xl border border-line object-cover"
         />
