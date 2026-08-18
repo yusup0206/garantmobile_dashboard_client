@@ -1,46 +1,39 @@
-export type ProductStatusKey = "active" | "draft" | "archived";
-
+/** A single product as returned by the API. */
 export type Product = {
-  id: number;
-  name: string;
-  brand: string;
-  category: string;
-  price: number;
+  id: string;
+  nameRu: string;
+  nameTm: string;
+  shortRu: string;
+  shortTm: string;
+  photos: string[];
   stock: number;
-  st: ProductStatusKey;
-};
-
-export type ProductVariantStatusKey = "active" | "archived";
-
-/** A defining option of a variant, e.g. { name: "Цвет", value: "Титан" }. */
-export type ProductVariantOption = { name: string; value: string };
-
-/** A purchasable variant: own SKU, price and stock. */
-export type ProductVariant = {
-  /** Set for a variant loaded from the backend; sent back so it reconciles by
-   *  id (updated in place) instead of being recreated. New variants omit it. */
-  id?: number;
-  sku: string;
   price: number;
-  oldPrice: number | null;
-  stock: number;
-  status: ProductVariantStatusKey;
-  options: ProductVariantOption[];
+  oldPrice: number;
+  brandId: string;
+  categoryId: string;
+  unitId: string;
 };
 
 /**
  * Payload for create/update — everything except the server-assigned id.
- * `variants` is optional: omitted leaves the product's variants untouched;
- * present (even empty) replaces the whole set.
  */
-export type ProductInput = Omit<Product, "id"> & {
-  /** Image URLs (uploaded or pasted); array order is the gallery order. */
-  photos?: string[];
-  variants?: ProductVariant[];
+export type ProductInput = Omit<Product, "id">;
+
+/** Response shape for GET /garant/products/all */
+export type GetProductsParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  brandId?: string;
+  categoryId?: string;
+  lang?: string;
 };
 
-/** Product detail (GET /products/:id) — the row plus photos and variants. */
-export type ProductDetail = Product & {
-  photos: string[];
-  variants: ProductVariant[];
+export type GetProductsResponse = {
+  count: number;
+  products: Product[];
+};
+
+export type DeleteProductResponse = {
+  deleted: boolean;
 };

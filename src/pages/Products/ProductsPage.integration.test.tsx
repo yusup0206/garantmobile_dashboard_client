@@ -1,9 +1,35 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import ProductsPage from "./index";
+
+vi.mock("@/config/env", () => ({
+  isApiEnabled: () => false,
+  env: { apiBaseUrl: "", appName: "GarantMobile", storefrontUrl: "" },
+}));
+
+vi.mock("@/services/brands/useBrands", () => ({
+  useBrands: () => ({
+    data: { count: 1, brands: [{ id: "brand_1", name: "Apple" }] },
+    isLoading: false,
+  }),
+}));
+
+vi.mock("@/services/categories/useCategories", () => ({
+  useCategories: () => ({
+    data: { count: 1, categories: [{ id: "1", nameRu: "Смартфоны", nameTk: "Smartfonlar" }] },
+    isLoading: false,
+  }),
+}));
+
+vi.mock("@/services/units/useUnits", () => ({
+  useUnits: () => ({
+    data: { count: 1, units: [{ id: "unit_1", nameRu: "Штука", shortName: "шт" }] },
+    isLoading: false,
+  }),
+}));
 
 function renderPage() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -21,59 +47,38 @@ describe("Products CRUD (integration)", () => {
     const user = userEvent.setup();
     renderPage();
 
-    // Wait for the seed data to load so we're interacting with a live table.
-    await screen.findByText(/iPhone 15 Pro Max/i, undefined, { timeout: 4000 });
+    // Wait for seed data to load.
+    await screen.findByText(/iPhone 15 Pro/i, undefined, { timeout: 4000 });
 
-    // Open the add dialog from the header.
-    await user.click(screen.getByRole("button", { name: "Добавить" }));
+    // Open add dialog.
+    await user.click(screen.getByRole("button", { name: /Добавить/i }));
     const dialog = await screen.findByRole("dialog");
 
-    // Fill the form.
-    await user.type(within(dialog).getByPlaceholderText("iPhone 15 Pro"), "QA Phone 42");
-    await user.type(within(dialog).getByPlaceholderText("Apple"), "QA Brand");
-    await user.type(within(dialog).getByPlaceholderText("Смартфоны"), "Смартфоны");
+    // Fill bilingual fields.
+    const inputs = within(dialog).getAllByRole("textbox");
+    // nameRu, nameTm, shortRu, shortTm
+    await user.type(inputs[0], "QA Phone 42");
+    await user.type(inputs[1], "QA Phone 42 TM");
+    await user.type(inputs[2], "Short description");
+    await user.type(inputs[3], "Gysga beyan");
+
+    // Select brand, category, unit
+    const selects = within(dialog).getAllByRole("combobox");
+    await user.selectOptions(selects[0], "brand_1");
+    await user.selectOptions(selects[1], "1");
+    await user.selectOptions(selects[2], "unit_1");
+
     const numbers = within(dialog).getAllByRole("spinbutton");
     await user.type(numbers[0], "1500"); // price
-    await user.type(numbers[1], "7"); // stock
+    await user.type(numbers[1], "1600"); // oldPrice
+    await user.type(numbers[2], "7"); // stock
 
-    // Submit.
+    // Submit form.
     await user.click(within(dialog).getByRole("button", { name: "Добавить" }));
 
-    // The new row appears in the table (mock store prepends, so it's on page 1).
+    // The new row appears in the table.
     expect(
       await screen.findByText("QA Phone 42", undefined, { timeout: 4000 }),
-    ).toBeInTheDocument();
-  });
-
-  it("blocks submit on an empty variant SKU, then saves once filled", async () => {
-    const user = userEvent.setup();
-    renderPage();
-    await screen.findByText(/iPhone 15 Pro Max/i, undefined, { timeout: 4000 });
-
-    await user.click(screen.getByRole("button", { name: "Добавить" }));
-    const dialog = await screen.findByRole("dialog");
-
-    await user.type(
-      within(dialog).getByPlaceholderText("iPhone 15 Pro"),
-      "QA Variant Phone",
-    );
-    await user.type(within(dialog).getByPlaceholderText("Apple"), "QA Brand");
-    await user.type(within(dialog).getByPlaceholderText("Смартфоны"), "Смартфоны");
-    const numbers = within(dialog).getAllByRole("spinbutton");
-    await user.type(numbers[0], "1500"); // price
-    await user.type(numbers[1], "7"); // stock
-
-    // Add a variant but leave its SKU empty → submit is blocked with an error.
-    await user.click(within(dialog).getByRole("button", { name: "Добавить вариант" }));
-    await user.click(within(dialog).getByRole("button", { name: "Добавить" }));
-    expect(await within(dialog).findByText("Укажите SKU варианта")).toBeInTheDocument();
-
-    // Fill the SKU and submit again → the product is created.
-    await user.type(within(dialog).getByPlaceholderText("SKU (артикул)"), "QA-SKU-1");
-    await user.click(within(dialog).getByRole("button", { name: "Добавить" }));
-
-    expect(
-      await screen.findByText("QA Variant Phone", undefined, { timeout: 4000 }),
     ).toBeInTheDocument();
   });
 });

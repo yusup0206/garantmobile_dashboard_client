@@ -5,14 +5,18 @@ import {
   getPromocodes,
   updatePromocode,
 } from "./promocodes.api";
-import type { PromocodeInput } from "./promocodes.types";
+import type { GetPromocodesParams, PromocodeInput } from "./promocodes.types";
 
 export const promocodesKeys = {
   all: ["promocodes"] as const,
+  list: (params: GetPromocodesParams) => ["promocodes", "list", params] as const,
 };
 
-export function usePromocodes() {
-  return useQuery({ queryKey: promocodesKeys.all, queryFn: getPromocodes });
+export function usePromocodes(params: GetPromocodesParams = {}) {
+  return useQuery({
+    queryKey: promocodesKeys.list(params),
+    queryFn: () => getPromocodes(params),
+  });
 }
 
 export function useCreatePromocode() {
@@ -26,8 +30,8 @@ export function useCreatePromocode() {
 export function useUpdatePromocode() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ code, input }: { code: string; input: PromocodeInput }) =>
-      updatePromocode(code, input),
+    mutationFn: ({ id, input }: { id: string; input: PromocodeInput }) =>
+      updatePromocode(id, input),
     onSuccess: () => qc.invalidateQueries({ queryKey: promocodesKeys.all }),
   });
 }
@@ -35,7 +39,7 @@ export function useUpdatePromocode() {
 export function useDeletePromocode() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (code: string) => deletePromocode(code),
+    mutationFn: (id: string) => deletePromocode(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: promocodesKeys.all }),
   });
 }

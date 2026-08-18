@@ -1,6 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useT } from "@/i18n/useT";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import type { ProductRow } from "../lib/products.helpers";
 
 type ProductsTableProps = {
@@ -17,12 +16,18 @@ export function ProductsTable({ rows, onEdit, onDelete }: ProductsTableProps) {
         <thead>
           <tr className="border-b border-line bg-canvas/60 text-xs uppercase tracking-wide text-muted">
             <th className="px-5 py-3 font-semibold">{t("form.product")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.brand")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.category")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("form.price")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("form.stock")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.status")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("common.actions")}</th>
+            <th className="px-5 py-3 text-right font-semibold">
+              {t("form.price")}
+            </th>
+            <th className="px-5 py-3 text-right font-semibold">
+              {t("form.oldPrice")}
+            </th>
+            <th className="px-5 py-3 text-right font-semibold">
+              {t("form.stock")}
+            </th>
+            <th className="px-5 py-3 text-right font-semibold">
+              {t("common.actions")}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -32,18 +37,23 @@ export function ProductsTable({ rows, onEdit, onDelete }: ProductsTableProps) {
               className="border-b border-line last:border-0 hover:bg-canvas/40"
             >
               <td className="max-w-xs px-5 py-3.5">
-                <div className="truncate font-display font-bold text-ink">{r.name}</div>
+                <div className="truncate font-display font-bold text-ink">
+                  {r.displayName}
+                </div>
+                {(r.shortRu || r.shortTm) && (
+                  <div className="truncate text-xs text-muted">
+                    {r.shortRu || r.shortTm}
+                  </div>
+                )}
               </td>
-              <td className="whitespace-nowrap px-5 py-3.5 text-muted">{r.brand}</td>
-              <td className="whitespace-nowrap px-5 py-3.5 text-muted">{r.category}</td>
               <td className="whitespace-nowrap px-5 py-3.5 text-right font-display font-bold text-ink">
                 {r.priceFmt}
               </td>
+              <td className="whitespace-nowrap px-5 py-3.5 text-right text-muted line-through">
+                {r.oldPriceFmt || "—"}
+              </td>
               <td className="whitespace-nowrap px-5 py-3.5 text-right text-muted">
                 {r.stockFmt}
-              </td>
-              <td className="px-5 py-3.5">
-                <StatusBadge meta={r.meta} />
               </td>
               <td className="px-5 py-3.5">
                 <div className="flex justify-end gap-1">
@@ -51,7 +61,7 @@ export function ProductsTable({ rows, onEdit, onDelete }: ProductsTableProps) {
                     type="button"
                     onClick={() => onEdit(r)}
                     className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                    aria-label={"Редактировать " + r.name}
+                    aria-label={"Редактировать " + r.displayName}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
@@ -59,7 +69,7 @@ export function ProductsTable({ rows, onEdit, onDelete }: ProductsTableProps) {
                     type="button"
                     onClick={() => onDelete(r)}
                     className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                    aria-label={"Удалить " + r.name}
+                    aria-label={"Удалить " + r.displayName}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

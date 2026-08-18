@@ -4,28 +4,38 @@ import { productSchema } from "./product.schema";
 describe("productSchema", () => {
   it("accepts a valid product and coerces numeric strings", () => {
     const res = productSchema.safeParse({
-      name: "iPhone 15 Pro",
-      brand: "Apple",
-      category: "Смартфоны",
+      nameRu: "iPhone 15 Pro",
+      nameTm: "iPhone 15 Pro",
+      shortRu: "Смартфон Apple",
+      shortTm: "Apple smartfony",
       price: "34500",
+      oldPrice: "36000",
       stock: "24",
-      st: "active",
+      brandId: "brand_1",
+      categoryId: "1",
+      unitId: "unit_1",
+      photos: [],
     });
     expect(res.success).toBe(true);
     if (res.success) {
       expect(res.data.price).toBe(34500);
+      expect(res.data.oldPrice).toBe(36000);
       expect(res.data.stock).toBe(24);
     }
   });
 
   it("rejects a too-short name", () => {
     const res = productSchema.safeParse({
-      name: "x",
-      brand: "Apple",
-      category: "Смартфоны",
+      nameRu: "x",
+      nameTm: "iPhone 15 Pro",
+      shortRu: "Short",
+      shortTm: "Short",
       price: 100,
+      oldPrice: 0,
       stock: 1,
-      st: "draft",
+      brandId: "brand_1",
+      categoryId: "1",
+      unitId: "unit_1",
     });
     expect(res.success).toBe(false);
   });
@@ -33,34 +43,46 @@ describe("productSchema", () => {
   it("rejects negative price and non-integer stock", () => {
     expect(
       productSchema.safeParse({
-        name: "Товар",
-        brand: "A",
-        category: "B",
+        nameRu: "Товар",
+        nameTm: "Haryt",
+        shortRu: "Короткое",
+        shortTm: "Gysga",
         price: -1,
+        oldPrice: 0,
         stock: 1,
-        st: "active",
+        brandId: "b1",
+        categoryId: "c1",
+        unitId: "u1",
       }).success,
     ).toBe(false);
     expect(
       productSchema.safeParse({
-        name: "Товар",
-        brand: "A",
-        category: "B",
+        nameRu: "Товар",
+        nameTm: "Haryt",
+        shortRu: "Короткое",
+        shortTm: "Gysga",
         price: 1,
+        oldPrice: 0,
         stock: 1.5,
-        st: "active",
+        brandId: "b1",
+        categoryId: "c1",
+        unitId: "u1",
       }).success,
     ).toBe(false);
   });
 
-  it("rejects an unknown status", () => {
+  it("rejects missing brand, category or unit ID", () => {
     const res = productSchema.safeParse({
-      name: "Товар",
-      brand: "A",
-      category: "B",
+      nameRu: "Товар",
+      nameTm: "Haryt",
+      shortRu: "Короткое",
+      shortTm: "Gysga",
       price: 1,
+      oldPrice: 0,
       stock: 1,
-      st: "sold",
+      brandId: "",
+      categoryId: "",
+      unitId: "",
     });
     expect(res.success).toBe(false);
   });

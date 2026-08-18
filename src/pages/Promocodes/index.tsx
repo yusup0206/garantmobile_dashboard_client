@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
@@ -11,7 +11,6 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
-import { usePagination } from "@/lib/usePagination";
 import {
   usePromocodes,
   useCreatePromocode,
@@ -22,32 +21,55 @@ import type { Promocode, PromocodeInput } from "@/services/promocodes/promocodes
 
 import { PromocodesTable } from "./ui/PromocodesTable";
 import { PromocodeFormDialog } from "./ui/PromocodeFormDialog";
-import { toRow, FILTER_TABS } from "./lib/promocodes.helpers";
+import { toRow, FILTER_TABS, type PromoStatusKey } from "./lib/promocodes.helpers";
+
+const PAGE_SIZE = 20;
 
 export default function PromocodesPage() {
   const t = useT();
-  const { data, isLoading, isError, refetch } = usePromocodes();
-  const createPromocode = useCreatePromocode();
-  const updatePromocode = useUpdatePromocode();
-  const deletePromocode = useDeletePromocode();
 
   // URL state: /promocodes?status=active — shareable & survives refresh.
   const [params, setParams] = useSearchParams();
-  const filter = params.get("status") ?? "all";
+  const filter = (params.get("status") ?? "all") as "all" | PromoStatusKey;
+  const page = Number(params.get("page") ?? "1");
+
+  // Build query params for the API
+  const queryParams = {
+    page,
+    pageSize: PAGE_SIZE,
+    ...(filter !== "all"
+      ? filter === "inactive"
+        ? { isActive: false }
+        : filter === "active"
+          ? { isActive: true }
+          : {}
+      : {}),
+  };
+
+  const { data, isLoading, isError, refetch } = usePromocodes(queryParams);
+  const createPromocode = useCreatePromocode();
+  const updatePromocode = useUpdatePromocode();
+  const deletePromocode = useDeletePromocode();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Promocode | null>(null);
   const [deleting, setDeleting] = useState<Promocode | null>(null);
 
-  const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
-  }, [data, filter]);
-
-  const pg = usePagination(rows, 8, filter);
+  const rows = (data?.promocodes ?? []).map(toRow);
+  const totalCount = data?.count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   function setFilter(key: string) {
-    setParams(key === "all" ? {} : { status: key }, { replace: true });
+    setParams(
+      key === "all" ? {} : { status: key },
+      { replace: true },
+    );
+  }
+
+  function setPage(p: number) {
+    const next = new URLSearchParams(params);
+    next.set("page", String(p));
+    setParams(next, { replace: true });
   }
 
   function openAdd() {
@@ -63,7 +85,7 @@ export default function PromocodesPage() {
   function submitForm(values: PromocodeInput) {
     if (editing) {
       updatePromocode.mutate(
-        { code: editing.code, input: values },
+        { id: editing.id, input: values },
         { onSuccess: () => setFormOpen(false) },
       );
     } else {
@@ -73,7 +95,7 @@ export default function PromocodesPage() {
 
   function confirmDelete() {
     if (!deleting) return;
-    deletePromocode.mutate(deleting.code, { onSuccess: () => setDeleting(null) });
+    deletePromocode.mutate(deleting.id, { onSuccess: () => setDeleting(null) });
   }
 
   return (
@@ -100,13 +122,13 @@ export default function PromocodesPage() {
         <EmptyState title={t("promocodes.empty")} />
       ) : (
         <>
-          <PromocodesTable rows={pg.slice} onEdit={openEdit} onDelete={setDeleting} />
+          <PromocodesTable rows={rows} onEdit={openEdit} onDelete={setDeleting} />
           <Pagination
-            page={pg.page}
-            pageCount={pg.pageCount}
-            total={pg.total}
-            pageSize={pg.pageSize}
-            onPage={pg.setPage}
+            page={page}
+            pageCount={pageCount}
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            onPage={setPage}
           />
         </>
       )}

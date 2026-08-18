@@ -6,22 +6,27 @@ import {
   getProducts,
   updateProduct,
 } from "./products.api";
-import type { ProductInput } from "./products.types";
+import type { GetProductsParams, ProductInput } from "./products.types";
 
 export const productsKeys = {
   all: ["products"] as const,
-  detail: (id: number) => ["products", id] as const,
+  list: (params?: GetProductsParams) =>
+    ["products", "list", params] as const,
+  detail: (id?: string) => ["products", "detail", id] as const,
 };
 
-export function useProducts() {
-  return useQuery({ queryKey: productsKeys.all, queryFn: getProducts });
+export function useProducts(params?: GetProductsParams) {
+  return useQuery({
+    queryKey: productsKeys.list(params),
+    queryFn: () => getProducts(params),
+  });
 }
 
-/** Load a product's editable detail (with variants). Enabled on demand. */
-export function useProductDetail(id: number | null) {
+/** Load a product's editable detail. Enabled on demand. */
+export function useProductDetail(id: string | null, lang?: string) {
   return useQuery({
-    queryKey: id !== null ? productsKeys.detail(id) : ["products", "none"],
-    queryFn: () => getProduct(id as number),
+    queryKey: productsKeys.detail(id ?? undefined),
+    queryFn: () => getProduct(id as string, lang),
     enabled: id !== null,
   });
 }
@@ -29,7 +34,8 @@ export function useProductDetail(id: number | null) {
 export function useCreateProduct() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: ProductInput) => createProduct(input),
+    mutationFn: ({ input, lang }: { input: ProductInput; lang?: string }) =>
+      createProduct(input, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: productsKeys.all }),
   });
 }
@@ -37,8 +43,15 @@ export function useCreateProduct() {
 export function useUpdateProduct() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, input }: { id: number; input: ProductInput }) =>
-      updateProduct(id, input),
+    mutationFn: ({
+      id,
+      input,
+      lang,
+    }: {
+      id: string;
+      input: ProductInput;
+      lang?: string;
+    }) => updateProduct(id, input, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: productsKeys.all }),
   });
 }
@@ -46,7 +59,8 @@ export function useUpdateProduct() {
 export function useDeleteProduct() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => deleteProduct(id),
+    mutationFn: ({ id, lang }: { id: string; lang?: string }) =>
+      deleteProduct(id, lang),
     onSuccess: () => qc.invalidateQueries({ queryKey: productsKeys.all }),
   });
 }

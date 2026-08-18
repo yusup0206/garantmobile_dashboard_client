@@ -1,17 +1,14 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useT } from "@/i18n/useT";
-import { useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
-import { FilterTabs } from "@/components/common/FilterTabs";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
-import { usePagination } from "@/lib/usePagination";
 import {
   useProducts,
   useCreateProduct,
@@ -22,33 +19,33 @@ import type { Product, ProductInput } from "@/services/products/products.types";
 
 import { ProductsTable } from "./ui/ProductsTable";
 import { ProductFormDialog } from "./ui/ProductFormDialog";
-import { toRow, FILTER_TABS } from "./lib/products.helpers";
+import { toRow } from "./lib/products.helpers";
+
+const PAGE_SIZE = 10;
 
 export default function ProductsPage() {
   const t = useT();
-  const { data, isLoading, isError, refetch } = useProducts();
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  const { data, isLoading, isError, refetch } = useProducts({
+    page,
+    pageSize: PAGE_SIZE,
+    search: search || undefined,
+  });
+
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
-
-  // URL state: /products?status=active — shareable & survives refresh.
-  const [params, setParams] = useSearchParams();
-  const filter = params.get("status") ?? "all";
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState<Product | null>(null);
 
-  const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
-  }, [data, filter]);
-
-  const pg = usePagination(rows, 8, filter);
-
-  function setFilter(key: string) {
-    setParams(key === "all" ? {} : { status: key }, { replace: true });
-  }
+  const rows = (data?.products ?? []).map(toRow);
+  const total = data?.count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   function openAdd() {
     setEditing(null);
@@ -67,13 +64,19 @@ export default function ProductsPage() {
         { onSuccess: () => setFormOpen(false) },
       );
     } else {
-      createProduct.mutate(values, { onSuccess: () => setFormOpen(false) });
+      createProduct.mutate(
+        { input: values },
+        { onSuccess: () => setFormOpen(false) },
+      );
     }
   }
 
   function confirmDelete() {
     if (!deleting) return;
-    deleteProduct.mutate(deleting.id, { onSuccess: () => setDeleting(null) });
+    deleteProduct.mutate(
+      { id: deleting.id },
+      { onSuccess: () => setDeleting(null) },
+    );
   }
 
   return (
@@ -83,7 +86,16 @@ export default function ProductsPage() {
         subtitle={t("page.products.subtitle")}
         action={
           <div className="flex flex-wrap items-center gap-3">
-            <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder={t("common.search")}
+              className="rounded-xl border border-line bg-canvas px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
+            />
             <Button size="sm" onClick={openAdd}>
               <Plus className="h-4 w-4" />
               {t("common.add")}
@@ -103,13 +115,13 @@ export default function ProductsPage() {
         />
       ) : (
         <>
-          <ProductsTable rows={pg.slice} onEdit={openEdit} onDelete={setDeleting} />
+          <ProductsTable rows={rows} onEdit={openEdit} onDelete={setDeleting} />
           <Pagination
-            page={pg.page}
-            pageCount={pg.pageCount}
-            total={pg.total}
-            pageSize={pg.pageSize}
-            onPage={pg.setPage}
+            page={page}
+            pageCount={pageCount}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPage={setPage}
           />
         </>
       )}
@@ -128,7 +140,7 @@ export default function ProductsPage() {
         title={t("products.confirm.title")}
         description={
           deleting
-            ? `«${deleting.name}» ${t("common.deleteWarnM")}`
+            ? `«${deleting.nameRu || deleting.nameTm}» ${t("common.deleteWarnM")}`
             : undefined
         }
         confirmLabel={t("common.delete")}

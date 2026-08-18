@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -8,19 +8,11 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/cn";
-import { PRODUCT_STATUS } from "@/data/products.mock";
-import { useProductDetail } from "@/services/products/useProducts";
 import { useBrands } from "@/services/brands/useBrands";
 import { useCategories } from "@/services/categories/useCategories";
-import type {
-  Product,
-  ProductInput,
-  ProductStatusKey,
-  ProductVariant,
-} from "@/services/products/products.types";
+import { useUnits } from "@/services/units/useUnits";
+import type { Product, ProductInput } from "@/services/products/products.types";
 import { productSchema, type ProductFormValues } from "../lib/product.schema";
-import { VariantsEditor } from "./VariantsEditor";
 import { PhotosEditor } from "./PhotosEditor";
 
 type ProductFormDialogProps = {
@@ -32,15 +24,18 @@ type ProductFormDialogProps = {
   pending?: boolean;
 };
 
-const STATUS_ORDER: ProductStatusKey[] = ["active", "draft", "archived"];
-
 const EMPTY: ProductFormValues = {
-  name: "",
-  brand: "",
-  category: "",
+  nameRu: "",
+  nameTm: "",
+  shortRu: "",
+  shortTm: "",
   price: 0,
+  oldPrice: 0,
   stock: 0,
-  st: "active",
+  brandId: "",
+  categoryId: "",
+  unitId: "",
+  photos: [],
 };
 
 export function ProductFormDialog({
@@ -51,8 +46,11 @@ export function ProductFormDialog({
   pending,
 }: ProductFormDialogProps) {
   const t = useT();
-  const { data: brands, isLoading: brandsLoading } = useBrands();
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: brandsData, isLoading: brandsLoading } = useBrands();
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useCategories();
+  const { data: unitsData, isLoading: unitsLoading } = useUnits();
+
   const {
     register,
     handleSubmit,
@@ -65,99 +63,49 @@ export function ProductFormDialog({
     defaultValues: EMPTY,
   });
 
-  // Variants live outside RHF (a structured sub-entity). Editing loads the
-  // product detail; adding starts empty. Until the detail arrives we mark
-  // variants "not ready" and omit them from the payload, so a save that races
-  // the load never wipes existing variants.
-  const detailId = open && product ? product.id : null;
-  const { data: detail } = useProductDetail(detailId);
-  const [variants, setVariants] = useState<ProductVariant[]>([]);
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [variantsReady, setVariantsReady] = useState(false);
-  const [variantErrors, setVariantErrors] = useState<Record<number, TKey | undefined>>(
-    {},
-  );
+  const photos = watch("photos");
 
   // Reset the fields each time the dialog opens (add vs edit).
   useEffect(() => {
     if (!open) return;
-    setVariantErrors({});
     if (product) {
       reset({
-        name: product.name,
-        brand: product.brand,
-        category: product.category,
+        nameRu: product.nameRu,
+        nameTm: product.nameTm,
+        shortRu: product.shortRu,
+        shortTm: product.shortTm,
         price: product.price,
+        oldPrice: product.oldPrice,
         stock: product.stock,
-        st: product.st,
+        brandId: product.brandId,
+        categoryId: product.categoryId,
+        unitId: product.unitId,
+        photos: product.photos,
       });
-      setVariantsReady(false);
     } else {
       reset(EMPTY);
-      setVariants([]);
-      setPhotos([]);
-      setVariantsReady(true);
     }
   }, [open, product, reset]);
 
-  // Seed variants + photos once the matching detail has loaded (edit mode).
-  // Both share the `variantsReady` gate so a save that races the load never
-  // wipes existing variants or photos.
-  useEffect(() => {
-    if (open && product && detail && detail.id === product.id) {
-      setVariants(detail.variants);
-      setPhotos(detail.photos);
-      setVariantsReady(true);
-    }
-  }, [open, product, detail]);
-
-  const st = watch("st");
-
   function handleFormSubmit(values: ProductFormValues) {
-    // Validate SKUs client-side: non-empty and unique (the backend also
-    // enforces global uniqueness with a 409).
-    const nextErrors: Record<number, TKey> = {};
-    const seen = new Set<string>();
-    variants.forEach((variant, index) => {
-      const sku = variant.sku.trim();
-      if (!sku) {
-        nextErrors[index] = "products.variant.err.sku";
-        return;
-      }
-      const key = sku.toLowerCase();
-      if (seen.has(key)) nextErrors[index] = "products.variant.err.skuDup";
-      else seen.add(key);
-    });
-    if (Object.keys(nextErrors).length > 0) {
-      setVariantErrors(nextErrors);
-      return;
-    }
-
-    // Keep the variant id for existing variants so the backend reconciles by
-    // id (updates in place); new variants have none and are created.
-    const cleaned: ProductVariant[] = variants.map((variant) => ({
-      ...(variant.id ? { id: variant.id } : {}),
-      sku: variant.sku.trim(),
-      price: variant.price,
-      oldPrice: variant.oldPrice,
-      stock: variant.stock,
-      status: variant.status,
-      options: variant.options
-        .map((option) => ({ name: option.name.trim(), value: option.value.trim() }))
-        .filter((option) => option.name && option.value),
-    }));
-
     onSubmit({
-      ...values,
-      ...(variantsReady
-        ? { photos: photos.map((p) => p.trim()).filter(Boolean), variants: cleaned }
-        : {}),
+      nameRu: values.nameRu,
+      nameTm: values.nameTm,
+      shortRu: values.shortRu,
+      shortTm: values.shortTm,
+      price: values.price,
+      oldPrice: values.oldPrice,
+      stock: values.stock,
+      brandId: values.brandId,
+      categoryId: values.categoryId,
+      unitId: values.unitId,
+      photos: values.photos.map((p) => p.trim()).filter(Boolean),
     });
   }
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content className="max-w-md">
+      <Dialog.Content className="max-w-lg">
         <Dialog.Title>
           {product ? t("products.dialog.edit") : t("products.dialog.new")}
         </Dialog.Title>
@@ -167,30 +115,90 @@ export function ProductFormDialog({
           onSubmit={handleSubmit(handleFormSubmit)}
           className="mt-4 flex max-h-[70vh] flex-col gap-3 overflow-y-auto"
         >
-          <Field
-            label={t("form.name")}
-            error={errors.name?.message ? t(errors.name?.message as TKey) : undefined}
-          >
-            <Input
-              {...register("name")}
-              invalid={!!errors.name}
-              placeholder="iPhone 15 Pro"
-            />
-          </Field>
-
+          {/* Bilingual names */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field
+              label={t("form.nameRu")}
+              error={
+                errors.nameRu?.message
+                  ? t(errors.nameRu.message as TKey)
+                  : undefined
+              }
+            >
+              <Input
+                {...register("nameRu")}
+                invalid={!!errors.nameRu}
+                placeholder="iPhone 15 Pro"
+              />
+            </Field>
+            <Field
+              label={t("form.nameTm")}
+              error={
+                errors.nameTm?.message
+                  ? t(errors.nameTm.message as TKey)
+                  : undefined
+              }
+            >
+              <Input
+                {...register("nameTm")}
+                invalid={!!errors.nameTm}
+                placeholder="iPhone 15 Pro"
+              />
+            </Field>
+          </div>
+
+          {/* Short descriptions */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Field
+              label={t("form.shortRu")}
+              error={
+                errors.shortRu?.message
+                  ? t(errors.shortRu.message as TKey)
+                  : undefined
+              }
+            >
+              <Input
+                {...register("shortRu")}
+                invalid={!!errors.shortRu}
+                placeholder="Краткое описание"
+              />
+            </Field>
+            <Field
+              label={t("form.shortTm")}
+              error={
+                errors.shortTm?.message
+                  ? t(errors.shortTm.message as TKey)
+                  : undefined
+              }
+            >
+              <Input
+                {...register("shortTm")}
+                invalid={!!errors.shortTm}
+                placeholder="Gysgaça beýan"
+              />
+            </Field>
+          </div>
+
+          {/* Brand / Category / Unit */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Field
               label={t("form.brand")}
-              error={errors.brand?.message ? t(errors.brand?.message as TKey) : undefined}
+              error={
+                errors.brandId?.message
+                  ? t(errors.brandId.message as TKey)
+                  : undefined
+              }
             >
               <Select
-                {...register("brand")}
-                invalid={!!errors.brand}
+                {...register("brandId")}
+                invalid={!!errors.brandId}
                 disabled={brandsLoading}
               >
-                <option value="">{brandsLoading ? t("common.loading") : "—"}</option>
-                {brands?.map((b) => (
-                  <option key={b.id} value={b.name}>
+                <option value="">
+                  {brandsLoading ? t("common.loading") : "—"}
+                </option>
+                {brandsData?.brands?.map((b) => (
+                  <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
                 ))}
@@ -199,39 +207,92 @@ export function ProductFormDialog({
             <Field
               label={t("form.category")}
               error={
-                errors.category?.message ? t(errors.category?.message as TKey) : undefined
+                errors.categoryId?.message
+                  ? t(errors.categoryId.message as TKey)
+                  : undefined
               }
             >
               <Select
-                {...register("category")}
-                invalid={!!errors.category}
+                {...register("categoryId")}
+                invalid={!!errors.categoryId}
                 disabled={categoriesLoading}
               >
-                <option value="">{categoriesLoading ? t("common.loading") : "—"}</option>
-                {categories?.categories?.map((c) => (
-                  <option key={c.id} value={c.nameRu || c.nameTk}>
+                <option value="">
+                  {categoriesLoading ? t("common.loading") : "—"}
+                </option>
+                {categoriesData?.categories?.map((c) => (
+                  <option key={c.id} value={c.id}>
                     {c.nameRu || c.nameTk}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field
+              label={t("form.unit")}
+              error={
+                errors.unitId?.message
+                  ? t(errors.unitId.message as TKey)
+                  : undefined
+              }
+            >
+              <Select
+                {...register("unitId")}
+                invalid={!!errors.unitId}
+                disabled={unitsLoading}
+              >
+                <option value="">
+                  {unitsLoading ? t("common.loading") : "—"}
+                </option>
+                {unitsData?.units?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nameRu} ({u.shortName})
                   </option>
                 ))}
               </Select>
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* Price / Old Price / Stock */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Field
               label={t("form.priceM")}
-              error={errors.price?.message ? t(errors.price?.message as TKey) : undefined}
+              error={
+                errors.price?.message
+                  ? t(errors.price.message as TKey)
+                  : undefined
+              }
             >
               <Input
                 type="number"
                 min={0}
+                step="0.01"
                 {...register("price")}
                 invalid={!!errors.price}
               />
             </Field>
             <Field
+              label={t("form.oldPriceM")}
+              error={
+                errors.oldPrice?.message
+                  ? t(errors.oldPrice.message as TKey)
+                  : undefined
+              }
+            >
+              <Input
+                type="number"
+                min={0}
+                step="0.01"
+                {...register("oldPrice")}
+                invalid={!!errors.oldPrice}
+              />
+            </Field>
+            <Field
               label={t("form.stockPcs")}
-              error={errors.stock?.message ? t(errors.stock?.message as TKey) : undefined}
+              error={
+                errors.stock?.message
+                  ? t(errors.stock.message as TKey)
+                  : undefined
+              }
             >
               <Input
                 type="number"
@@ -242,44 +303,20 @@ export function ProductFormDialog({
             </Field>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-ink/70">
-              {t("form.status")}
-            </label>
-            <div className="inline-flex w-fit rounded-xl border border-line bg-canvas p-1">
-              {STATUS_ORDER.map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setValue("st", key)}
-                  className={cn(
-                    "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
-                    st === key ? "bg-brand text-white" : "text-muted hover:text-ink",
-                  )}
-                >
-                  {t(PRODUCT_STATUS[key].labelKey)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {product && !variantsReady ? (
-            <p className="rounded-xl border border-dashed border-line px-3 py-4 text-center text-xs text-faint">
-              {t("products.variant.loading")}
-            </p>
-          ) : (
-            <>
-              <PhotosEditor photos={photos} onChange={setPhotos} />
-              <VariantsEditor
-                variants={variants}
-                onChange={setVariants}
-                errors={variantErrors}
-              />
-            </>
-          )}
+          {/* Photos */}
+          <PhotosEditor
+            photos={photos}
+            onChange={(next) =>
+              setValue("photos", next, { shouldValidate: true })
+            }
+          />
 
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={pending}>
