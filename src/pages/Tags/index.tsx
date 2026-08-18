@@ -7,6 +7,7 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { Table } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -138,63 +139,58 @@ export default function TagsPage() {
       ) : tagsList.length === 0 ? (
         <EmptyState title="Теги не найдены" />
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-          <table className="w-full border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-line bg-canvas/60 text-xs uppercase tracking-wide text-muted">
-                <th className="px-5 py-3 font-semibold">Название (RU)</th>
-                <th className="px-5 py-3 font-semibold">Название (TK)</th>
-                <th className="px-5 py-3 font-semibold">Бренд</th>
-                <th className="px-5 py-3 text-right font-semibold">{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tagsList.map((tag) => (
-                <tr
-                  key={tag.id}
-                  className="border-b border-line last:border-0 hover:bg-canvas/40"
-                >
-                  <td className="px-5 py-3.5 font-display font-bold text-ink">
-                    <span className="inline-flex items-center gap-1.5">
-                      <TagIcon className="h-4 w-4 text-brand" />
-                      {tag.nameRu}
+        <Table containerClassName="rounded-2xl border border-line bg-surface">
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>Название (RU)</Table.Head>
+              <Table.Head>Название (TK)</Table.Head>
+              <Table.Head>Бренд</Table.Head>
+              <Table.Head className="text-right">{t("common.actions")}</Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {tagsList.map((tag) => (
+              <Table.Row key={tag.id}>
+                <Table.Cell className="font-display font-bold text-ink">
+                  <span className="inline-flex items-center gap-1.5">
+                    <TagIcon className="h-4 w-4 text-brand" />
+                    {tag.nameRu}
+                  </span>
+                </Table.Cell>
+                <Table.Cell className="text-ink font-medium">{tag.nameTk}</Table.Cell>
+                <Table.Cell className="text-muted">
+                  {tag.brandId && brandMap.has(tag.brandId) ? (
+                    <span className="inline-flex items-center rounded-md bg-canvas px-2.5 py-1 text-xs border border-line/60 font-semibold text-ink">
+                      {brandMap.get(tag.brandId)}
                     </span>
-                  </td>
-                  <td className="px-5 py-3.5 text-ink font-medium">{tag.nameTk}</td>
-                  <td className="px-5 py-3.5 text-muted">
-                    {tag.brandId && brandMap.has(tag.brandId) ? (
-                      <span className="inline-flex items-center rounded-md bg-canvas px-2.5 py-1 text-xs border border-line/60 font-semibold text-ink">
-                        {brandMap.get(tag.brandId)}
-                      </span>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => openEdit(tag)}
-                        className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                        aria-label={"Редактировать " + tag.nameRu}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleting(tag)}
-                        className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                        aria-label={"Удалить " + tag.nameRu}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    "—"
+                  )}
+                </Table.Cell>
+                <Table.Cell>
+                  <div className="flex justify-end gap-1">
+                    <button
+                      type="button"
+                      onClick={() => openEdit(tag)}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
+                      aria-label={"Редактировать " + tag.nameRu}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleting(tag)}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
+                      aria-label={"Удалить " + tag.nameRu}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
       )}
 
       <TagFormDialog

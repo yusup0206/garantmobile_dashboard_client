@@ -3,49 +3,45 @@ import { useLangStore } from "@/store/i18n.store";
 import { compact } from "@/lib/format";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { Table } from "@/components/ui/Table";
 import type { CampaignRow } from "../lib/marketing.helpers";
 
 export function CampaignsTable({ rows }: { rows: CampaignRow[] }) {
   const t = useT();
   const lang = useLangStore((s) => s.lang);
   return (
-    <Card className="p-0">
+    <Card className="p-0 overflow-hidden">
       <div className="px-5 pt-5">
         <CardHeader title={t("form.campaigns")} />
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-y border-line bg-canvas/60 text-xs uppercase tracking-wide text-muted">
-              <th className="px-5 py-3 font-semibold">{t("form.campaign")}</th>
-              <th className="px-5 py-3 font-semibold">{t("form.channel")}</th>
-              <th className="px-5 py-3 font-semibold">{t("form.period")}</th>
-              <th className="px-5 py-3 text-right font-semibold">{t("form.reach")}</th>
-              <th className="px-5 py-3 font-semibold">{t("form.status")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr
-                key={r.id}
-                className="border-b border-line last:border-0 hover:bg-canvas/40"
-              >
-                <td className="px-5 py-3.5 font-semibold text-ink">{r.name}</td>
-                <td className="whitespace-nowrap px-5 py-3.5 text-muted">
-                  {t(r.channelLabel)}
-                </td>
-                <td className="whitespace-nowrap px-5 py-3.5 text-muted">{r.period}</td>
-                <td className="whitespace-nowrap px-5 py-3.5 text-right text-muted">
-                  {r.reach > 0 ? compact(r.reach, lang) : "—"}
-                </td>
-                <td className="px-5 py-3.5">
-                  <StatusBadge meta={r.meta} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>{t("form.campaign")}</Table.Head>
+            <Table.Head>{t("form.channel")}</Table.Head>
+            <Table.Head>{t("form.period")}</Table.Head>
+            <Table.Head className="text-right">{t("form.reach")}</Table.Head>
+            <Table.Head>{t("form.status")}</Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {rows.map((r) => (
+            <Table.Row key={r.id}>
+              <Table.Cell className="font-semibold text-ink">{r.name}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap text-muted">
+                {t(r.channelLabel)}
+              </Table.Cell>
+              <Table.Cell className="whitespace-nowrap text-muted">{r.period}</Table.Cell>
+              <Table.Cell className="whitespace-nowrap text-right text-muted">
+                {r.reach > 0 ? compact(r.reach, lang) : "—"}
+              </Table.Cell>
+              <Table.Cell>
+                <StatusBadge meta={r.meta} />
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
     </Card>
   );
 }

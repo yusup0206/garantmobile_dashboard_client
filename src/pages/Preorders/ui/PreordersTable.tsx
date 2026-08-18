@@ -2,6 +2,7 @@ import { useT } from "@/i18n/useT";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { StatusMenu } from "@/components/common/StatusMenu";
 import type { StatusOption } from "@/components/common/StatusMenu";
+import { Table } from "@/components/ui/Table";
 import type { PreorderRow } from "../lib/preorders.helpers";
 
 type PreordersTableProps = {
@@ -13,54 +14,49 @@ type PreordersTableProps = {
 export function PreordersTable({ rows, options, onStatus }: PreordersTableProps) {
   const t = useT();
   return (
-    <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-      <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-line bg-canvas/60 text-xs uppercase tracking-wide text-muted">
-            <th className="px-5 py-3 font-semibold">{t("form.preorder")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.product")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.customer")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("form.prepay")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("form.amount")}</th>
-            <th className="px-5 py-3 font-semibold">{t("form.status")}</th>
-            <th className="px-5 py-3 text-right font-semibold">{t("common.actions")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr
-              key={r.num}
-              className="border-b border-line last:border-0 hover:bg-canvas/40"
-            >
-              <td className="whitespace-nowrap px-5 py-3.5 font-display font-bold text-ink">
-                {r.num}
-              </td>
-              <td className="max-w-xs px-5 py-3.5">
-                <div className="truncate text-ink">{r.product}</div>
-              </td>
-              <td className="whitespace-nowrap px-5 py-3.5 text-ink">{r.customer}</td>
-              <td className="whitespace-nowrap px-5 py-3.5 text-right font-display font-bold text-ink">
-                {r.prepayFmt}
-              </td>
-              <td className="whitespace-nowrap px-5 py-3.5 text-right font-display font-bold text-ink">
-                {r.totalFmt}
-              </td>
-              <td className="px-5 py-3.5">
-                <StatusBadge meta={r.meta} />
-              </td>
-              <td className="px-5 py-3.5">
-                <div className="flex justify-end">
-                  <StatusMenu
-                    options={options}
-                    value={r.st}
-                    onSelect={(st) => onStatus(r.num, st)}
-                  />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table className="min-w-[720px]" containerClassName="rounded-2xl border border-line bg-surface">
+      <Table.Header>
+        <Table.Row>
+          <Table.Head>{t("form.preorder")}</Table.Head>
+          <Table.Head>{t("form.product")}</Table.Head>
+          <Table.Head>{t("form.customer")}</Table.Head>
+          <Table.Head className="text-right">{t("form.prepay")}</Table.Head>
+          <Table.Head className="text-right">{t("form.amount")}</Table.Head>
+          <Table.Head>{t("form.status")}</Table.Head>
+          <Table.Head className="text-right">{t("common.actions")}</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {rows.map((r) => (
+          <Table.Row key={r.num}>
+            <Table.Cell className="whitespace-nowrap font-display font-bold text-ink">
+              {r.num}
+            </Table.Cell>
+            <Table.Cell className="max-w-xs">
+              <div className="truncate text-ink">{r.product}</div>
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap text-ink">{r.customer}</Table.Cell>
+            <Table.Cell className="whitespace-nowrap text-right font-display font-bold text-ink">
+              {r.prepayFmt}
+            </Table.Cell>
+            <Table.Cell className="whitespace-nowrap text-right font-display font-bold text-ink">
+              {r.totalFmt}
+            </Table.Cell>
+            <Table.Cell>
+              <StatusBadge meta={r.meta} />
+            </Table.Cell>
+            <Table.Cell>
+              <div className="flex justify-end">
+                <StatusMenu
+                  options={options}
+                  value={r.st}
+                  onSelect={(st) => onStatus(r.num, st)}
+                />
+              </div>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
   );
 }
