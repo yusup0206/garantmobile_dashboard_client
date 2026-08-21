@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
 
@@ -9,23 +9,27 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Pagination } from "@/components/common/Pagination";
 import { useOrders, useUpdateOrderStatus } from "@/services/orders/useOrders";
-import type { OrderStatusKey } from "@/services/orders/orders.types";
+import type { Order, OrderStatusKey } from "@/services/orders/orders.types";
 import { usePagination } from "@/lib/usePagination";
 
 import { OrdersTable } from "./ui/OrdersTable";
-import { toRow, FILTER_TABS, STATUS_OPTIONS } from "./lib/orders.helpers";
+import { OrderDetailDialog } from "./ui/OrderDetailDialog";
+import { toRow, FILTER_TABS, STATUS_OPTIONS, type OrderRow } from "./lib/orders.helpers";
 
 export default function OrdersPage() {
   const t = useT();
   const { data, isLoading, isError, refetch } = useOrders();
   const updateStatus = useUpdateOrderStatus();
-  // URL state: /orders?status=proc — shareable & survives refresh.
+  const [selectedOrder, setSelectedOrder] = useState<OrderRow | null>(null);
+
+  // URL state: /orders?status=pending — shareable & survives refresh.
   const [params, setParams] = useSearchParams();
   const filter = params.get("status") ?? "all";
 
   const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
+    const list: Order[] = Array.isArray(data) ? data : (data?.orders ?? []);
+    const all = list.map((o) => toRow(o));
+    return filter === "all" ? all : all.filter((r) => r.status === filter);
   }, [data, filter]);
 
   const pg = usePagination(rows, 8, filter);
@@ -53,7 +57,8 @@ export default function OrdersPage() {
           <OrdersTable
             rows={pg.slice}
             options={STATUS_OPTIONS}
-            onStatus={(num, st) => updateStatus.mutate({ num, st: st as OrderStatusKey })}
+            onStatus={(id, st) => updateStatus.mutate({ id, status: st as OrderStatusKey })}
+            onViewDetails={(order) => setSelectedOrder(order)}
           />
           <Pagination
             page={pg.page}
@@ -64,6 +69,16 @@ export default function OrdersPage() {
           />
         </>
       )}
+
+      <OrderDetailDialog
+        order={selectedOrder}
+        open={Boolean(selectedOrder)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedOrder(null);
+        }}
+        options={STATUS_OPTIONS}
+        onStatusChange={(id, st) => updateStatus.mutate({ id, status: st })}
+      />
     </div>
   );
 }

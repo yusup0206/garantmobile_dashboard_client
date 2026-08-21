@@ -1,10 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { useSyncPermissions } from "@/lib/permissions";
 import { Sidebar } from "./ui/Sidebar";
 import { Topbar } from "./ui/Topbar";
 
 export function MainLayout() {
-  useSyncPermissions();
   return (
     <div className="flex min-h-screen bg-canvas">
       <Sidebar />

@@ -1,13 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { AuthUser } from "@/services/auth/auth.types";
+import type { AuthUser, AdminRole } from "@/services/auth/auth.types";
 
 type AuthState = {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
-  /** Effective permissions from GET /auth/me; empty until loaded / in demo. */
+  /** Flattened permission strings from all roles (e.g. "orders:readonly"). */
   permissions: string[];
+  /** Raw roles from the admin login response. */
+  roles: AdminRole[];
   setSession: (user: AuthUser, token: string) => void;
   setPermissions: (permissions: string[]) => void;
   logout: () => void;
@@ -24,10 +26,36 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       permissions: [],
-      setSession: (user, token) => set({ user, token, isAuthenticated: true }),
+      roles: [],
+      setSession: (user, token) => {
+        // Flatten permissions from roles for easy lookup
+        const flatPerms: string[] = [];
+        for (const role of user.roles ?? []) {
+          for (const perm of role.permissions ?? []) {
+            flatPerms.push(`${perm.permission}:${perm.access}`);
+          }
+        }
+        set({
+          user,
+          token,
+          isAuthenticated: true,
+          roles: user.roles ?? [],
+          permissions: flatPerms,
+        });
+      },
       setPermissions: (permissions) => set({ permissions }),
-      logout: () =>
-        set({ user: null, token: null, isAuthenticated: false, permissions: [] }),
+      logout: () => {
+        // Clear persisted auth from localStorage before resetting state
+        localStorage.removeItem("gm.auth");
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          permissions: [],
+          roles: [],
+        });
+        window.location.href = "/login";
+      },
     }),
     { name: "gm.auth" },
   ),

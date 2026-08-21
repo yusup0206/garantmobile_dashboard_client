@@ -1,14 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getOrders, getRecentOrders, updateOrderStatus } from "./orders.api";
-import type { OrderStatusKey } from "./orders.types";
+import {
+  getOrders,
+  getOrderDetails,
+  getRecentOrders,
+  updateOrderStatus,
+} from "./orders.api";
+import type { GetOrdersParams, OrderStatusKey } from "./orders.types";
 
 export const ordersKeys = {
   all: ["orders"] as const,
+  list: (params?: GetOrdersParams) => ["orders", "list", params] as const,
+  details: (id: string, lang?: string) => ["orders", "details", id, lang] as const,
   recent: (limit: number) => ["orders", "recent", limit] as const,
 };
 
-export function useOrders() {
-  return useQuery({ queryKey: ordersKeys.all, queryFn: getOrders });
+export function useOrders(params?: GetOrdersParams) {
+  return useQuery({
+    queryKey: ordersKeys.list(params),
+    queryFn: () => getOrders(params),
+  });
+}
+
+export function useOrderDetails(id?: string, lang?: string) {
+  return useQuery({
+    queryKey: ordersKeys.details(id ?? "", lang),
+    queryFn: () => (id ? getOrderDetails(id, lang) : Promise.reject("No ID")),
+    enabled: Boolean(id),
+  });
 }
 
 export function useRecentOrders(limit = 6) {
@@ -21,9 +39,17 @@ export function useRecentOrders(limit = 6) {
 export function useUpdateOrderStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ num, st }: { num: string; st: OrderStatusKey }) =>
-      updateOrderStatus(num, st),
-    // Invalidating the ["orders"] prefix covers both the list and the recent key.
-    onSuccess: () => qc.invalidateQueries({ queryKey: ordersKeys.all }),
+    mutationFn: ({
+      id,
+      status,
+      lang,
+    }: {
+      id: string;
+      status: OrderStatusKey;
+      lang?: string;
+    }) => updateOrderStatus(id, status, lang),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ordersKeys.all });
+    },
   });
 }

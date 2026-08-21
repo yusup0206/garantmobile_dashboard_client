@@ -4,24 +4,34 @@ import { categorySchema } from "./category.schema";
 describe("categorySchema", () => {
   it("accepts a valid category", () => {
     const res = categorySchema.safeParse({
-      name: "Смартфоны",
+      nameTk: "Smartfonlar",
+      nameRu: "Смартфоны",
       slug: "smartphones",
-      st: "active",
+      homepageShow: true,
+      sortOrder: 0,
     });
     expect(res.success).toBe(true);
   });
 
   it("rejects a slug with non-latin / spaces / uppercase", () => {
     for (const slug of ["Смартфоны", "smart phones", "Smart", "phones!"]) {
-      expect(categorySchema.safeParse({ name: "Тест", slug, st: "active" }).success).toBe(
-        false,
-      );
+      expect(
+        categorySchema.safeParse({
+          nameTk: "Test",
+          nameRu: "Тест",
+          slug,
+        }).success,
+      ).toBe(false);
     }
   });
 
-  it("rejects an unknown status", () => {
+  it("rejects a short name", () => {
     expect(
-      categorySchema.safeParse({ name: "Тест", slug: "test", st: "gone" }).success,
+      categorySchema.safeParse({
+        nameTk: "A",
+        nameRu: "Б",
+        slug: "test",
+      }).success,
     ).toBe(false);
   });
 });

@@ -1,13 +1,9 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuthStore } from "@/store/auth.store";
+import { Outlet } from "react-router-dom";
 
+/**
+ * Route container. Does not block client-side route entry;
+ * unauthorized access is handled globally when APIs return 401 Unauthorized.
+ */
 export function ProtectedRoute() {
-  // const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const isAuthenticated = true;
-  const location = useLocation();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  }
   return <Outlet />;
 }

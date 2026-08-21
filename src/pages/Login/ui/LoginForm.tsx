@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { User, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Phone, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -19,7 +19,6 @@ import type { LoginFormValues } from "../types";
 export function LoginForm() {
   const t = useT();
   const navigate = useNavigate();
-  const location = useLocation();
   const setSession = useAuthStore((s) => s.setSession);
 
   const [captcha, setCaptcha] = useState(genCaptcha);
@@ -28,15 +27,14 @@ export function LoginForm() {
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { login: "", password: "", captcha: "" },
+    defaultValues: { phone: "", password: "", captcha: "" },
   });
 
   const mutation = useMutation({
     mutationFn: loginRequest,
     onSuccess: (res) => {
       setSession(res.user, res.token);
-      const from = (location.state as { from?: string } | null)?.from;
-      navigate(from ?? "/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true });
     },
     onError: (err: Error) => setFormError(err.message),
   });
@@ -47,21 +45,14 @@ export function LoginForm() {
     setFormError("");
   }
 
-  function fillDemo() {
-    form.setValue("login", "admin");
-    form.setValue("password", "garant2026");
-    form.setValue("captcha", captcha);
-    setFormError("");
-  }
-
   function onSubmit(values: LoginFormValues) {
     setFormError("");
-    if (!captchaMatches(values.captcha, captcha)) {
+    if (!values.captcha || !captchaMatches(values.captcha, captcha)) {
       form.setError("captcha", { message: "login.err.captchaWrong" });
       refreshCaptcha();
       return;
     }
-    mutation.mutate({ login: values.login, password: values.password });
+    mutation.mutate({ phone: values.phone, password: values.password });
   }
 
   const { errors } = form.formState;
@@ -70,35 +61,27 @@ export function LoginForm() {
     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <label className="text-xs font-semibold text-ink/70">
-          {t("login.loginLabel")}
+          {t("login.phoneLabel")}
         </label>
         <div className="relative">
-          <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
+          <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
           <Input
-            {...form.register("login")}
-            placeholder={t("login.loginPlaceholder")}
-            autoComplete="username"
-            invalid={!!errors.login}
+            {...form.register("phone")}
+            placeholder={t("login.phonePlaceholder")}
+            autoComplete="tel"
+            invalid={!!errors.phone}
             className="pl-11"
           />
         </div>
-        {errors.login ? (
-          <p className="text-xs text-red-600">{t(errors.login.message as TKey)}</p>
+        {errors.phone ? (
+          <p className="text-xs text-red-600">{t(errors.phone.message as TKey)}</p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-semibold text-ink/70">
-            {t("login.passwordLabel")}
-          </label>
-          <Link
-            to="/forgot-password"
-            className="text-xs font-semibold text-brand-dark hover:underline"
-          >
-            {t("login.forgot")}
-          </Link>
-        </div>
+        <label className="text-xs font-semibold text-ink/70">
+          {t("login.passwordLabel")}
+        </label>
         <div className="relative">
           <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
           <Input
@@ -170,18 +153,6 @@ export function LoginForm() {
       <Button type="submit" size="lg" disabled={mutation.isPending} className="mt-1">
         {mutation.isPending ? t("login.submitting") : t("login.submit")}
       </Button>
-
-      <div className="mt-1 flex items-center gap-3 rounded-xl border border-dashed border-line bg-canvas px-3.5 py-3">
-        <span className="rounded-md bg-brand-soft px-2 py-1 font-display text-[10px] font-bold tracking-wide text-brand-dark">
-          {t("login.demoBadge")}
-        </span>
-        <p className="flex-1 text-[11px] leading-snug text-muted">
-          {t("login.demoText")}
-        </p>
-        <Button type="button" variant="outline" size="sm" onClick={fillDemo}>
-          {t("login.fill")}
-        </Button>
-      </div>
     </form>
   );
 }

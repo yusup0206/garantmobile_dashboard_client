@@ -114,7 +114,9 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
 
   function optionNameOf(v: ResolvedValue | undefined, lang: string) {
     if (!v) return "—";
-    return lang === "tm" ? v.optionNameTm || v.optionNameRu : v.optionNameRu || v.optionNameTm;
+    return lang === "tm"
+      ? v.optionNameTm || v.optionNameRu
+      : v.optionNameRu || v.optionNameTm;
   }
 
   function handleAttach() {
@@ -168,7 +170,10 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
     const groups = new Map<string, { optionName: string; values: ResolvedValue[] }>();
     allValues.forEach((v) => {
       const key = `${v.optionNameRu}|${v.optionNameTm}`;
-      const optName = lang === "tm" ? v.optionNameTm || v.optionNameRu : v.optionNameRu || v.optionNameTm;
+      const optName =
+        lang !== "ru"
+          ? v.optionNameTm || v.optionNameRu
+          : v.optionNameRu || v.optionNameTm;
       if (!groups.has(key)) groups.set(key, { optionName: optName, values: [] });
       groups.get(key)!.values.push(v);
     });
@@ -191,7 +196,9 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
           <div>
             <h2 className="text-lg font-bold text-ink">
               Вариант:{" "}
-              <span className="font-mono text-brand">{variant.barcode || variant.id}</span>
+              <span className="font-mono text-brand">
+                {variant.barcode || variant.id}
+              </span>
             </h2>
             <p className="text-sm text-muted">
               Привязанные значения опций • Цена:{" "}
@@ -328,9 +335,7 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
 
           <div className="mt-4 flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-ink/70">
-                Новое значение
-              </label>
+              <label className="text-xs font-semibold text-ink/70">Новое значение</label>
               <select
                 value={replaceNewId}
                 onChange={(e) => setReplaceNewId(e.target.value)}
@@ -340,21 +345,18 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
                 {grouped.map((group) => (
                   <optgroup key={group.optionName} label={group.optionName}>
                     {group.values.map((v) => {
-                        const label =
-                          lang === "tm" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
-                        const alreadyLinked = linkedIds.has(v.id) && v.id !== replacing?.optionValueId;
-                        return (
-                          <option
-                            key={v.id}
-                            value={v.id}
-                            disabled={alreadyLinked}
-                          >
-                            {label}
-                            {v.hex ? ` (${v.hex})` : ""}
-                            {alreadyLinked ? " ✓" : ""}
-                          </option>
-                        );
-                      })}
+                      const label =
+                        lang === "ru" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+                      const alreadyLinked =
+                        linkedIds.has(v.id) && v.id !== replacing?.optionValueId;
+                      return (
+                        <option key={v.id} value={v.id} disabled={alreadyLinked}>
+                          {label}
+                          {v.hex ? ` (${v.hex})` : ""}
+                          {alreadyLinked ? " ✓" : ""}
+                        </option>
+                      );
+                    })}
                   </optgroup>
                 ))}
               </select>
@@ -393,9 +395,7 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
 
           <div className="mt-4 flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-ink/70">
-                Значение опции
-              </label>
+              <label className="text-xs font-semibold text-ink/70">Значение опции</label>
               {grouped.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-line px-3 py-4 text-center text-sm text-muted">
                   Нет доступных значений. Сначала создайте опции и их значения.
@@ -411,14 +411,10 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
                     <optgroup key={group.optionName} label={group.optionName}>
                       {group.values.map((v) => {
                         const label =
-                          lang === "tm" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+                          lang === "ru" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
                         const alreadyLinked = linkedIds.has(v.id);
                         return (
-                          <option
-                            key={v.id}
-                            value={v.id}
-                            disabled={alreadyLinked}
-                          >
+                          <option key={v.id} value={v.id} disabled={alreadyLinked}>
                             {label}
                             {v.hex ? ` (${v.hex})` : ""}
                             {alreadyLinked ? " ✓" : ""}

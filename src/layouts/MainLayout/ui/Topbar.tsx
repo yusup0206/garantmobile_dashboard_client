@@ -1,13 +1,11 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, KeyRound, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { Bell, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { useUiStore } from "@/store/ui.store";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { useT } from "@/i18n/useT";
 import { meta } from "@/data/meta";
 import { DEMO_USER } from "@/data/auth.mock";
-import { ChangePasswordDialog } from "./ChangePasswordDialog";
 
 export function Topbar() {
   const user = useAuthStore((s) => s.user);
@@ -16,7 +14,6 @@ export function Topbar() {
   const theme = useUiStore((s) => s.theme);
   const toggleTheme = useUiStore((s) => s.toggleTheme);
   const t = useT();
-  const [pwOpen, setPwOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line bg-surface/90 px-4 backdrop-blur sm:px-6">
@@ -73,16 +70,6 @@ export function Topbar() {
 
         <button
           type="button"
-          onClick={() => setPwOpen(true)}
-          className="grid h-10 w-10 place-items-center rounded-xl text-muted transition-colors hover:bg-canvas hover:text-ink"
-          aria-label={t("password.title")}
-          title={t("password.title")}
-        >
-          <KeyRound className="h-5 w-5" strokeWidth={1.9} />
-        </button>
-
-        <button
-          type="button"
           onClick={logout}
           className="grid h-10 w-10 place-items-center rounded-xl text-muted transition-colors hover:bg-red-50 hover:text-red-600"
           aria-label={t("topbar.logout")}
@@ -90,8 +77,6 @@ export function Topbar() {
           <LogOut className="h-5 w-5" strokeWidth={1.9} />
         </button>
       </div>
-
-      <ChangePasswordDialog open={pwOpen} onOpenChange={setPwOpen} />
     </header>
   );
 }

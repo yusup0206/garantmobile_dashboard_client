@@ -1,6 +1,8 @@
 import { env } from "@/config/env";
 import type { RequestOptions } from "./api.types";
 
+import { useAuthStore } from "@/store/auth.store";
+
 /**
  * Thin fetch wrapper. Never call fetch directly from components — go through a
  * feature API in services/<feature>/*.api.ts, which uses this client.
@@ -19,6 +21,17 @@ export async function apiClient<T>(
       ...headers,
     },
   });
+
+  if (response.status === 401) {
+    const isLoginEndpoint = endpoint.includes("/login");
+    if (!isLoginEndpoint) {
+      useAuthStore.getState().logout();
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    throw new Error("API Error: 401 Unauthorized");
+  }
 
   if (!response.ok) {
     throw new Error("API Error: " + response.status);

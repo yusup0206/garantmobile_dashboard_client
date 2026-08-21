@@ -2,22 +2,97 @@ import { apiClient, mockDelay } from "@/services/api/apiClient";
 import { isApiEnabled } from "@/config/env";
 import { authToken } from "@/services/api/authToken";
 import { DEMO_USER } from "@/data/auth.mock";
-import type { AuthUser, LoginPayload, LoginResponse, Me } from "./auth.types";
+import type {
+  AuthUser,
+  AdminRole,
+  LoginPayload,
+  LoginResponse,
+} from "./auth.types";
 
-/** Shape of the backend POST /auth/login response (staff). */
+type ApiResponse<T> = {
+  statusCode?: number;
+  success?: boolean;
+  data?: T;
+  timestamp?: string;
+};
+
+/** Shape of POST /garant/admins/login response. */
+type AdminLoginResponse = {
+  admin: {
+    id: string;
+    phone: string;
+    email?: string | null;
+    name: string;
+    status?: string;
+    created?: string;
+    roles: AdminRole[];
+  };
+  token: string;
+};
+
+/** Shape of legacy backend POST /auth/login response (staff). */
 type BackendLogin = {
   user: { id: number; name: string; role: string; initials: string };
   tokens: { accessToken: string };
 };
 
+function initials(name: string): string {
+  const parts = name.trim().split(" ").filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
+}
+
+function primaryRole(roles: AdminRole[]): string {
+  return roles[0]?.name ?? "admin";
+}
+
 /**
- * Staff login. Against the real backend (VITE_API_BASE_URL set) it posts to
- * /auth/login and returns the access token; otherwise it accepts any non-empty
- * credentials from the mock. Thrown errors carry i18n key CODES, resolved via
- * t() in the UI.
+ * Admin login via POST /garant/admins/login.
+ * Falls back to the legacy /auth/login if no phone is supplied.
+ * In demo mode (no VITE_API_BASE_URL) accepts any non-empty credentials.
  */
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   if (isApiEnabled()) {
+    // ── New admin endpoint (phone-based) ──
+    if (payload.phone) {
+      try {
+        const res = await apiClient<ApiResponse<AdminLoginResponse> | AdminLoginResponse>("/admins/login", {
+          method: "POST",
+          headers: { "Accept-Language": "tk" },
+          body: JSON.stringify({
+            phone: payload.phone,
+            password: payload.password,
+          }),
+        });
+
+        const data =
+          res && typeof res === "object" && "data" in res && res.data
+            ? (res.data as AdminLoginResponse)
+            : (res as AdminLoginResponse);
+
+        if (!data?.admin || !data?.token) {
+          throw new Error("login.err.badCredentials");
+        }
+
+        const user: AuthUser = {
+          id: String(data.admin.id),
+          name: data.admin.name || "Admin",
+          phone: data.admin.phone ?? undefined,
+          email: data.admin.email ?? undefined,
+          status: data.admin.status,
+          role: primaryRole(data.admin.roles ?? []),
+          initials: initials(data.admin.name || "Admin"),
+          roles: data.admin.roles ?? [],
+        };
+        return { token: data.token, user };
+      } catch (err) {
+        if (err instanceof Error && err.message !== "login.err.badCredentials") {
+          console.error("Admin login error:", err);
+        }
+        throw new Error("login.err.badCredentials");
+      }
+    }
+
+    // ── Legacy staff endpoint (login/email-based) ──
     try {
       const res = await apiClient<BackendLogin>("/auth/login", {
         method: "POST",
@@ -38,6 +113,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     }
   }
 
+  // ── Demo / mock mode ──
   return mockDelay(
     {
       token: "demo-token-" + Date.now(),
@@ -45,7 +121,8 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     },
     700,
   ).then((res) => {
-    if (!payload.login || !payload.password) {
+    const identifier = payload.phone || payload.login;
+    if (!identifier || !payload.password) {
       throw new Error("login.err.badCredentials");
     }
     return res;
@@ -54,13 +131,11 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 
 /**
  * Issue a password-setup invite for a staff member created without a password
- * (backend gates this to `staff:write`, i.e. admin). Returns a short-lived token
- * the caller turns into an invite link.
+ * (backend gates this to `staff:write`, i.e. admin).
  */
 export type SetPasswordLink = {
   token: string;
   expiresIn: number;
-  /** True when the backend also e-mailed the link to the member. */
   emailed?: boolean;
 };
 
@@ -75,9 +150,7 @@ export async function inviteStaff(id: number): Promise<SetPasswordLink> {
 }
 
 /**
- * Admin-initiated reset of another staff member's password (backend gates this
- * to `staff:write`). Locks the account and returns a fresh set-password token —
- * the same accept-invite link the member uses to choose a new password.
+ * Admin-initiated reset of another staff member's password.
  */
 export async function resetStaffPassword(id: number): Promise<SetPasswordLink> {
   if (isApiEnabled()) {
@@ -90,9 +163,7 @@ export async function resetStaffPassword(id: number): Promise<SetPasswordLink> {
 }
 
 /**
- * Consume an invite token: set the first password and sign in. Public — the
- * invitee is not yet authenticated. Errors carry the i18n key CODE resolved in
- * the UI.
+ * Consume an invite token: set the first password and sign in.
  */
 export async function acceptInvite(
   token: string,
@@ -116,51 +187,4 @@ export async function acceptInvite(
     }
   }
   return mockDelay({ token: "demo-token-" + Date.now(), user: DEMO_USER }, 500);
-}
-
-/**
- * Change the signed-in staff member's own password. On success the backend
- * rotates every session and returns a fresh token pair; the caller should adopt
- * the new token. Errors carry the i18n key CODE resolved in the UI.
- */
-export async function changePassword(
-  currentPassword: string,
-  newPassword: string,
-): Promise<LoginResponse> {
-  if (isApiEnabled()) {
-    try {
-      const res = await apiClient<BackendLogin>("/auth/change-password", {
-        method: "POST",
-        token: authToken(),
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const user: AuthUser = {
-        id: String(res.user.id),
-        name: res.user.name,
-        role: res.user.role,
-        initials: res.user.initials,
-      };
-      return { token: res.tokens.accessToken, user };
-    } catch {
-      throw new Error("password.err.invalid");
-    }
-  }
-  return mockDelay({ token: "demo-token-" + Date.now(), user: DEMO_USER }, 500);
-}
-
-/**
- * Current staff identity and effective permissions. In demo mode there is no
- * backend, so it returns an empty permission list — the UI treats that as
- * "unrestricted" (the real backend enforces permissions server-side anyway).
- */
-export async function getMe(): Promise<Me> {
-  if (isApiEnabled()) {
-    return apiClient<Me>("/auth/me", { token: authToken() });
-  }
-  return mockDelay({
-    id: 0,
-    name: DEMO_USER.name,
-    role: DEMO_USER.role,
-    permissions: [],
-  });
 }

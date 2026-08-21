@@ -7,7 +7,6 @@ import { LoadingState } from "@/components/common/LoadingState";
 
 const LoginPage = lazy(() => import("@/pages/Login"));
 const AcceptInvitePage = lazy(() => import("@/pages/AcceptInvite"));
-const ForgotPasswordPage = lazy(() => import("@/pages/ForgotPassword"));
 const DashboardPage = lazy(() => import("@/pages/Dashboard"));
 const AnalyticsPage = lazy(() => import("@/pages/Analytics"));
 const OrdersPage = lazy(() => import("@/pages/Orders"));
@@ -61,7 +60,6 @@ export const router = createBrowserRouter([
     children: [
       { path: "/login", element: withSuspense(<LoginPage />) },
       { path: "/accept-invite", element: withSuspense(<AcceptInvitePage />) },
-      { path: "/forgot-password", element: withSuspense(<ForgotPasswordPage />) },
     ],
   },
   {
