@@ -1,3 +1,4 @@
-import type { BannerStatusKey } from "@/services/banners/banners.types";
+import type { BannerPlacement, BannerLinkType } from "@/services/banners/banners.types";
 
-export type BannerFilter = "all" | BannerStatusKey;
+export type BannerFilter = "all" | "active" | "inactive";
+export type { BannerPlacement, BannerLinkType };

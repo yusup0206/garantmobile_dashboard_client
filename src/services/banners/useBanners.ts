@@ -1,14 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createBanner, deleteBanner, getBanners, updateBanner } from "./banners.api";
-import type { BannerInput } from "./banners.types";
+import {
+  getBanners,
+  createBanner,
+  updateBanner,
+  deleteBanner,
+} from "./banners.api";
+import type { BannerInput, GetBannersParams } from "./banners.types";
 
 export const bannersKeys = {
   all: ["banners"] as const,
-  list: ["banners", "list"] as const,
+  list: (params?: GetBannersParams) => ["banners", "list", params] as const,
 };
 
-export function useBanners() {
-  return useQuery({ queryKey: bannersKeys.list, queryFn: getBanners });
+export function useBanners(params?: GetBannersParams) {
+  return useQuery({
+    queryKey: bannersKeys.list(params),
+    queryFn: () => getBanners(params),
+  });
 }
 
 export function useCreateBanner() {

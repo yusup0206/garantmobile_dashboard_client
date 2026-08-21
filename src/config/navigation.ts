@@ -99,7 +99,7 @@ export const NAV_GROUPS: NavGroup[] = [
       // { label: "nav.hero", to: "/hero-slides", icon: Images },
       // { label: "nav.marketing", to: "/marketing", icon: Megaphone },
       { label: "nav.promocodes", to: "/promocodes", icon: TicketPercent },
-      // { label: "nav.banners", to: "/banners", icon: Image },
+      { label: "nav.banners", to: "/banners", icon: Image },
       { label: "nav.blog", to: "/blog", icon: Newspaper },
       { label: "nav.tags", to: "/tags", icon: Tag },
     ],

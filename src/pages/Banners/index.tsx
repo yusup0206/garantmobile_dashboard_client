@@ -22,7 +22,7 @@ import type { Banner, BannerInput } from "@/services/banners/banners.types";
 
 import { BannersTable } from "./ui/BannersTable";
 import { BannerFormDialog } from "./ui/BannerFormDialog";
-import { toRow, FILTER_TABS } from "./lib/banners.helpers";
+import { toRow, FILTER_TABS, type BannerRow } from "./lib/banners.helpers";
 
 export default function BannersPage() {
   const t = useT();
@@ -31,20 +31,24 @@ export default function BannersPage() {
   const updateBanner = useUpdateBanner();
   const deleteBanner = useDeleteBanner();
 
-  // URL state: /banners?status=active — shareable & survives refresh.
   const [params, setParams] = useSearchParams();
   const filter = params.get("status") ?? "all";
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Banner | null>(null);
-  const [deleting, setDeleting] = useState<Banner | null>(null);
+  const [deleting, setDeleting] = useState<BannerRow | null>(null);
 
   const rows = useMemo(() => {
-    const all = (data ?? []).map(toRow);
-    return filter === "all" ? all : all.filter((r) => r.st === filter);
+    const list = Array.isArray(data)
+      ? data
+      : (data?.banners ?? []);
+    const all = list.map(toRow);
+    if (filter === "active") return all.filter((r) => r.isActive);
+    if (filter === "inactive") return all.filter((r) => !r.isActive);
+    return all;
   }, [data, filter]);
 
-  const pg = usePagination(rows, 8, filter);
+  const pg = usePagination(rows, 10, filter);
 
   function setFilter(key: string) {
     setParams(key === "all" ? {} : { status: key }, { replace: true });
@@ -55,8 +59,8 @@ export default function BannersPage() {
     setFormOpen(true);
   }
 
-  function openEdit(banner: Banner) {
-    setEditing(banner);
+  function openEdit(row: BannerRow) {
+    setEditing(row);
     setFormOpen(true);
   }
 
@@ -125,7 +129,7 @@ export default function BannersPage() {
         title={t("banners.confirm.title")}
         description={
           deleting
-            ? `«${deleting.title.ru || deleting.to}» ${t("common.deleteWarnM")}`
+            ? `«${deleting.displayTitle}» ${t("common.deleteWarnM")}`
             : undefined
         }
         confirmLabel={t("common.delete")}

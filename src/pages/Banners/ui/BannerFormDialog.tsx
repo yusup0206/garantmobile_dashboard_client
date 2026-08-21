@@ -8,11 +8,15 @@ import { cn } from "@/lib/cn";
 import type {
   Banner,
   BannerInput,
-  BannerOverlay,
   BannerPlacement,
-  BannerStatusKey,
+  BannerLinkType,
 } from "@/services/banners/banners.types";
-import { BANNER_STATUS, OVERLAY_LABEL, PLACEMENT_LABEL } from "../lib/banners.helpers";
+import {
+  PLACEMENT_LABEL,
+  LINK_TYPE_LABEL,
+  PLACEMENTS,
+  LINK_TYPES,
+} from "../lib/banners.helpers";
 
 type BannerFormDialogProps = {
   open: boolean;
@@ -22,39 +26,43 @@ type BannerFormDialogProps = {
   pending?: boolean;
 };
 
-const PLACEMENTS: BannerPlacement[] = ["home", "category", "checkout"];
-const OVERLAYS: BannerOverlay[] = ["brand", "dark"];
-const STATUSES: BannerStatusKey[] = ["active", "paused", "draft"];
-
 type Draft = {
+  titleRu: string;
+  titleTk: string;
+  subtitleRu: string;
+  subtitleTk: string;
+  imageRu: string;
+  imageTk: string;
+  price: string;
+  oldPrice: string;
+  sortOrder: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
   placement: BannerPlacement;
-  order: number;
-  img: string;
-  kicker: { ru: string; tm: string };
-  title: { ru: string; tm: string };
-  ctaLabel: { ru: string; tm: string };
-  to: string;
-  overlay: BannerOverlay;
-  startsAt: string;
-  endsAt: string;
-  st: BannerStatusKey;
+  linkType: BannerLinkType;
+  linkId: string;
 };
 
 const EMPTY: Draft = {
-  placement: "home",
-  order: 1,
-  img: "",
-  kicker: { ru: "", tm: "" },
-  title: { ru: "", tm: "" },
-  ctaLabel: { ru: "", tm: "" },
-  to: "",
-  overlay: "brand",
-  startsAt: "",
-  endsAt: "",
-  st: "draft",
+  titleRu: "",
+  titleTk: "",
+  subtitleRu: "",
+  subtitleTk: "",
+  imageRu: "",
+  imageTk: "",
+  price: "0",
+  oldPrice: "0",
+  sortOrder: "0",
+  startDate: "",
+  endDate: "",
+  isActive: true,
+  placement: "main_slider",
+  linkType: "product",
+  linkId: "",
 };
 
-/** ISO → значение для <input type="datetime-local"> (первые 16 символов). */
+/** ISO → value for <input type="datetime-local"> (first 16 chars). */
 const toLocal = (iso: string | null): string => (iso ? iso.slice(0, 16) : "");
 
 export function BannerFormDialog({
@@ -66,62 +74,60 @@ export function BannerFormDialog({
 }: BannerFormDialogProps) {
   const t = useT();
   const [draft, setDraft] = useState<Draft>(EMPTY);
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setImgError(false);
     setDraft(
       banner
         ? {
+            titleRu: banner.titleRu,
+            titleTk: banner.titleTk,
+            subtitleRu: banner.subtitleRu,
+            subtitleTk: banner.subtitleTk,
+            imageRu: banner.imageRu,
+            imageTk: banner.imageTk,
+            price: String(banner.price ?? 0),
+            oldPrice: String(banner.oldPrice ?? 0),
+            sortOrder: String(banner.sortOrder ?? 0),
+            startDate: toLocal(banner.startDate),
+            endDate: toLocal(banner.endDate),
+            isActive: banner.isActive,
             placement: banner.placement,
-            order: banner.order,
-            img: banner.img,
-            kicker: { ...banner.kicker },
-            title: { ...banner.title },
-            ctaLabel: { ...banner.ctaLabel },
-            to: banner.to,
-            overlay: banner.overlay,
-            startsAt: toLocal(banner.startsAt),
-            endsAt: toLocal(banner.endsAt),
-            st: banner.st,
+            linkType: banner.linkType,
+            linkId: banner.linkId ?? "",
           }
         : EMPTY,
     );
   }, [open, banner]);
 
-  function setLoc(
-    field: "kicker" | "title" | "ctaLabel",
-    lang: "ru" | "tm",
-    value: string,
-  ) {
-    setDraft((d) => ({ ...d, [field]: { ...d[field], [lang]: value } }));
+  function set<K extends keyof Draft>(key: K, value: Draft[K]) {
+    setDraft((d) => ({ ...d, [key]: value }));
   }
 
   function submit() {
-    if (!draft.img.trim()) {
-      setImgError(true);
-      return;
-    }
     const input: BannerInput = {
+      titleRu: draft.titleRu.trim(),
+      titleTk: draft.titleTk.trim(),
+      subtitleRu: draft.subtitleRu.trim(),
+      subtitleTk: draft.subtitleTk.trim(),
+      imageRu: draft.imageRu.trim(),
+      imageTk: draft.imageTk.trim(),
+      price: Number(draft.price) || 0,
+      oldPrice: Number(draft.oldPrice) || 0,
+      sortOrder: Number(draft.sortOrder) || 0,
+      startDate: draft.startDate ? new Date(draft.startDate).toISOString() : null,
+      endDate: draft.endDate ? new Date(draft.endDate).toISOString() : null,
+      isActive: draft.isActive,
       placement: draft.placement,
-      order: draft.order,
-      img: draft.img.trim(),
-      kicker: draft.kicker,
-      title: draft.title,
-      ctaLabel: draft.ctaLabel,
-      to: draft.to.trim(),
-      overlay: draft.overlay,
-      startsAt: draft.startsAt ? new Date(draft.startsAt).toISOString() : null,
-      endsAt: draft.endsAt ? new Date(draft.endsAt).toISOString() : null,
-      st: draft.st,
+      linkType: draft.linkType,
+      linkId: draft.linkId.trim() || null,
     };
     onSubmit(input);
   }
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content className="max-w-lg">
+      <Dialog.Content className="max-w-xl">
         <Dialog.Title>
           {banner ? t("banners.dialog.edit") : t("banners.dialog.new")}
         </Dialog.Title>
@@ -132,123 +138,155 @@ export function BannerFormDialog({
             e.preventDefault();
             submit();
           }}
-          className="mt-4 flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1"
+          className="mt-4 flex max-h-[70vh] flex-col gap-4 overflow-y-auto pr-1"
         >
-          <Field
-            label={t("banners.form.img")}
-            error={imgError ? t("err.imgRequired") : undefined}
-          >
-            <ImageUploadField
-              value={draft.img}
-              invalid={imgError}
-              onChange={(url) => setDraft((d) => ({ ...d, img: url }))}
-            />
-          </Field>
-
+          {/* Titles */}
           <div className="grid grid-cols-2 gap-3">
             <Field label={t("banners.form.titleRu")}>
               <Input
-                value={draft.title.ru}
-                onChange={(e) => setLoc("title", "ru", e.target.value)}
+                value={draft.titleRu}
+                onChange={(e) => set("titleRu", e.target.value)}
+                placeholder="Заголовок (RU)"
               />
             </Field>
-            <Field label={t("banners.form.titleTm")}>
+            <Field label={t("banners.form.titleTk")}>
               <Input
-                value={draft.title.tm}
-                onChange={(e) => setLoc("title", "tm", e.target.value)}
+                value={draft.titleTk}
+                onChange={(e) => set("titleTk", e.target.value)}
+                placeholder="Заголовок (TK)"
               />
             </Field>
-            <Field label={t("banners.form.kickerRu")}>
+            <Field label={t("banners.form.subtitleRu")}>
               <Input
-                value={draft.kicker.ru}
-                onChange={(e) => setLoc("kicker", "ru", e.target.value)}
+                value={draft.subtitleRu}
+                onChange={(e) => set("subtitleRu", e.target.value)}
+                placeholder="Подзаголовок (RU)"
               />
             </Field>
-            <Field label={t("banners.form.kickerTm")}>
+            <Field label={t("banners.form.subtitleTk")}>
               <Input
-                value={draft.kicker.tm}
-                onChange={(e) => setLoc("kicker", "tm", e.target.value)}
-              />
-            </Field>
-            <Field label={t("banners.form.ctaRu")}>
-              <Input
-                value={draft.ctaLabel.ru}
-                onChange={(e) => setLoc("ctaLabel", "ru", e.target.value)}
-              />
-            </Field>
-            <Field label={t("banners.form.ctaTm")}>
-              <Input
-                value={draft.ctaLabel.tm}
-                onChange={(e) => setLoc("ctaLabel", "tm", e.target.value)}
+                value={draft.subtitleTk}
+                onChange={(e) => set("subtitleTk", e.target.value)}
+                placeholder="Подзаголовок (TK)"
               />
             </Field>
           </div>
 
-          <Field label={t("banners.form.to")}>
-            <Input
-              value={draft.to}
-              onChange={(e) => setDraft((d) => ({ ...d, to: e.target.value }))}
-              placeholder="/catalog?cat=audio · /product/5 · /brand/Apple"
-            />
-          </Field>
+          {/* Images */}
+          <div className="grid grid-cols-1 gap-3">
+            <Field label={t("banners.form.imageRu")}>
+              <ImageUploadField
+                value={draft.imageRu}
+                onChange={(url) => set("imageRu", url)}
+                placeholder="https://…"
+              />
+            </Field>
+            <Field label={t("banners.form.imageTk")}>
+              <ImageUploadField
+                value={draft.imageTk}
+                onChange={(url) => set("imageTk", url)}
+                placeholder="https://…"
+              />
+            </Field>
+          </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Segmented
-              label={t("form.placement")}
-              value={draft.placement}
-              options={PLACEMENTS.map((p) => ({
-                value: p,
-                label: t(PLACEMENT_LABEL[p]),
-              }))}
-              onChange={(v) =>
-                setDraft((d) => ({ ...d, placement: v as BannerPlacement }))
-              }
-            />
-            <Field label={t("banners.form.order")}>
+          {/* Prices */}
+          <div className="grid grid-cols-3 gap-3">
+            <Field label={t("banners.form.price")}>
               <Input
                 type="number"
                 min={0}
-                value={draft.order}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, order: Number(e.target.value) }))
-                }
+                value={draft.price}
+                onChange={(e) => set("price", e.target.value)}
+              />
+            </Field>
+            <Field label={t("banners.form.oldPrice")}>
+              <Input
+                type="number"
+                min={0}
+                value={draft.oldPrice}
+                onChange={(e) => set("oldPrice", e.target.value)}
+              />
+            </Field>
+            <Field label={t("banners.form.sortOrder")}>
+              <Input
+                type="number"
+                min={0}
+                value={draft.sortOrder}
+                onChange={(e) => set("sortOrder", e.target.value)}
               />
             </Field>
           </div>
 
+          {/* Placement */}
           <Segmented
-            label={t("banners.form.overlay")}
-            value={draft.overlay}
-            options={OVERLAYS.map((o) => ({ value: o, label: t(OVERLAY_LABEL[o]) }))}
-            onChange={(v) => setDraft((d) => ({ ...d, overlay: v as BannerOverlay }))}
+            label={t("form.placement")}
+            value={draft.placement}
+            options={PLACEMENTS.map((p) => ({ value: p, label: PLACEMENT_LABEL[p] }))}
+            onChange={(v) => set("placement", v as BannerPlacement)}
           />
 
+          {/* Link */}
+          <div className="grid grid-cols-2 gap-3">
+            <Segmented
+              label={t("banners.form.linkType")}
+              value={draft.linkType}
+              options={LINK_TYPES.map((lt) => ({
+                value: lt,
+                label: LINK_TYPE_LABEL[lt],
+              }))}
+              onChange={(v) => set("linkType", v as BannerLinkType)}
+            />
+            <Field label={t("banners.form.linkId")}>
+              <Input
+                value={draft.linkId}
+                onChange={(e) => set("linkId", e.target.value)}
+                placeholder="ID товара / категории / ..."
+              />
+            </Field>
+          </div>
+
+          {/* Schedule */}
           <div className="grid grid-cols-2 gap-3">
             <Field label={t("banners.form.startsAt")}>
               <Input
                 type="datetime-local"
-                value={draft.startsAt}
-                onChange={(e) => setDraft((d) => ({ ...d, startsAt: e.target.value }))}
+                value={draft.startDate}
+                onChange={(e) => set("startDate", e.target.value)}
               />
             </Field>
             <Field label={t("banners.form.endsAt")}>
               <Input
                 type="datetime-local"
-                value={draft.endsAt}
-                onChange={(e) => setDraft((d) => ({ ...d, endsAt: e.target.value }))}
+                value={draft.endDate}
+                onChange={(e) => set("endDate", e.target.value)}
               />
             </Field>
           </div>
 
-          <Segmented
-            label={t("form.status")}
-            value={draft.st}
-            options={STATUSES.map((s) => ({
-              value: s,
-              label: t(BANNER_STATUS[s].labelKey),
-            }))}
-            onChange={(v) => setDraft((d) => ({ ...d, st: v as BannerStatusKey }))}
-          />
+          {/* Active toggle */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={draft.isActive}
+              onClick={() => set("isActive", !draft.isActive)}
+              className={cn(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                draft.isActive ? "bg-brand" : "bg-muted/30",
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform",
+                  draft.isActive ? "translate-x-5" : "translate-x-0",
+                )}
+              />
+            </button>
+            <span className="text-sm font-medium text-ink">
+              {draft.isActive ? t("status.banner.active") : t("status.banner.paused")}
+            </span>
+          </div>
 
           <div className="mt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -296,15 +334,17 @@ function Segmented({
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-xs font-semibold text-ink/70">{label}</label>
-      <div className="inline-flex w-fit rounded-xl border border-line bg-canvas p-1">
+      <div className="flex flex-wrap gap-1.5">
         {options.map((o) => (
           <button
             key={o.value}
             type="button"
             onClick={() => onChange(o.value)}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
-              value === o.value ? "bg-brand text-white" : "text-muted hover:text-ink",
+              "rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors",
+              value === o.value
+                ? "border-brand bg-brand text-white"
+                : "border-line bg-canvas text-muted hover:text-ink",
             )}
           >
             {o.label}
