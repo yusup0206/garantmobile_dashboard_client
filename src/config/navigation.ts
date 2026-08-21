@@ -65,7 +65,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "nav.payments", to: "/payments", icon: CreditCard },
       { label: "nav.delivery", to: "/delivery", icon: Truck },
       // { label: "nav.drivers", to: "/drivers", icon: Bike },
-      // { label: "nav.tradein", to: "/tradein", icon: Repeat },
+      { label: "nav.tradein", to: "/tradein", icon: Repeat },
     ],
   },
   {
