@@ -84,14 +84,14 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "nav.units", to: "/units", icon: Store },
     ],
   },
-  // {
-  //   title: "nav.group.customers",
-  //   items: [
-  //     { label: "nav.customers", to: "/customers", icon: Users },
-  //     { label: "nav.reviews", to: "/reviews", icon: Star },
-  //     { label: "nav.chat", to: "/chat", icon: MessageSquare },
-  //   ],
-  // },
+  {
+    title: "nav.group.customers",
+    items: [
+      { label: "nav.customers", to: "/customers", icon: Users },
+      // { label: "nav.reviews", to: "/reviews", icon: Star },
+      // { label: "nav.chat", to: "/chat", icon: MessageSquare },
+    ],
+  },
   {
     title: "nav.group.marketing",
     items: [

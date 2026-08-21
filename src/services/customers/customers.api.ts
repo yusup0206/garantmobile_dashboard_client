@@ -1,40 +1,29 @@
-import { apiClient, mockDelay } from "@/services/api/apiClient";
-import { isApiEnabled } from "@/config/env";
+import { apiClient } from "@/services/api/apiClient";
 import { authToken } from "@/services/api/authToken";
-import { CUSTOMERS } from "@/data/customers.mock";
-import type { AdjustBonusInput, BonusTxn, Customer } from "./customers.types";
+import type {
+  Customer,
+  GetCustomersParams,
+  GetCustomersResponse,
+} from "./customers.types";
 
-/**
- * Customers directory. With a live backend it reads the staff `/customers`
- * endpoint and manages loyalty balances; otherwise the in-memory demo list
- * powers the page.
- */
+const BASE = "/customer";
 
-export function getCustomers(): Promise<Customer[]> {
-  if (isApiEnabled()) {
-    return apiClient<Customer[]>("/customers", { token: authToken() });
-  }
-  return mockDelay(CUSTOMERS.map((c) => ({ ...c })));
+export async function getCustomers(
+  params?: GetCustomersParams,
+): Promise<GetCustomersResponse> {
+  const qs = new URLSearchParams();
+  if (params?.page) qs.set("page", String(params.page));
+  if (params?.pageSize) qs.set("pageSize", String(params.pageSize));
+  if (params?.search) qs.set("search", params.search);
+  if (params?.filterType) qs.set("filterType", params.filterType);
+  const query = qs.toString();
+  const url = query ? `${BASE}/all?${query}` : `${BASE}/all`;
+  return apiClient<GetCustomersResponse>(url, { token: authToken() });
 }
 
-export function getCustomerBonuses(id: number): Promise<BonusTxn[]> {
-  if (isApiEnabled()) {
-    return apiClient<BonusTxn[]>(`/customers/${id}/bonuses`, { token: authToken() });
-  }
-  return mockDelay([]);
-}
-
-export function adjustCustomerBonus(
-  id: number,
-  input: AdjustBonusInput,
-): Promise<{ id: number; bonusBalance: number }> {
-  if (isApiEnabled()) {
-    return apiClient(`/customers/${id}/bonus/adjust`, {
-      method: "POST",
-      token: authToken(),
-      body: JSON.stringify(input),
-    });
-  }
-  const current = CUSTOMERS.find((c) => c.id === id)?.bonusBalance ?? 0;
-  return mockDelay({ id, bonusBalance: Math.max(0, current + input.delta) });
+export async function blockCustomer(customerId: string): Promise<void> {
+  await apiClient<void>(`${BASE}/block/${customerId}`, {
+    method: "POST",
+    token: authToken(),
+  });
 }

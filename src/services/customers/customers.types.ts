@@ -1,25 +1,33 @@
 export type CustomerTier = "vip" | "active" | "new";
 
+export type CustomerFilterType =
+  | "createdDate"
+  | "orderCount"
+  | "bonusBalance"
+  | "repeatCustomers"
+  | "newsForMonth";
+
 export type Customer = {
-  id: number;
+  id: string;
+  phone: string;
   name: string;
-  city: string;
-  orders: number;
-  spent: number;
+  email: string | null;
+  city: string | null;
   tier: CustomerTier;
   bonusBalance: number;
+  ordersCount: number;
+  theme?: string;
+  isBlocked: boolean;
 };
 
-export type BonusReason = "earn" | "spend" | "adjust" | "revoke" | "refund";
-
-export type BonusTxn = {
-  id: number;
-  delta: number;
-  reason: BonusReason;
-  orderNumber: string | null;
-  note: string | null;
-  date: string;
+export type GetCustomersParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  filterType?: CustomerFilterType;
 };
 
-/** Signed manual bonus correction against one customer. */
-export type AdjustBonusInput = { delta: number; note?: string };
+export type GetCustomersResponse = {
+  count: number;
+  customers: Customer[];
+};
