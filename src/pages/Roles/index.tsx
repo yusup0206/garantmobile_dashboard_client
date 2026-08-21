@@ -1,15 +1,15 @@
 import { useState, useMemo } from "react";
-import { Plus, Shield, Edit2, Trash2, ChevronDown, Search } from "lucide-react";
+import { Plus, Shield, Edit2, Trash2, ChevronDown } from "lucide-react";
 import { useT } from "@/i18n/useT";
 
 import { PageHeader } from "@/components/common/PageHeader";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import {
   useRoles,
@@ -93,32 +93,25 @@ export default function RolesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Роли и права"
         subtitle="Управление ролями и разграничение прав доступа пользователей"
         action={
-          <Button onClick={handleOpenCreate}>
-            <Plus className="mr-2 h-4 w-4" />
-            Создать роль
+          <Button size="sm" onClick={handleOpenCreate}>
+            <Plus className="h-4 w-4" />
+            {t("common.add")}
           </Button>
         }
       />
 
-      {/* Standard filter controls card */}
-      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-          <Search className="h-4 w-4" />
-          <span>Gözleg:</span>
-        </div>
-        <div className="w-full sm:w-72">
-          <Input
-            placeholder="Поиск по названию роли..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 text-sm"
-          />
-        </div>
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-end gap-4">
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Поиск по названию роли..."
+        />
       </Card>
 
       {isLoading ? (

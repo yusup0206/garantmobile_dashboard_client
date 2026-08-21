@@ -1,16 +1,15 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useLangStore } from "@/store/i18n.store";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card } from "@/components/ui/Card";
 import {
   useUnits,
   useCreateUnit,
@@ -18,6 +17,7 @@ import {
   useDeleteUnit,
 } from "@/services/units/useUnits";
 import type { Unit, UnitInput } from "@/services/units/units.types";
+import { Card } from "@/components/ui/Card";
 
 import { UnitCard } from "./ui/UnitCard";
 import { UnitFormDialog } from "./ui/UnitFormDialog";
@@ -75,31 +75,25 @@ export default function UnitsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={t("page.units.title")}
         subtitle={t("page.units.subtitle")}
         action={
           <Button size="sm" onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             {t("common.add")}
           </Button>
         }
       />
 
-      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-          <Search className="h-4 w-4" />
-          <span>Search:</span>
-        </div>
-        <div className="w-full sm:w-72">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search units…"
-            className="h-10 text-sm"
-          />
-        </div>
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-end gap-4">
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("common.search")}
+        />
       </Card>
 
       {isLoading ? (

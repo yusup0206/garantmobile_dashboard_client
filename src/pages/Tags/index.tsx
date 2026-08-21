@@ -1,17 +1,16 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
-import { Plus, Search, Tag as TagIcon, Pencil, Trash2 } from "lucide-react";
+import { Plus, Tag as TagIcon, Pencil, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Table } from "@/components/ui/Table";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Card } from "@/components/ui/Card";
 import {
   useTags,
   useCreateTag,
@@ -20,6 +19,7 @@ import {
 } from "@/services/tags/useTags";
 import { useBrands } from "@/services/brands/useBrands";
 import type { Tag, TagInput } from "@/services/tags/tags.types";
+import { Card } from "@/components/ui/Card";
 import { TagFormDialog } from "./ui/TagFormDialog";
 
 export default function TagsPage() {
@@ -87,49 +87,40 @@ export default function TagsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Теги"
         subtitle="Управление тегами для товаров и публикаций блога"
         action={
           <Button size="sm" onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             {t("common.add")}
           </Button>
         }
       />
 
-      {/* Standard filter controls card */}
+      {/* Unified Filter & Search Bar */}
       <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-          <Search className="h-4 w-4" />
-          <span>Gözleg we Filter:</span>
+        <div className="w-full sm:w-56">
+          <Select
+            value={selectedBrandId}
+            onChange={(e) => setSelectedBrandId(e.target.value)}
+            className="h-10 rounded-xl text-sm"
+          >
+            <option value="">— Все бренды —</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </Select>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-          <div className="w-full sm:w-64">
-            <Input
-              placeholder="Поиск по названию…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 text-sm"
-            />
-          </div>
-          <div className="w-full sm:w-48">
-            <Select
-              value={selectedBrandId}
-              onChange={(e) => setSelectedBrandId(e.target.value)}
-              className="h-10 text-sm"
-            >
-              <option value="">— Все бренды —</option>
-              {brands.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Поиск по названию…"
+        />
       </Card>
 
       {isLoading ? (

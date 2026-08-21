@@ -4,16 +4,17 @@ import { useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
+import { Card } from "@/components/ui/Card";
 import { usePagination } from "@/lib/usePagination";
 import { useCustomers, useBlockCustomer } from "@/services/customers/useCustomers";
 import type { Customer, CustomerFilterType } from "@/services/customers/customers.types";
 
-import { CustomersSearch } from "./ui/CustomersSearch";
 import { CustomersTable } from "./ui/CustomersTable";
 import { toRow, matches, FILTER_TABS, type CustomerRow } from "./lib/customers.helpers";
 
@@ -41,16 +42,16 @@ export default function CustomersPage() {
   const pg = usePagination(rows, 10, `${filter}-${query}`);
 
   function setQuery(value: string) {
-    const next: Record<string, string> = {};
-    if (value.trim()) next.q = value;
-    if (filter !== "all") next.filter = filter;
+    const next = new URLSearchParams(params);
+    if (!value.trim()) next.delete("q");
+    else next.set("q", value);
     setParams(next, { replace: true });
   }
 
   function setFilter(key: string) {
-    const next: Record<string, string> = {};
-    if (query.trim()) next.q = query;
-    if (key !== "all") next.filter = key;
+    const next = new URLSearchParams(params);
+    if (key === "all") next.delete("filter");
+    else next.set("filter", key);
     setParams(next, { replace: true });
   }
 
@@ -66,10 +67,17 @@ export default function CustomersPage() {
       <PageHeader
         title={t("page.customers.title")}
         subtitle={t("page.customers.subtitle")}
-        action={<CustomersSearch value={query} onChange={setQuery} />}
       />
 
-      <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t("customers.searchPlaceholder")}
+        />
+      </Card>
 
       {isLoading ? (
         <LoadingState />

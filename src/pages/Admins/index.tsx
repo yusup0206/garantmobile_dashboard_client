@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import {
   useAdmins,
@@ -90,30 +90,26 @@ export default function AdminsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={t("page.users.title")}
         subtitle={t("page.users.subtitle")}
         action={
-          <Button onClick={openAdd}>
-            <Plus className="mr-2 h-4 w-4" />
-            Добавить сотрудника
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="h-4 w-4" />
+            {t("common.add")}
           </Button>
         }
       />
 
-      {/* Standard filter controls card */}
+      {/* Unified Filter & Search Bar */}
       <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
-
-        <div className="w-full sm:w-72">
-          <Input
-            placeholder="Поиск (имя, телефон)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 text-sm"
-          />
-        </div>
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("common.search")}
+        />
       </Card>
 
       {isLoading ? (

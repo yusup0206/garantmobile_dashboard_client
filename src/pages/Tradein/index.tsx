@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
-import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
 import {
   useTradein,
   useUpdateTradeinStatus,
@@ -86,8 +86,8 @@ export default function TradeinPage() {
     updateUrlParams({ condition: key });
   }
 
-  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-    updateUrlParams({ search: e.target.value });
+  function setSearch(value: string) {
+    updateUrlParams({ search: value });
   }
 
   function setPage(p: number) {
@@ -114,13 +114,13 @@ export default function TradeinPage() {
         subtitle={t("page.tradein.subtitle")}
       />
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Filter and Search Bar — inside Card */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <FilterTabs tabs={FILTER_TABS} value={statusFilter} onChange={setStatusFilter} />
 
-          {/* Condition selector */}
-          <div className="flex items-center gap-1 rounded-xl border border-line bg-surface p-1">
+          {/* Condition pill filter */}
+          <div className="flex items-center gap-1 rounded-xl border border-line bg-canvas p-1">
             {CONDITION_OPTIONS.map((c) => (
               <button
                 key={c.value}
@@ -138,17 +138,12 @@ export default function TradeinPage() {
           </div>
         </div>
 
-        {/* Search input */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <Input
-            value={search}
-            onChange={handleSearchChange}
-            placeholder={t("tradein.searchPlaceholder")}
-            className="pl-9 text-xs"
-          />
-        </div>
-      </div>
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("tradein.searchPlaceholder")}
+        />
+      </Card>
 
       {isLoading ? (
         <LoadingState />

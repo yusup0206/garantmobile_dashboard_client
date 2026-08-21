@@ -5,12 +5,14 @@ import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import {
   usePromocodes,
   useCreatePromocode,
@@ -28,15 +30,17 @@ const PAGE_SIZE = 20;
 export default function PromocodesPage() {
   const t = useT();
 
-  // URL state: /promocodes?status=active — shareable & survives refresh.
+  // URL state: /promocodes?status=active&search=... — shareable & survives refresh.
   const [params, setParams] = useSearchParams();
   const filter = (params.get("status") ?? "all") as "all" | PromoStatusKey;
+  const search = params.get("search") ?? "";
   const page = Number(params.get("page") ?? "1");
 
   // Build query params for the API
   const queryParams = {
     page,
     pageSize: PAGE_SIZE,
+    ...(search.trim() ? { search: search.trim() } : {}),
     ...(filter !== "all"
       ? filter === "inactive"
         ? { isActive: false }
@@ -60,10 +64,19 @@ export default function PromocodesPage() {
   const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   function setFilter(key: string) {
-    setParams(
-      key === "all" ? {} : { status: key },
-      { replace: true },
-    );
+    const next = new URLSearchParams(params);
+    if (key === "all") next.delete("status");
+    else next.set("status", key);
+    next.delete("page");
+    setParams(next, { replace: true });
+  }
+
+  function setSearch(value: string) {
+    const next = new URLSearchParams(params);
+    if (!value.trim()) next.delete("search");
+    else next.set("search", value);
+    next.delete("page");
+    setParams(next, { replace: true });
   }
 
   function setPage(p: number) {
@@ -99,20 +112,27 @@ export default function PromocodesPage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={t("page.promocodes.title")}
         subtitle={t("page.promocodes.subtitle")}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
-            <Button size="sm" onClick={openAdd}>
-              <Plus className="h-4 w-4" />
-              {t("common.add")}
-            </Button>
-          </div>
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="h-4 w-4" />
+            {t("common.add")}
+          </Button>
         }
       />
+
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("common.search")}
+        />
+      </Card>
 
       {isLoading ? (
         <LoadingState />

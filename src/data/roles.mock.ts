@@ -1,4 +1,4 @@
-import type { RoleResponse } from "./roles.types";
+import type { RoleResponse } from "@/services/roles/roles.types";
 
 export const MOCK_ROLES: RoleResponse[] = [
   {

@@ -5,12 +5,14 @@ import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { usePagination } from "@/lib/usePagination";
 import {
   useBanners,
@@ -26,13 +28,16 @@ import { toRow, FILTER_TABS, type BannerRow } from "./lib/banners.helpers";
 
 export default function BannersPage() {
   const t = useT();
-  const { data, isLoading, isError, refetch } = useBanners();
+  const [params, setParams] = useSearchParams();
+  const filter = params.get("status") ?? "all";
+  const search = params.get("search") ?? "";
+
+  const { data, isLoading, isError, refetch } = useBanners({
+    search: search.trim() || undefined,
+  });
   const createBanner = useCreateBanner();
   const updateBanner = useUpdateBanner();
   const deleteBanner = useDeleteBanner();
-
-  const [params, setParams] = useSearchParams();
-  const filter = params.get("status") ?? "all";
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Banner | null>(null);
@@ -42,16 +47,34 @@ export default function BannersPage() {
     const list = Array.isArray(data)
       ? data
       : (data?.banners ?? []);
-    const all = list.map(toRow);
-    if (filter === "active") return all.filter((r) => r.isActive);
-    if (filter === "inactive") return all.filter((r) => !r.isActive);
+    let all = list.map(toRow);
+    if (filter === "active") all = all.filter((r) => r.isActive);
+    if (filter === "inactive") all = all.filter((r) => !r.isActive);
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      all = all.filter(
+        (r) =>
+          r.displayTitle.toLowerCase().includes(q) ||
+          r.displaySubtitle.toLowerCase().includes(q),
+      );
+    }
     return all;
-  }, [data, filter]);
+  }, [data, filter, search]);
 
-  const pg = usePagination(rows, 10, filter);
+  const pg = usePagination(rows, 10, `${filter}-${search}`);
 
   function setFilter(key: string) {
-    setParams(key === "all" ? {} : { status: key }, { replace: true });
+    const next = new URLSearchParams(params);
+    if (key === "all") next.delete("status");
+    else next.set("status", key);
+    setParams(next, { replace: true });
+  }
+
+  function setSearch(value: string) {
+    const next = new URLSearchParams(params);
+    if (!value.trim()) next.delete("search");
+    else next.set("search", value);
+    setParams(next, { replace: true });
   }
 
   function openAdd() {
@@ -86,15 +109,22 @@ export default function BannersPage() {
         title={t("page.banners.title")}
         subtitle={t("page.banners.subtitle")}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
-            <Button size="sm" onClick={openAdd}>
-              <Plus className="h-4 w-4" />
-              {t("common.add")}
-            </Button>
-          </div>
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="h-4 w-4" />
+            {t("common.add")}
+          </Button>
         }
       />
+
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t("common.search")}
+        />
+      </Card>
 
       {isLoading ? (
         <LoadingState />

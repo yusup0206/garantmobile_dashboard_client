@@ -3,12 +3,14 @@ import { useT } from "@/i18n/useT";
 import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
+import { SearchInput } from "@/components/common/SearchInput";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import {
   useProducts,
   useCreateProduct,
@@ -80,29 +82,29 @@ export default function ProductsPage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={t("page.products.title")}
         subtitle={t("page.products.subtitle")}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder={t("common.search")}
-              className="rounded-xl border border-line bg-canvas px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none"
-            />
-            <Button size="sm" onClick={openAdd}>
-              <Plus className="h-4 w-4" />
-              {t("common.add")}
-            </Button>
-          </div>
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="h-4 w-4" />
+            {t("common.add")}
+          </Button>
         }
       />
+
+      {/* Unified Filter & Search Bar */}
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-end gap-4">
+        <SearchInput
+          value={search}
+          onChange={(val) => {
+            setSearch(val);
+            setPage(1);
+          }}
+          placeholder={t("common.search")}
+        />
+      </Card>
 
       {isLoading ? (
         <LoadingState />
