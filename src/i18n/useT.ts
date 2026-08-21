@@ -23,8 +23,8 @@ export function useT(): TFunction {
   const lang = useLangStore((s) => s.lang);
   return useCallback(
     (key: TKey, vars?: Vars) => {
-      const dict = I18N[lang] as Record<TKey, string>;
-      return interpolate(dict[key] ?? I18N[DEFAULT_LANG][key] ?? key, vars);
+      const dict = (I18N[lang] ?? I18N[DEFAULT_LANG]) as Record<TKey, string>;
+      return interpolate(dict?.[key] ?? I18N[DEFAULT_LANG][key] ?? key, vars);
     },
     [lang],
   );

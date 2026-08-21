@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
 import type { RequestOptions } from "./api.types";
 
-import { useAuthStore } from "@/store/auth.store";
+import { useLangStore } from "@/store/i18n.store";
 
 /**
  * Thin fetch wrapper. Never call fetch directly from components — go through a
@@ -12,11 +12,13 @@ export async function apiClient<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   const { token, headers, ...rest } = options;
+  const currentLang = useLangStore.getState().lang;
 
   const response = await fetch(env.apiBaseUrl + endpoint, {
     ...rest,
     headers: {
       "Content-Type": "application/json",
+      "Accept-Language": currentLang,
       ...(token ? { Authorization: "Bearer " + token } : {}),
       ...headers,
     },
