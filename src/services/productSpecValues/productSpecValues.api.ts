@@ -16,12 +16,12 @@ type ApiResponse<T> = {
 };
 
 let mockStore: ProductSpecValue[] = [
-  { id: "v1", specId: "1", valueRu: "Красный", valueTm: "Gyzyl", sortOrder: 0 },
-  { id: "v2", specId: "1", valueRu: "Синий", valueTm: "Gök", sortOrder: 1 },
-  { id: "v3", specId: "1", valueRu: "Чёрный", valueTm: "Gara", sortOrder: 2 },
-  { id: "v4", specId: "2", valueRu: "64 ГБ", valueTm: "64 GB", sortOrder: 0 },
-  { id: "v5", specId: "2", valueRu: "128 ГБ", valueTm: "128 GB", sortOrder: 1 },
-  { id: "v6", specId: "2", valueRu: "256 ГБ", valueTm: "256 GB", sortOrder: 2 },
+  { id: "v1", specId: "1", valueRu: "Красный", valueTk: "Gyzyl", sortOrder: 0 },
+  { id: "v2", specId: "1", valueRu: "Синий", valueTk: "Gök", sortOrder: 1 },
+  { id: "v3", specId: "1", valueRu: "Чёрный", valueTk: "Gara", sortOrder: 2 },
+  { id: "v4", specId: "2", valueRu: "64 ГБ", valueTk: "64 GB", sortOrder: 0 },
+  { id: "v5", specId: "2", valueRu: "128 ГБ", valueTk: "128 GB", sortOrder: 1 },
+  { id: "v6", specId: "2", valueRu: "256 ГБ", valueTk: "256 GB", sortOrder: 2 },
 ];
 
 export async function getProductSpecValues(
@@ -53,7 +53,7 @@ export async function getProductSpecValues(
     filtered = filtered.filter(
       (v) =>
         v.valueRu.toLowerCase().includes(s) ||
-        v.valueTm.toLowerCase().includes(s),
+        v.valueTk.toLowerCase().includes(s),
     );
   }
   return mockDelay({ count: filtered.length, values: filtered });

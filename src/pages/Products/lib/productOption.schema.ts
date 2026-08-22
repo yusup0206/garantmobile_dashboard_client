@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const productOptionSchema = z.object({
   nameRu: z.string().min(1, "Название (RU) обязательно"),
-  nameTm: z.string().min(1, "Название (TM) обязательно"),
+  nameTk: z.string().min(1, "Название (TK) обязательно"),
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 

@@ -22,7 +22,7 @@ type ProductSpecValueFormDialogProps = {
 
 const EMPTY: ProductSpecValueFormValues = {
   valueRu: "",
-  valueTm: "",
+  valueTk: "",
   sortOrder: 0,
 };
 
@@ -50,7 +50,7 @@ export function ProductSpecValueFormDialog({
       specValue
         ? {
             valueRu: specValue.valueRu ?? "",
-            valueTm: specValue.valueTm ?? "",
+            valueTk: specValue.valueTk ?? "",
             sortOrder: specValue.sortOrder ?? 0,
           }
         : EMPTY,
@@ -81,10 +81,10 @@ export function ProductSpecValueFormDialog({
             />
           </Field>
 
-          <Field label="Значение (TM)" error={errors.valueTm?.message}>
+          <Field label="Значение (TK)" error={errors.valueTk?.message}>
             <Input
-              {...register("valueTm")}
-              invalid={!!errors.valueTm}
+              {...register("valueTk")}
+              invalid={!!errors.valueTk}
               placeholder="например: Gyzyl"
             />
           </Field>

@@ -48,9 +48,9 @@ export type HomeBlockInput = {
   kind: HomeBlockKind;
   visible: boolean;
   title?: string;
-  titleTm?: string;
+  titleTk?: string;
   subtitle?: string;
-  subtitleTm?: string;
+  subtitleTk?: string;
   categoryId?: number | null;
   props?: Record<string, unknown>;
 };

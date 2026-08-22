@@ -142,7 +142,7 @@ export default function ProductsPage() {
         title={t("products.confirm.title")}
         description={
           deleting
-            ? `«${deleting.nameRu || deleting.nameTm}» ${t("common.deleteWarnM")}`
+            ? `«${deleting.nameRu || deleting.nameTk}» ${t("common.deleteWarnM")}`
             : undefined
         }
         confirmLabel={t("common.delete")}

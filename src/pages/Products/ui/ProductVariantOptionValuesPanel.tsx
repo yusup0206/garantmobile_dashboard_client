@@ -31,11 +31,11 @@ import type { ProductVariant } from "@/services/productVariants/productVariants.
 type ResolvedValue = {
   id: string;
   valueRu: string;
-  valueTm: string;
+  valueTk: string;
   hex: string;
   sortOrder: number;
   optionNameRu: string;
-  optionNameTm: string;
+  optionNameTk: string;
 };
 
 type Props = {
@@ -81,11 +81,11 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
         map.set(v.id, {
           id: v.id,
           valueRu: v.valueRu,
-          valueTm: v.valueTm,
+          valueTk: v.valueTk,
           hex: v.hex,
           sortOrder: v.sortOrder,
           optionNameRu: opt.nameRu,
-          optionNameTm: opt.nameTm,
+          optionNameTk: opt.nameTk,
         });
       });
     });
@@ -109,14 +109,14 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
 
   function nameOf(v: ResolvedValue | undefined, lang: string) {
     if (!v) return "—";
-    return lang === "tm" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+    return lang === "tk" || lang === "tm" ? v.valueTk || v.valueRu : v.valueRu || v.valueTk;
   }
 
   function optionNameOf(v: ResolvedValue | undefined, lang: string) {
     if (!v) return "—";
-    return lang === "tm"
-      ? v.optionNameTm || v.optionNameRu
-      : v.optionNameRu || v.optionNameTm;
+    return lang === "tk" || lang === "tm"
+      ? v.optionNameTk || v.optionNameRu
+      : v.optionNameRu || v.optionNameTk;
   }
 
   function handleAttach() {
@@ -169,11 +169,11 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
   const grouped = useMemo(() => {
     const groups = new Map<string, { optionName: string; values: ResolvedValue[] }>();
     allValues.forEach((v) => {
-      const key = `${v.optionNameRu}|${v.optionNameTm}`;
+      const key = `${v.optionNameRu}|${v.optionNameTk}`;
       const optName =
         lang !== "ru"
-          ? v.optionNameTm || v.optionNameRu
-          : v.optionNameRu || v.optionNameTm;
+          ? v.optionNameTk || v.optionNameRu
+          : v.optionNameRu || v.optionNameTk;
       if (!groups.has(key)) groups.set(key, { optionName: optName, values: [] });
       groups.get(key)!.values.push(v);
     });
@@ -346,7 +346,7 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
                   <optgroup key={group.optionName} label={group.optionName}>
                     {group.values.map((v) => {
                       const label =
-                        lang === "ru" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+                        lang === "ru" ? v.valueTk || v.valueRu : v.valueRu || v.valueTk;
                       const alreadyLinked =
                         linkedIds.has(v.id) && v.id !== replacing?.optionValueId;
                       return (
@@ -411,7 +411,7 @@ export function ProductVariantOptionValuesPanel({ variant, productId, onBack }: 
                     <optgroup key={group.optionName} label={group.optionName}>
                       {group.values.map((v) => {
                         const label =
-                          lang === "ru" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+                          lang === "ru" ? v.valueTk || v.valueRu : v.valueRu || v.valueTk;
                         const alreadyLinked = linkedIds.has(v.id);
                         return (
                           <option key={v.id} value={v.id} disabled={alreadyLinked}>

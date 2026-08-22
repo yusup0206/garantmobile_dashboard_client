@@ -1,12 +1,12 @@
 export type ProductSpecDefinition = {
   id: string;
   nameRu: string;
-  nameTm: string;
+  nameTk: string;
 };
 
 export type ProductSpecDefinitionInput = {
   nameRu: string;
-  nameTm: string;
+  nameTk: string;
 };
 
 export type GetProductSpecDefinitionsParams = {

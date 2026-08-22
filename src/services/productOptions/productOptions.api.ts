@@ -20,14 +20,14 @@ let mockStore: ProductOption[] = [
     id: "opt_1",
     productId: "prod_1",
     nameRu: "Цвет",
-    nameTm: "Reňk",
+    nameTk: "Reňk",
     sortOrder: 1,
   },
   {
     id: "opt_2",
     productId: "prod_1",
     nameRu: "Размер",
-    nameTm: "Ölçeg",
+    nameTk: "Ölçeg",
     sortOrder: 2,
   },
 ];

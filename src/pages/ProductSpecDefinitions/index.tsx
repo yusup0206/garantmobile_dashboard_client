@@ -34,7 +34,7 @@ export default function ProductSpecDefinitionsPage() {
   const [search, setSearch] = useState("");
 
   const nameOf = (item: ProductSpecDefinition) =>
-    (lang as string) === "tm" ? item.nameTm || item.nameRu : item.nameRu || item.nameTm;
+    (lang as string) === "tk" ? item.nameTk || item.nameRu : item.nameRu || item.nameTk;
 
   const { data, isLoading, isError, refetch } = useProductSpecDefinitions({
     search,

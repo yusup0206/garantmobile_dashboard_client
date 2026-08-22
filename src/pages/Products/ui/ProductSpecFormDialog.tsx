@@ -84,11 +84,11 @@ export function ProductSpecFormDialog({
     setValue("specValueId", "", { shouldValidate: true });
   }
 
-  const defLabel = (item: { nameRu: string; nameTm: string }) =>
-    (lang as string) === "tm" ? item.nameTm || item.nameRu : item.nameRu || item.nameTm;
+  const defLabel = (item: { nameRu: string; nameTk: string }) =>
+    (lang as string) === "tk" ? item.nameTk || item.nameRu : item.nameRu || item.nameTk;
 
-  const valLabel = (item: { valueRu: string; valueTm: string }) =>
-    (lang as string) === "tm" ? item.valueTm || item.valueRu : item.valueRu || item.valueTm;
+  const valLabel = (item: { valueRu: string; valueTk: string }) =>
+    (lang as string) === "tk" ? item.valueTk || item.valueRu : item.valueRu || item.valueTk;
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useT } from "@/i18n/useT";
 import { useSearchParams } from "react-router-dom";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { FilterTabs } from "@/components/common/FilterTabs";
@@ -78,19 +78,13 @@ export default function DeliveryPage() {
         { onSuccess: () => setFormOpen(false) },
       );
     } else {
-      createDelivery.mutate(
-        { input: values },
-        { onSuccess: () => setFormOpen(false) },
-      );
+      createDelivery.mutate({ input: values }, { onSuccess: () => setFormOpen(false) });
     }
   }
 
   function confirmDelete() {
     if (!deleting) return;
-    deleteDelivery.mutate(
-      { id: deleting.id },
-      { onSuccess: () => setDeleting(null) },
-    );
+    deleteDelivery.mutate({ id: deleting.id }, { onSuccess: () => setDeleting(null) });
   }
 
   return (
@@ -125,11 +119,7 @@ export default function DeliveryPage() {
         <EmptyState title={t("delivery.empty")} />
       ) : (
         <>
-          <DeliveryTable
-            rows={pg.slice}
-            onEdit={openEdit}
-            onDelete={setDeleting}
-          />
+          <DeliveryTable rows={pg.slice} onEdit={openEdit} onDelete={setDeleting} />
           <Pagination
             page={pg.page}
             pageCount={pg.pageCount}

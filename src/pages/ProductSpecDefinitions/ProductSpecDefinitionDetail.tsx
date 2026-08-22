@@ -42,9 +42,9 @@ export default function ProductSpecDefinitionDetailPage() {
 
   const defName =
     definition
-      ? (lang as string) === "tm"
-        ? definition.nameTm || definition.nameRu
-        : definition.nameRu || definition.nameTm
+      ? (lang as string) === "tk"
+        ? definition.nameTk || definition.nameRu
+        : definition.nameRu || definition.nameTk
       : "…";
 
   // ── Spec values ──
@@ -67,7 +67,7 @@ export default function ProductSpecDefinitionDetailPage() {
   const [deleting, setDeleting] = useState<ProductSpecValue | null>(null);
 
   const valueOf = (v: ProductSpecValue) =>
-    (lang as string) === "tm" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+    (lang as string) === "tk" ? v.valueTk || v.valueRu : v.valueRu || v.valueTk;
 
   function openAdd() {
     setEditing(null);

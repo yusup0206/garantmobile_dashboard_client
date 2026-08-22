@@ -23,7 +23,7 @@ type ProductOptionFormDialogProps = {
 
 const EMPTY: ProductOptionFormValues = {
   nameRu: "",
-  nameTm: "",
+  nameTk: "",
   sortOrder: 0,
 };
 
@@ -51,7 +51,7 @@ export function ProductOptionFormDialog({
     if (option) {
       reset({
         nameRu: option.nameRu ?? "",
-        nameTm: option.nameTm ?? "",
+        nameTk: option.nameTk ?? "",
         sortOrder: option.sortOrder ?? 0,
       });
     } else {
@@ -81,10 +81,10 @@ export function ProductOptionFormDialog({
             />
           </Field>
 
-          <Field label="Название (TM)" error={errors.nameTm?.message}>
+          <Field label="Название (TK)" error={errors.nameTk?.message}>
             <Input
-              {...register("nameTm")}
-              invalid={!!errors.nameTm}
+              {...register("nameTk")}
+              invalid={!!errors.nameTk}
               placeholder="mysal: Reňk"
             />
           </Field>

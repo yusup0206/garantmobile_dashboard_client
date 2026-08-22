@@ -2,9 +2,9 @@
 export type Product = {
   id: string;
   nameRu: string;
-  nameTm: string;
+  nameTk: string;
   shortRu: string;
-  shortTm: string;
+  shortTk: string;
   photos: string[];
   stock: number;
   price: number;

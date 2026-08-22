@@ -56,7 +56,7 @@ describe("Products CRUD (integration)", () => {
 
     // Fill bilingual fields.
     const inputs = within(dialog).getAllByRole("textbox");
-    // nameRu, nameTm, shortRu, shortTm
+    // nameRu, nameTk, shortRu, shortTk
     await user.type(inputs[0], "QA Phone 42");
     await user.type(inputs[1], "QA Phone 42 TM");
     await user.type(inputs[2], "Short description");

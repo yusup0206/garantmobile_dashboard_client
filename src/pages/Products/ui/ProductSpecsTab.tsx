@@ -61,13 +61,13 @@ export function ProductSpecsTab({ productId }: ProductSpecsTabProps) {
   const defName = (defId: string) => {
     const d = definitions.find((item) => item.id === defId);
     if (!d) return defId || "—";
-    return (lang as string) === "tm" ? d.nameTm || d.nameRu : d.nameRu || d.nameTm;
+    return (lang as string) === "tk" ? d.nameTk || d.nameRu : d.nameRu || d.nameTk;
   };
 
   const valName = (valId: string) => {
     const v = allValues.find((item) => item.id === valId);
     if (!v) return valId || "—";
-    return (lang as string) === "tm" ? v.valueTm || v.valueRu : v.valueRu || v.valueTm;
+    return (lang as string) === "tk" ? v.valueTk || v.valueRu : v.valueRu || v.valueTk;
   };
 
   const specs = useMemo(() => {

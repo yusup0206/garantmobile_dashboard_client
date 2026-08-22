@@ -36,9 +36,9 @@ export function ProductsTable({ rows, onEdit, onDelete }: ProductsTableProps) {
               <div className="truncate font-display font-bold text-ink hover:text-brand transition-colors">
                 {r.displayName}
               </div>
-              {(r.shortRu || r.shortTm) && (
+              {(r.shortRu || r.shortTk) && (
                 <div className="truncate text-xs text-muted">
-                  {r.shortRu || r.shortTm}
+                  {r.shortRu || r.shortTk}
                 </div>
               )}
             </Table.Cell>

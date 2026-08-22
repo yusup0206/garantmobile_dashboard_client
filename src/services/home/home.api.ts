@@ -19,9 +19,9 @@ function toInput(block: HomeBlock) {
     kind: block.kind,
     visible: block.visible,
     title: block.title.ru,
-    titleTm: block.title.tm,
+    titleTk: block.title.tm,
     subtitle: block.subtitle.ru,
-    subtitleTm: block.subtitle.tm,
+    subtitleTk: block.subtitle.tm,
     categoryId: block.categoryId ?? undefined,
     props: block.props,
   };

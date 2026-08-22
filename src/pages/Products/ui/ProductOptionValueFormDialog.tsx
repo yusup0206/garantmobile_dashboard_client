@@ -23,7 +23,7 @@ type Props = {
 
 const EMPTY: ProductOptionValueFormValues = {
   valueRu: "",
-  valueTm: "",
+  valueTk: "",
   hex: "",
   sortOrder: 0,
 };
@@ -55,7 +55,7 @@ export function ProductOptionValueFormDialog({
     if (value) {
       reset({
         valueRu: value.valueRu ?? "",
-        valueTm: value.valueTm ?? "",
+        valueTk: value.valueTk ?? "",
         hex: value.hex ?? "",
         sortOrder: value.sortOrder ?? 0,
       });
@@ -87,10 +87,10 @@ export function ProductOptionValueFormDialog({
             />
           </Field>
 
-          <Field label="Значение (TM)" error={errors.valueTm?.message}>
+          <Field label="Значение (TK)" error={errors.valueTk?.message}>
             <Input
-              {...register("valueTm")}
-              invalid={!!errors.valueTm}
+              {...register("valueTk")}
+              invalid={!!errors.valueTk}
               placeholder="mysal: Gyzyl"
             />
           </Field>

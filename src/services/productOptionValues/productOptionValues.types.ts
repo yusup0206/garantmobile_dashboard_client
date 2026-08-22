@@ -2,7 +2,7 @@ export type ProductOptionValue = {
   id: string;
   optionId: string;
   valueRu: string;
-  valueTm: string;
+  valueTk: string;
   hex: string;
   sortOrder: number;
 };
@@ -10,7 +10,7 @@ export type ProductOptionValue = {
 export type ProductOptionValueInput = {
   optionId: string;
   valueRu: string;
-  valueTm: string;
+  valueTk: string;
   hex: string;
   sortOrder: number;
 };

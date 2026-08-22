@@ -33,9 +33,9 @@ export function ProductOptionValuesPanel({ option, onBack }: Props) {
   const lang = useLangStore((s) => s.lang);
 
   const optionName =
-    (lang as string) === "tm"
-      ? option.nameTm || option.nameRu
-      : option.nameRu || option.nameTm;
+    (lang as string) === "tk"
+      ? option.nameTk || option.nameRu
+      : option.nameRu || option.nameTk;
 
   const {
     data: valuesData,
@@ -58,9 +58,9 @@ export function ProductOptionValuesPanel({ option, onBack }: Props) {
   const [deleting, setDeleting] = useState<ProductOptionValue | null>(null);
 
   function valueNameOf(item: ProductOptionValue) {
-    return (lang as string) === "tm"
-      ? item.valueTm || item.valueRu
-      : item.valueRu || item.valueTm;
+    return (lang as string) === "tk"
+      ? item.valueTk || item.valueRu
+      : item.valueRu || item.valueTk;
   }
 
   function openAdd() {
@@ -81,7 +81,7 @@ export function ProductOptionValuesPanel({ option, onBack }: Props) {
           input: {
             optionId: option.id,
             valueRu: vals.valueRu,
-            valueTm: vals.valueTm,
+            valueTk: vals.valueTk,
             hex: vals.hex ?? "",
             sortOrder: vals.sortOrder,
           },
@@ -93,7 +93,7 @@ export function ProductOptionValuesPanel({ option, onBack }: Props) {
         {
           optionId: option.id,
           valueRu: vals.valueRu,
-          valueTm: vals.valueTm,
+          valueTk: vals.valueTk,
           hex: vals.hex ?? "",
           sortOrder: vals.sortOrder,
         },

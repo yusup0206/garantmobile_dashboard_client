@@ -2,14 +2,14 @@ export type ProductSpecValue = {
   id: string;
   specId: string;
   valueRu: string;
-  valueTm: string;
+  valueTk: string;
   sortOrder: number;
 };
 
 export type ProductSpecValueInput = {
   specId: string;
   valueRu: string;
-  valueTm: string;
+  valueTk: string;
   sortOrder: number;
 };
 

@@ -95,11 +95,6 @@ export default function FaqPage() {
       {/* Standard filter controls card */}
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-            <Filter className="h-4 w-4" />
-            <span>Filterler:</span>
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             <div>
               <Input

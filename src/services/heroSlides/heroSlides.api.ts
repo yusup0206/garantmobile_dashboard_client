@@ -14,11 +14,11 @@ import type { HeroSlide, HeroSlideInput } from "./heroSlides.types";
 function toBody(input: HeroSlideInput) {
   return {
     tag: input.tag.ru,
-    tagTm: input.tag.tm,
+    tagTk: input.tag.tm,
     title: input.title.ru,
-    titleTm: input.title.tm,
+    titleTk: input.title.tm,
     subtitle: input.subtitle.ru,
-    subtitleTm: input.subtitle.tm,
+    subtitleTk: input.subtitle.tm,
     price: input.price,
     oldPrice: input.old,
     img: input.img,

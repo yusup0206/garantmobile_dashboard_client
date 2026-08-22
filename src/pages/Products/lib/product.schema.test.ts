@@ -5,9 +5,9 @@ describe("productSchema", () => {
   it("accepts a valid product and coerces numeric strings", () => {
     const res = productSchema.safeParse({
       nameRu: "iPhone 15 Pro",
-      nameTm: "iPhone 15 Pro",
+      nameTk: "iPhone 15 Pro",
       shortRu: "Смартфон Apple",
-      shortTm: "Apple smartfony",
+      shortTk: "Apple smartfony",
       price: "34500",
       oldPrice: "36000",
       stock: "24",
@@ -27,9 +27,9 @@ describe("productSchema", () => {
   it("rejects a too-short name", () => {
     const res = productSchema.safeParse({
       nameRu: "x",
-      nameTm: "iPhone 15 Pro",
+      nameTk: "iPhone 15 Pro",
       shortRu: "Short",
-      shortTm: "Short",
+      shortTk: "Short",
       price: 100,
       oldPrice: 0,
       stock: 1,
@@ -44,9 +44,9 @@ describe("productSchema", () => {
     expect(
       productSchema.safeParse({
         nameRu: "Товар",
-        nameTm: "Haryt",
+        nameTk: "Haryt",
         shortRu: "Короткое",
-        shortTm: "Gysga",
+        shortTk: "Gysga",
         price: -1,
         oldPrice: 0,
         stock: 1,
@@ -58,9 +58,9 @@ describe("productSchema", () => {
     expect(
       productSchema.safeParse({
         nameRu: "Товар",
-        nameTm: "Haryt",
+        nameTk: "Haryt",
         shortRu: "Короткое",
-        shortTm: "Gysga",
+        shortTk: "Gysga",
         price: 1,
         oldPrice: 0,
         stock: 1.5,
@@ -74,9 +74,9 @@ describe("productSchema", () => {
   it("rejects missing brand, category or unit ID", () => {
     const res = productSchema.safeParse({
       nameRu: "Товар",
-      nameTm: "Haryt",
+      nameTk: "Haryt",
       shortRu: "Короткое",
-      shortTm: "Gysga",
+      shortTk: "Gysga",
       price: 1,
       oldPrice: 0,
       stock: 1,

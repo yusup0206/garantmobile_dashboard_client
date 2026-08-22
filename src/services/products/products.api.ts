@@ -18,9 +18,9 @@ let store: Product[] = [
   {
     id: "prod_1",
     nameRu: "iPhone 15 Pro",
-    nameTm: "iPhone 15 Pro",
+    nameTk: "iPhone 15 Pro",
     shortRu: "Смартфон Apple",
-    shortTm: "Apple smartfony",
+    shortTk: "Apple smartfony",
     photos: [],
     stock: 10,
     price: 15000,
@@ -32,9 +32,9 @@ let store: Product[] = [
   {
     id: "prod_2",
     nameRu: "Samsung Galaxy S24",
-    nameTm: "Samsung Galaxy S24",
+    nameTk: "Samsung Galaxy S24",
     shortRu: "Смартфон Samsung",
-    shortTm: "Samsung smartfony",
+    shortTk: "Samsung smartfony",
     photos: [],
     stock: 5,
     price: 12000,
@@ -86,7 +86,7 @@ export async function getProducts(
   if (params?.search) {
     const q = params.search.toLowerCase();
     filtered = filtered.filter(
-      (p) => p.nameRu.toLowerCase().includes(q) || p.nameTm.toLowerCase().includes(q),
+      (p) => p.nameRu.toLowerCase().includes(q) || p.nameTk.toLowerCase().includes(q),
     );
   }
   if (params?.brandId) {

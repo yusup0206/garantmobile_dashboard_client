@@ -25,7 +25,7 @@ type ProductSpecDefinitionFormDialogProps = {
 
 const EMPTY: ProductSpecDefinitionFormValues = {
   nameRu: "",
-  nameTm: "",
+  nameTk: "",
 };
 
 export function ProductSpecDefinitionFormDialog({
@@ -52,7 +52,7 @@ export function ProductSpecDefinitionFormDialog({
       definition
         ? {
             nameRu: definition.nameRu ?? "",
-            nameTm: definition.nameTm ?? "",
+            nameTk: definition.nameTk ?? "",
           }
         : EMPTY,
     );
@@ -82,10 +82,10 @@ export function ProductSpecDefinitionFormDialog({
             />
           </Field>
 
-          <Field label="Название (TM)" error={errors.nameTm?.message}>
+          <Field label="Название (TK)" error={errors.nameTk?.message}>
             <Input
-              {...register("nameTm")}
-              invalid={!!errors.nameTm}
+              {...register("nameTk")}
+              invalid={!!errors.nameTk}
               placeholder="например: Reňk"
             />
           </Field>

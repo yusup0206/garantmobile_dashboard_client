@@ -12,7 +12,7 @@ export type ProductRow = Product & {
 export function toRow(p: Product): ProductRow {
   return {
     ...p,
-    displayName: p.nameRu || p.nameTm,
+    displayName: p.nameRu || p.nameTk,
     priceFmt: money(p.price),
     oldPriceFmt: p.oldPrice > 0 ? money(p.oldPrice) : "",
     stockFmt: p.stock > 0 ? fmt(p.stock) + " шт" : "—",

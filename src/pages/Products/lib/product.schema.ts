@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const productSchema = z.object({
   nameRu: z.string().min(2, "err.nameMin2"),
-  nameTm: z.string().min(2, "err.nameMin2"),
+  nameTk: z.string().min(2, "err.nameMin2"),
   shortRu: z.string().min(1, "err.required"),
-  shortTm: z.string().min(1, "err.required"),
+  shortTk: z.string().min(1, "err.required"),
   price: z.coerce.number().min(0, "products.err.price"),
   oldPrice: z.coerce.number().min(0, "products.err.price"),
   stock: z.coerce.number().int("err.int").min(0, "products.err.stock"),

@@ -28,9 +28,9 @@ export default function ProductDetailPage() {
 
   const productName =
     product
-      ? (lang as string) === "tm"
-        ? product.nameTm || product.nameRu
-        : product.nameRu || product.nameTm
+      ? (lang as string) === "tk"
+        ? product.nameTk || product.nameRu
+        : product.nameRu || product.nameTk
       : "Товар";
 
   const tabs: { key: TabKey; label: string; icon: typeof Sliders }[] = [
@@ -62,7 +62,7 @@ export default function ProductDetailPage() {
               </h1>
             </div>
             <p className="text-sm text-muted">
-              {product?.shortRu || product?.shortTm || "Детальная информация о товаре"}
+              {product?.shortRu || product?.shortTk || "Детальная информация о товаре"}
             </p>
           </div>
         </div>

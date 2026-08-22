@@ -54,9 +54,9 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
   const [selectedOption, setSelectedOption] = useState<ProductOption | null>(null);
 
   function nameOf(item: ProductOption) {
-    return (lang as string) === "tm"
-      ? item.nameTm || item.nameRu
-      : item.nameRu || item.nameTm;
+    return (lang as string) === "tk"
+      ? item.nameTk || item.nameRu
+      : item.nameRu || item.nameTk;
   }
 
   function openAdd() {
@@ -77,7 +77,7 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
           input: {
             productId,
             nameRu: values.nameRu,
-            nameTm: values.nameTm,
+            nameTk: values.nameTk,
             sortOrder: values.sortOrder,
           },
         },
@@ -88,7 +88,7 @@ export function ProductOptionsTab({ productId }: ProductOptionsTabProps) {
         {
           productId,
           nameRu: values.nameRu,
-          nameTm: values.nameTm,
+          nameTk: values.nameTk,
           sortOrder: values.sortOrder,
         },
         { onSuccess: () => setFormOpen(false) },

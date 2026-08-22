@@ -2,14 +2,14 @@ export type ProductOption = {
   id: string;
   productId: string;
   nameRu: string;
-  nameTm: string;
+  nameTk: string;
   sortOrder: number;
 };
 
 export type ProductOptionInput = {
   productId: string;
   nameRu: string;
-  nameTm: string;
+  nameTk: string;
   sortOrder: number;
 };
 

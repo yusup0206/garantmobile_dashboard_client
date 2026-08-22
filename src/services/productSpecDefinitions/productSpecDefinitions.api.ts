@@ -16,9 +16,9 @@ export type ApiResponse<T> = {
 };
 
 let mockStore: ProductSpecDefinition[] = [
-  { id: "1", nameRu: "Цвет", nameTm: "Reňk" },
-  { id: "2", nameRu: "Память", nameTm: "Ýat" },
-  { id: "3", nameRu: "Размер экрана", nameTm: "Ekran ölçegi" },
+  { id: "1", nameRu: "Цвет", nameTk: "Reňk" },
+  { id: "2", nameRu: "Память", nameTk: "Ýat" },
+  { id: "3", nameRu: "Размер экрана", nameTk: "Ekran ölçegi" },
 ];
 
 export async function getProductSpecDefinitions(
@@ -46,7 +46,7 @@ export async function getProductSpecDefinitions(
     filtered = filtered.filter(
       (item) =>
         item.nameRu.toLowerCase().includes(s) ||
-        item.nameTm.toLowerCase().includes(s),
+        item.nameTk.toLowerCase().includes(s),
     );
   }
   return mockDelay({

@@ -26,9 +26,9 @@ type ProductFormDialogProps = {
 
 const EMPTY: ProductFormValues = {
   nameRu: "",
-  nameTm: "",
+  nameTk: "",
   shortRu: "",
-  shortTm: "",
+  shortTk: "",
   price: 0,
   oldPrice: 0,
   stock: 0,
@@ -71,9 +71,9 @@ export function ProductFormDialog({
     if (product) {
       reset({
         nameRu: product.nameRu,
-        nameTm: product.nameTm,
+        nameTk: product.nameTk,
         shortRu: product.shortRu,
-        shortTm: product.shortTm,
+        shortTk: product.shortTk,
         price: product.price,
         oldPrice: product.oldPrice,
         stock: product.stock,
@@ -90,9 +90,9 @@ export function ProductFormDialog({
   function handleFormSubmit(values: ProductFormValues) {
     onSubmit({
       nameRu: values.nameRu,
-      nameTm: values.nameTm,
+      nameTk: values.nameTk,
       shortRu: values.shortRu,
-      shortTm: values.shortTm,
+      shortTk: values.shortTk,
       price: values.price,
       oldPrice: values.oldPrice,
       stock: values.stock,
@@ -132,16 +132,16 @@ export function ProductFormDialog({
               />
             </Field>
             <Field
-              label={t("form.nameTm")}
+              label={t("form.nameTk")}
               error={
-                errors.nameTm?.message
-                  ? t(errors.nameTm.message as TKey)
+                errors.nameTk?.message
+                  ? t(errors.nameTk.message as TKey)
                   : undefined
               }
             >
               <Input
-                {...register("nameTm")}
-                invalid={!!errors.nameTm}
+                {...register("nameTk")}
+                invalid={!!errors.nameTk}
                 placeholder="iPhone 15 Pro"
               />
             </Field>
@@ -164,16 +164,16 @@ export function ProductFormDialog({
               />
             </Field>
             <Field
-              label={t("form.shortTm")}
+              label={t("form.shortTk")}
               error={
-                errors.shortTm?.message
-                  ? t(errors.shortTm.message as TKey)
+                errors.shortTk?.message
+                  ? t(errors.shortTk.message as TKey)
                   : undefined
               }
             >
               <Input
-                {...register("shortTm")}
-                invalid={!!errors.shortTm}
+                {...register("shortTk")}
+                invalid={!!errors.shortTk}
                 placeholder="Gysgaça beýan"
               />
             </Field>
