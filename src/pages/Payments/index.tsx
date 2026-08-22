@@ -78,19 +78,13 @@ export default function PaymentsPage() {
         { onSuccess: () => setFormOpen(false) },
       );
     } else {
-      createPayment.mutate(
-        { input: values },
-        { onSuccess: () => setFormOpen(false) },
-      );
+      createPayment.mutate({ input: values }, { onSuccess: () => setFormOpen(false) });
     }
   }
 
   function confirmDelete() {
     if (!deleting) return;
-    deletePayment.mutate(
-      { id: deleting.id },
-      { onSuccess: () => setDeleting(null) },
-    );
+    deletePayment.mutate({ id: deleting.id }, { onSuccess: () => setDeleting(null) });
   }
 
   return (
@@ -100,7 +94,6 @@ export default function PaymentsPage() {
         subtitle={t("page.payments.subtitle")}
         action={
           <div className="flex items-center gap-3">
-            <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
             <Button size="sm" onClick={openAdd}>
               <Plus className="mr-2 h-4 w-4" />
               {t("common.add")}
@@ -110,15 +103,13 @@ export default function PaymentsPage() {
       />
 
       <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-          <Search className="h-4 w-4" />
-          <span>Gözleg:</span>
-        </div>
+        <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
+
         <div className="w-full sm:w-72">
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск по названию…"
+            placeholder={t("payments.search")}
             className="h-10 text-sm"
           />
         </div>
@@ -154,9 +145,11 @@ export default function PaymentsPage() {
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title="Удалить способ оплаты?"
+        title={t("payments.confirm.title")}
         description={
-          deleting ? `«${deleting.titleRu || deleting.titleTk}» ${t("common.deleteWarnM")}` : undefined
+          deleting
+            ? `«${deleting.titleRu || deleting.titleTk}» ${t("common.deleteWarnM")}`
+            : undefined
         }
         confirmLabel={t("common.delete")}
         danger

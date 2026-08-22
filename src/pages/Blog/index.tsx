@@ -108,7 +108,7 @@ export default function BlogPage() {
       <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
         <SearchInput
-          placeholder="Поиск по статьям…"
+          placeholder={t("blog.search")}
           value={search}
           onChange={setSearch}
         />

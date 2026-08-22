@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { Card } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Select";
 import {
   useTradein,
   useUpdateTradeinStatus,
@@ -38,7 +39,8 @@ export default function TradeinPage() {
   // URL state: /tradein?status=new&condition=all&page=1&search=...
   const [params, setParams] = useSearchParams();
   const statusFilter = (params.get("status") ?? "all") as "all" | TradeinStatusKey;
-  const conditionFilter = (params.get("condition") ?? "all") as "all" | TradeinConditionKey;
+  const conditionFilter = (params.get("condition") ?? "all") as
+    "all" | TradeinConditionKey;
   const search = params.get("search") ?? "";
   const page = Number(params.get("page") ?? "1");
 
@@ -59,7 +61,8 @@ export default function TradeinPage() {
 
   const rawList = Array.isArray(data) ? data : (data?.tradeIn ?? []);
   const rows = rawList.map(toRow);
-  const totalCount = !Array.isArray(data) && data?.count !== undefined ? data.count : rows.length;
+  const totalCount =
+    !Array.isArray(data) && data?.count !== undefined ? data.count : rows.length;
   const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   function updateUrlParams(updates: Record<string, string | null>) {
@@ -109,32 +112,30 @@ export default function TradeinPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={t("page.tradein.title")}
-        subtitle={t("page.tradein.subtitle")}
-      />
+      <PageHeader title={t("page.tradein.title")} subtitle={t("page.tradein.subtitle")} />
 
       {/* Filter and Search Bar — inside Card */}
       <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
-          <FilterTabs tabs={FILTER_TABS} value={statusFilter} onChange={setStatusFilter} />
+          <FilterTabs
+            tabs={FILTER_TABS}
+            value={statusFilter}
+            onChange={setStatusFilter}
+          />
 
-          {/* Condition pill filter */}
-          <div className="flex items-center gap-1 rounded-xl border border-line bg-canvas p-1">
-            {CONDITION_OPTIONS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => setConditionFilter(c.value)}
-                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                  conditionFilter === c.value
-                    ? "bg-brand text-white shadow-sm"
-                    : "text-muted hover:text-ink"
-                }`}
-              >
-                {t(c.labelKey)}
-              </button>
-            ))}
+          {/* Condition select filter */}
+          <div className="w-full sm:w-44">
+            <Select
+              value={conditionFilter}
+              onChange={(e) => setConditionFilter(e.target.value as "all" | TradeinConditionKey)}
+              className="h-10 rounded-xl text-sm"
+            >
+              {CONDITION_OPTIONS.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {t(c.labelKey)}
+                </option>
+              ))}
+            </Select>
           </div>
         </div>
 

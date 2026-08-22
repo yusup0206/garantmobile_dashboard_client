@@ -95,8 +95,8 @@ export default function RolesPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Роли и права"
-        subtitle="Управление ролями и разграничение прав доступа пользователей"
+        title={t("page.roles.title")}
+        subtitle={t("page.roles.subtitle")}
         action={
           <Button size="sm" onClick={handleOpenCreate}>
             <Plus className="h-4 w-4" />
@@ -110,7 +110,7 @@ export default function RolesPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Поиск по названию роли..."
+          placeholder={t("roles.search")}
         />
       </Card>
 
@@ -119,7 +119,7 @@ export default function RolesPage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : filteredRoles.length === 0 ? (
-        <EmptyState title="Роли не найдены" />
+        <EmptyState title={t("roles.empty")} />
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {filteredRoles.map((role) => {
@@ -141,9 +141,9 @@ export default function RolesPage() {
                         {role.name}
                       </h3>
                       <p className="text-xs text-muted">
-                        Создан:{" "}
+                        {t("roles.info.created")}{" "}
                         {role.created ? new Date(role.created).toLocaleDateString() : "—"}{" "}
-                        • Права: {writeCount} полный доступ, {readonlyCount} чтение
+                        • {t("roles.info.permissions")} {writeCount} {t("roles.info.fullAccess")}, {readonlyCount} {t("roles.info.readonly")}
                       </p>
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default function RolesPage() {
                       size="sm"
                       onClick={() => setExpandedId(isExpanded ? null : role.id)}
                     >
-                      <span>Права ({role.permissions?.length ?? 0})</span>
+                      <span>{t("roles.btn.showPermissions")} ({role.permissions?.length ?? 0})</span>
                       <ChevronDown
                         className={`ml-1 h-4 w-4 transition-transform ${
                           isExpanded ? "rotate-180" : ""
@@ -216,10 +216,10 @@ export default function RolesPage() {
         onOpenChange={(open) => {
           if (!open) setDeletingId(null);
         }}
-        title="Удаление роли"
-        description="Вы действительно хотите удалить эту роль? Действие нельзя отменить."
-        confirmLabel="Удалить"
-        cancelLabel="Отмена"
+        title={t("roles.confirm.title")}
+        description={t("roles.confirm.desc")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
         danger
         pending={deleteMutation.isPending}
         onConfirm={handleConfirmDelete}

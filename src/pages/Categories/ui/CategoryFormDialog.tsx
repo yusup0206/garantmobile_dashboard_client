@@ -8,7 +8,6 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ImageUpload } from "@/components/ui/ImageUpload";
-import { cn } from "@/lib/cn";
 import type {
   Category,
   CategoryInput,
@@ -85,14 +84,14 @@ export function CategoryFormDialog({
           className="mt-4 flex flex-col gap-3"
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Название (RU)" error={errors.nameRu?.message ? t(errors.nameRu?.message as TKey) : undefined}>
+            <Field label={t("categories.field.nameRu")} error={errors.nameRu?.message ? t(errors.nameRu?.message as TKey) : undefined}>
               <Input
                 {...register("nameRu")}
                 invalid={!!errors.nameRu}
                 placeholder="Смартфоны"
               />
             </Field>
-            <Field label="Название (TK)" error={errors.nameTk?.message ? t(errors.nameTk?.message as TKey) : undefined}>
+            <Field label={t("categories.field.nameTk")} error={errors.nameTk?.message ? t(errors.nameTk?.message as TKey) : undefined}>
               <Input
                 {...register("nameTk")}
                 invalid={!!errors.nameTk}
@@ -107,11 +106,11 @@ export function CategoryFormDialog({
           
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ImageUpload
-              label="Иконка"
+              label={t("categories.field.icon")}
               value={icon}
               onChange={(url) => setValue("icon", url, { shouldValidate: true })}
             />
-            <Field label="Порядок сортировки">
+            <Field label={t("categories.field.sortOrder")}>
               <Input type="number" min={0} {...register("sortOrder")} />
             </Field>
           </div>
@@ -124,7 +123,7 @@ export function CategoryFormDialog({
               className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
             />
             <label htmlFor="homepageShow" className="text-sm font-medium text-ink cursor-pointer">
-              Показывать на главной странице
+              {t("categories.field.homepageShow")}
             </label>
           </div>
 

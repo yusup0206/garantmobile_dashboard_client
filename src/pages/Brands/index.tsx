@@ -77,16 +77,12 @@ export default function BrandsPage() {
       />
 
       {/* Standard filter controls card */}
-      <Card className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted font-medium text-sm shrink-0">
-          <Search className="h-4 w-4" />
-          <span>Gözleg:</span>
-        </div>
+      <Card className="p-4 flex flex-col sm:flex-row items-center justify-end gap-4">
         <div className="w-full sm:w-72">
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск по названию…"
+            placeholder={t("brands.search")}
             className="h-10 text-sm"
           />
         </div>

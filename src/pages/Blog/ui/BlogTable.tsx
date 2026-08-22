@@ -19,9 +19,9 @@ export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
       <Table.Header>
         <Table.Row>
           <Table.Head>{t("form.heading")}</Table.Head>
-          <Table.Head>Тег</Table.Head>
+          <Table.Head>{t("blog.col.tag")}</Table.Head>
           <Table.Head>{t("form.date")}</Table.Head>
-          <Table.Head className="text-right">Время чтения</Table.Head>
+          <Table.Head className="text-right">{t("blog.col.readingTime")}</Table.Head>
           <Table.Head>{t("form.status")}</Table.Head>
           <Table.Head className="text-right">{t("common.actions")}</Table.Head>
         </Table.Row>
@@ -64,7 +64,7 @@ export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
             <Table.Cell className="whitespace-nowrap text-right font-display font-bold text-ink">
               <span className="inline-flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5 text-muted" />
-                {r.readingTime ?? 0} мин
+                {r.readingTime ?? 0} {t("blog.readingTimeUnit")}
               </span>
             </Table.Cell>
             <Table.Cell>
@@ -76,7 +76,7 @@ export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
                   type="button"
                   onClick={() => onEdit(r)}
                   className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                  aria-label={"Редактировать " + (r.titleRu || r.titleTk)}
+                  aria-label={t("common.edit") + " " + (r.titleRu || r.titleTk)}
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
@@ -84,7 +84,7 @@ export function BlogTable({ rows, onEdit, onDelete }: BlogTableProps) {
                   type="button"
                   onClick={() => onDelete(r)}
                   className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                  aria-label={"Удалить " + (r.titleRu || r.titleTk)}
+                  aria-label={t("common.delete") + " " + (r.titleRu || r.titleTk)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

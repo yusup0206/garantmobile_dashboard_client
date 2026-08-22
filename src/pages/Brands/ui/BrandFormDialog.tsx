@@ -79,12 +79,12 @@ export function BrandFormDialog({
           </Field>
 
           <ImageUpload
-            label="Логотип"
+            label={t("brands.field.logo")}
             value={logo}
             onChange={(url) => setValue("logo", url, { shouldValidate: true })}
           />
 
-          <Field label="Описание">
+          <Field label={t("brands.field.description")}>
             <textarea
               {...register("description")}
               rows={3}
@@ -93,7 +93,7 @@ export function BrandFormDialog({
             />
           </Field>
 
-          <Field label="Порядок сортировки">
+          <Field label={t("brands.field.sortOrder")}>
             <Input
               type="number"
               min={0}
@@ -110,7 +110,7 @@ export function BrandFormDialog({
               className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
             />
             <label htmlFor="homepageShow" className="text-sm font-medium text-ink cursor-pointer">
-              Показывать на главной странице
+              {t("brands.field.homepageShow")}
             </label>
           </div>
 

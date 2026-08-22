@@ -89,8 +89,8 @@ export default function TagsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Теги"
-        subtitle="Управление тегами для товаров и публикаций блога"
+        title={t("page.tags.title")}
+        subtitle={t("page.tags.subtitle")}
         action={
           <Button size="sm" onClick={openAdd}>
             <Plus className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function TagsPage() {
             onChange={(e) => setSelectedBrandId(e.target.value)}
             className="h-10 rounded-xl text-sm"
           >
-            <option value="">— Все бренды —</option>
+            <option value="">{t("tags.allBrands")}</option>
             {brands.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -119,7 +119,7 @@ export default function TagsPage() {
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Поиск по названию…"
+          placeholder={t("tags.search")}
         />
       </Card>
 
@@ -128,14 +128,14 @@ export default function TagsPage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : tagsList.length === 0 ? (
-        <EmptyState title="Теги не найдены" />
+        <EmptyState title={t("tags.empty")} />
       ) : (
         <Table containerClassName="rounded-2xl border border-line bg-surface">
           <Table.Header>
             <Table.Row>
-              <Table.Head>Название (RU)</Table.Head>
-              <Table.Head>Название (TK)</Table.Head>
-              <Table.Head>Бренд</Table.Head>
+              <Table.Head>{t("tags.col.nameRu")}</Table.Head>
+              <Table.Head>{t("tags.col.nameTk")}</Table.Head>
+              <Table.Head>{t("tags.col.brand")}</Table.Head>
               <Table.Head className="text-right">{t("common.actions")}</Table.Head>
             </Table.Row>
           </Table.Header>
@@ -164,7 +164,7 @@ export default function TagsPage() {
                       type="button"
                       onClick={() => openEdit(tag)}
                       className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                      aria-label={"Редактировать " + tag.nameRu}
+                      aria-label={t("common.edit") + " " + tag.nameRu}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
@@ -172,7 +172,7 @@ export default function TagsPage() {
                       type="button"
                       onClick={() => setDeleting(tag)}
                       className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                      aria-label={"Удалить " + tag.nameRu}
+                      aria-label={t("common.delete") + " " + tag.nameRu}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -195,10 +195,10 @@ export default function TagsPage() {
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title="Удалить тег?"
+        title={t("tags.confirm.title")}
         description={
           deleting
-            ? `Вы действительно хотите удалить тег «${deleting.nameRu}»?`
+            ? `${t("tags.confirm.desc")} «${deleting.nameRu}»?`
             : undefined
         }
         confirmLabel={t("common.delete")}

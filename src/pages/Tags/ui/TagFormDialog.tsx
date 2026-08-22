@@ -63,24 +63,24 @@ export function TagFormDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className="max-w-md">
-        <Dialog.Title>{tag ? "Редактировать тег" : "Новый тег"}</Dialog.Title>
-        <Dialog.Description>Заполните названия тега и привязку к бренду.</Dialog.Description>
+        <Dialog.Title>{tag ? t("tags.dialog.edit") : t("tags.dialog.new")}</Dialog.Title>
+        <Dialog.Description>{t("tags.dialog.desc")}</Dialog.Description>
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex flex-col gap-3"
         >
-          <Field label="Название (RU)" error={errors.nameRu?.message ? t(errors.nameRu?.message as TKey) : undefined}>
+          <Field label={t("tags.field.nameRu")} error={errors.nameRu?.message ? t(errors.nameRu?.message as TKey) : undefined}>
             <Input {...register("nameRu")} invalid={!!errors.nameRu} placeholder="Новинки" />
           </Field>
 
-          <Field label="Название (TK)" error={errors.nameTk?.message ? t(errors.nameTk?.message as TKey) : undefined}>
+          <Field label={t("tags.field.nameTk")} error={errors.nameTk?.message ? t(errors.nameTk?.message as TKey) : undefined}>
             <Input {...register("nameTk")} invalid={!!errors.nameTk} placeholder="Täzelikler" />
           </Field>
 
-          <Field label="Бренд (опционально)">
+          <Field label={t("tags.field.brand")}>
             <Select {...register("brandId")} disabled={brandsLoading}>
-              <option value="">— Без бренда —</option>
+              <option value="">{t("tags.noBrand")}</option>
               {brands.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}

@@ -137,10 +137,10 @@ export default function AdminsPage() {
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title="Удалить сотрудника"
+        title={t("admins.confirm.title")}
         description={
           deleting
-            ? `Вы действительно хотите удалить сотрудника «${deleting.name}»?`
+            ? `${t("admins.confirm.desc")} «${deleting.name}»?`
             : undefined
         }
         confirmLabel={t("common.delete")}

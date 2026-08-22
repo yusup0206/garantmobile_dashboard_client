@@ -17,10 +17,10 @@ export function PaymentsTable({ rows, onEdit, onDelete }: PaymentsTableProps) {
     <Table className="min-w-[720px]" containerClassName="rounded-2xl border border-line bg-surface">
       <Table.Header>
         <Table.Row>
-          <Table.Head>Название</Table.Head>
-          <Table.Head>Описание</Table.Head>
-          <Table.Head>Процент / Бонус</Table.Head>
-          <Table.Head>Переплата</Table.Head>
+          <Table.Head>{t("payments.col.name")}</Table.Head>
+          <Table.Head>{t("payments.col.description")}</Table.Head>
+          <Table.Head>{t("payments.col.percentBonus")}</Table.Head>
+          <Table.Head>{t("payments.col.overpayment")}</Table.Head>
           <Table.Head>{t("form.status")}</Table.Head>
           <Table.Head className="text-right">{t("common.actions")}</Table.Head>
         </Table.Row>
@@ -43,11 +43,11 @@ export function PaymentsTable({ rows, onEdit, onDelete }: PaymentsTableProps) {
             <Table.Cell className="whitespace-nowrap text-muted">
               {String(r.isOverpayment) === "true" ? (
                 <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600">
-                  Да
+                  {t("payments.overpayment.yes")}
                 </span>
               ) : (
                 <span className="inline-flex items-center rounded-md bg-zinc-500/10 px-2 py-0.5 text-xs font-medium text-zinc-500">
-                  Нет
+                  {t("payments.overpayment.no")}
                 </span>
               )}
             </Table.Cell>

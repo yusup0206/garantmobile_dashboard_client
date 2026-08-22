@@ -63,18 +63,18 @@ export function ProductSpecDefinitionFormDialog({
       <Dialog.Content className="max-w-md">
         <Dialog.Title>
           {definition
-            ? "Редактировать спецификацию"
-            : "Новая спецификация"}
+            ? t("spec.dialog.edit")
+            : t("spec.dialog.new")}
         </Dialog.Title>
         <Dialog.Description>
-          Укажите название спецификации на русском и туркменском языках.
+          {t("spec.dialog.desc")}
         </Dialog.Description>
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex flex-col gap-3"
         >
-          <Field label="Название (RU)" error={errors.nameRu?.message}>
+          <Field label={t("spec.field.nameRu")} error={errors.nameRu?.message}>
             <Input
               {...register("nameRu")}
               invalid={!!errors.nameRu}
@@ -82,7 +82,7 @@ export function ProductSpecDefinitionFormDialog({
             />
           </Field>
 
-          <Field label="Название (TK)" error={errors.nameTk?.message}>
+          <Field label={t("spec.field.nameTk")} error={errors.nameTk?.message}>
             <Input
               {...register("nameTk")}
               invalid={!!errors.nameTk}

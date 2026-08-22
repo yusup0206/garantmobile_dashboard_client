@@ -82,24 +82,24 @@ export function DeliveryFormDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className="max-w-lg">
         <Dialog.Title>
-          {deliveryType ? "Редактировать способ доставки" : "Новый способ доставки"}
+          {deliveryType ? t("delivery.dialog.edit") : t("delivery.dialog.new")}
         </Dialog.Title>
-        <Dialog.Description>Заполните параметры и цены способа доставки.</Dialog.Description>
+        <Dialog.Description>{t("delivery.dialog.desc")}</Dialog.Description>
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex max-h-[75vh] flex-col gap-3 overflow-y-auto pr-1"
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Название (RU)" error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
+            <Field label={t("delivery.field.titleRu")} error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
               <Input {...register("titleRu")} invalid={!!errors.titleRu} placeholder="Курьерская доставка" />
             </Field>
-            <Field label="Название (TK)" error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
+            <Field label={t("delivery.field.titleTk")} error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
               <Input {...register("titleTk")} invalid={!!errors.titleTk} placeholder="Kuryer eltip bermek" />
             </Field>
           </div>
 
-          <Field label="Описание (RU)">
+          <Field label={t("delivery.field.descriptionRu")}>
             <textarea
               {...register("descriptionRu")}
               rows={2}
@@ -108,7 +108,7 @@ export function DeliveryFormDialog({
             />
           </Field>
 
-          <Field label="Описание (TK)">
+          <Field label={t("delivery.field.descriptionTk")}>
             <textarea
               {...register("descriptionTk")}
               rows={2}
@@ -118,30 +118,30 @@ export function DeliveryFormDialog({
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Стоимость (TMT)">
+            <Field label={t("delivery.field.price")}>
               <Input type="number" min={0} {...register("price")} invalid={!!errors.price} />
             </Field>
-            <Field label="Срок доставки">
+            <Field label={t("delivery.field.deliveryTime")}>
               <Input {...register("deliveryTime")} placeholder="1-2 дня" />
             </Field>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Бесплатно от (сумма)">
+            <Field label={t("delivery.field.freeFrom")}>
               <Input {...register("freeFrom")} placeholder="500 TMT" />
             </Field>
-            <Field label="Скидка при выборе (%)">
+            <Field label={t("delivery.field.discount")}>
               <Input type="number" min={0} {...register("discountForMethod")} />
             </Field>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ImageUpload
-              label="Иконка"
+              label={t("delivery.field.icon")}
               value={icon}
               onChange={(url) => setValue("icon", url, { shouldValidate: true })}
             />
-            <Field label="Порядок сортировки">
+            <Field label={t("delivery.field.sortOrder")}>
               <Input type="number" min={0} {...register("sortOrder")} />
             </Field>
           </div>
@@ -155,7 +155,7 @@ export function DeliveryFormDialog({
                 className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
               />
               <label htmlFor="isSelfPickup" className="text-sm font-medium text-ink cursor-pointer">
-                Самовывоз
+                {t("delivery.field.isSelfPickup")}
               </label>
             </div>
 
@@ -167,7 +167,7 @@ export function DeliveryFormDialog({
                 className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
               />
               <label htmlFor="isActive" className="text-sm font-medium text-ink cursor-pointer">
-                Активен
+                {t("delivery.field.isActive")}
               </label>
             </div>
           </div>

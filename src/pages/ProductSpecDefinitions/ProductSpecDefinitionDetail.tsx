@@ -120,7 +120,7 @@ export default function ProductSpecDefinitionDetailPage() {
               {defName}
             </h1>
             <p className="mt-0.5 text-sm text-muted">
-              Значения спецификации
+              {t("specValue.subtitle")}
             </p>
           </div>
         </div>
@@ -134,13 +134,13 @@ export default function ProductSpecDefinitionDetailPage() {
       <Card className="flex flex-col items-center justify-between gap-4 p-4 sm:flex-row">
         <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-muted">
           <Search className="h-4 w-4" />
-          <span>Поиск:</span>
+          <span>{t("common.search")}</span>
         </div>
         <div className="w-full sm:w-72">
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск по значению…"
+            placeholder={t("specValue.search")}
             className="h-10 text-sm"
           />
         </div>
@@ -152,14 +152,14 @@ export default function ProductSpecDefinitionDetailPage() {
       ) : isError ? (
         <ErrorState onRetry={() => refetchValues()} />
       ) : values.length === 0 ? (
-        <EmptyState title="Значения не найдены" />
+        <EmptyState title={t("specValue.empty")} />
       ) : (
         <Card className="overflow-hidden p-0">
           <Table>
             <Table.Header>
               <Table.Row>
                 <Table.Head>{t("form.name")}</Table.Head>
-                <Table.Head className="text-right w-28">Порядок</Table.Head>
+                <Table.Head className="text-right w-28">{t("specValue.col.sortOrder")}</Table.Head>
                 <Table.Head className="text-right">
                   {t("common.actions")}
                 </Table.Head>
@@ -180,7 +180,7 @@ export default function ProductSpecDefinitionDetailPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => openEdit(v)}
-                        title="Редактировать"
+                        title={t("common.edit")}
                       >
                         <Edit2 className="h-4 w-4 text-muted" />
                       </Button>
@@ -188,7 +188,7 @@ export default function ProductSpecDefinitionDetailPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleting(v)}
-                        title="Удалить"
+                        title={t("common.delete")}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
@@ -214,10 +214,10 @@ export default function ProductSpecDefinitionDetailPage() {
       <ConfirmDialog
         open={!!deleting}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title="Удалить значение?"
+        title={t("specValue.confirm.title")}
         description={
           deleting
-            ? `Вы действительно хотите удалить "${valueOf(deleting)}"?`
+            ? `${t("tags.confirm.desc")} "${valueOf(deleting)}"?`
             : undefined
         }
         confirmLabel={t("common.delete")}

@@ -16,12 +16,12 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
     <Table className="min-w-[800px]" containerClassName="rounded-2xl border border-line bg-surface">
       <Table.Header>
         <Table.Row>
-          <Table.Head>Название</Table.Head>
-          <Table.Head>Тип</Table.Head>
-          <Table.Head>Стоимость</Table.Head>
-          <Table.Head>Срок доставки</Table.Head>
-          <Table.Head>Скидка / Бесплатно от</Table.Head>
-          <Table.Head>Порядок</Table.Head>
+          <Table.Head>{t("delivery.col.name")}</Table.Head>
+          <Table.Head>{t("delivery.col.type")}</Table.Head>
+          <Table.Head>{t("delivery.col.cost")}</Table.Head>
+          <Table.Head>{t("delivery.col.time")}</Table.Head>
+          <Table.Head>{t("delivery.col.discountFree")}</Table.Head>
+          <Table.Head>{t("delivery.col.order")}</Table.Head>
           <Table.Head>{t("form.status")}</Table.Head>
           <Table.Head className="text-right">{t("common.actions")}</Table.Head>
         </Table.Row>
@@ -56,17 +56,17 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
               {String(r.isSelfPickup) === "true" || r.isSelfPickup === true ? (
                 <span className="inline-flex items-center gap-1 rounded-md bg-purple-50 px-2 py-0.5 font-medium text-xs text-purple-700 border border-purple-200">
                   <Store className="h-3 w-3" />
-                  Самовывоз
+                  {t("delivery.type.selfPickup")}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-medium text-xs text-blue-700 border border-blue-200">
                   <Truck className="h-3 w-3" />
-                  Доставка
+                  {t("delivery.type.courier")}
                 </span>
               )}
             </Table.Cell>
             <Table.Cell className="whitespace-nowrap font-display font-bold text-ink">
-              {Number(r.price) === 0 ? "Бесплатно" : `${r.price} TMT`}
+              {Number(r.price) === 0 ? t("delivery.price.free") : `${r.price} TMT`}
             </Table.Cell>
             <Table.Cell className="whitespace-nowrap text-muted">
               {r.deliveryTime ? (
@@ -83,11 +83,11 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
                 {r.discountForMethod > 0 ? (
                   <span className="inline-flex items-center gap-0.5 text-emerald-600 font-semibold">
                     <Percent className="h-3 w-3" />
-                    Скидка {r.discountForMethod}%
+                    {t("delivery.discount.label")} {r.discountForMethod}%
                   </span>
                 ) : null}
                 {r.freeFrom ? (
-                  <p className="text-muted">Бесплатно от: {r.freeFrom}</p>
+                  <p className="text-muted">{t("delivery.freeFrom.label")} {r.freeFrom}</p>
                 ) : null}
                 {!r.discountForMethod && !r.freeFrom ? "—" : null}
               </div>
@@ -101,11 +101,11 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
             <Table.Cell>
               {String(r.isActive) === "true" || r.isActive === true ? (
                 <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                  Активен
+                  {t("delivery.status.active")}
                 </span>
               ) : (
                 <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
-                  Неактивен
+                  {t("delivery.status.inactive")}
                 </span>
               )}
             </Table.Cell>
@@ -115,7 +115,7 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
                   type="button"
                   onClick={() => onEdit(r)}
                   className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                  aria-label={"Редактировать " + (r.titleRu || r.titleTk)}
+                  aria-label={t("common.edit") + " " + (r.titleRu || r.titleTk)}
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
@@ -123,7 +123,7 @@ export function DeliveryTable({ rows, onEdit, onDelete }: DeliveryTableProps) {
                   type="button"
                   onClick={() => onDelete(r)}
                   className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                  aria-label={"Удалить " + (r.titleRu || r.titleTk)}
+                  aria-label={t("common.delete") + " " + (r.titleRu || r.titleTk)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

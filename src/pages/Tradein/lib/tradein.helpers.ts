@@ -1,4 +1,5 @@
 import type { FilterTab } from "@/components/common/FilterTabs";
+import type { TKey } from "@/i18n/dict";
 import { TRADEIN_STATUS, TRADEIN_CONDITIONS } from "@/data/tradein.mock";
 import type {
   TradeinItem,
@@ -70,7 +71,7 @@ export const FILTER_TABS: FilterTab[] = [
   { key: "rejected", label: "tradein.filter.rejected" },
 ];
 
-export const CONDITION_OPTIONS: { value: string; labelKey: string }[] = [
+export const CONDITION_OPTIONS: { value: string; labelKey: TKey }[] = [
   { value: "all", labelKey: "tradein.condition.all" },
   { value: "excellent", labelKey: "tradein.condition.excellent" },
   { value: "good", labelKey: "tradein.condition.good" },

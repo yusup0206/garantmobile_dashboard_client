@@ -23,9 +23,9 @@ export function AdminsTable({
       <Table.Header>
         <Table.Row>
           <Table.Head>{t("form.staffMember")}</Table.Head>
-          <Table.Head>Телефон</Table.Head>
+          <Table.Head>{t("admins.col.phone")}</Table.Head>
           <Table.Head>{t("E-mail")}</Table.Head>
-          <Table.Head>Роли</Table.Head>
+          <Table.Head>{t("admins.col.roles")}</Table.Head>
           <Table.Head>{t("form.status")}</Table.Head>
           {canWrite ? (
             <Table.Head className="text-right">
@@ -63,8 +63,8 @@ export function AdminsTable({
                       type="button"
                       onClick={() => onEdit(r)}
                       className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-canvas hover:text-ink"
-                      aria-label={"Редактировать " + r.name}
-                      title="Редактировать"
+                      aria-label={t("common.edit") + " " + r.name}
+                      title={t("common.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
@@ -74,8 +74,8 @@ export function AdminsTable({
                       type="button"
                       onClick={() => onDelete(r)}
                       className="grid h-8 w-8 place-items-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                      aria-label={"Удалить " + r.name}
-                      title="Удалить"
+                      aria-label={t("common.delete") + " " + r.name}
+                      title={t("common.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

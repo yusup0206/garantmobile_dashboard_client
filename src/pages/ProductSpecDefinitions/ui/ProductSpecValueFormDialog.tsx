@@ -62,18 +62,18 @@ export function ProductSpecValueFormDialog({
       <Dialog.Content className="max-w-md">
         <Dialog.Title>
           {specValue
-            ? "Редактировать значение"
-            : "Новое значение"}
+            ? t("specValue.dialog.edit")
+            : t("specValue.dialog.new")}
         </Dialog.Title>
         <Dialog.Description>
-          Укажите значение спецификации на русском и туркменском языках.
+          {t("specValue.dialog.desc")}
         </Dialog.Description>
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex flex-col gap-3"
         >
-          <Field label="Значение (RU)" error={errors.valueRu?.message}>
+          <Field label={t("specValue.field.valueRu")} error={errors.valueRu?.message}>
             <Input
               {...register("valueRu")}
               invalid={!!errors.valueRu}
@@ -81,7 +81,7 @@ export function ProductSpecValueFormDialog({
             />
           </Field>
 
-          <Field label="Значение (TK)" error={errors.valueTk?.message}>
+          <Field label={t("specValue.field.valueTk")} error={errors.valueTk?.message}>
             <Input
               {...register("valueTk")}
               invalid={!!errors.valueTk}
@@ -89,7 +89,7 @@ export function ProductSpecValueFormDialog({
             />
           </Field>
 
-          <Field label="Порядок сортировки" error={errors.sortOrder?.message}>
+          <Field label={t("specValue.field.sortOrder")} error={errors.sortOrder?.message}>
             <Input
               type="number"
               {...register("sortOrder")}

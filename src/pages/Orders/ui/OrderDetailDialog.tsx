@@ -167,7 +167,8 @@ export function OrderDetailDialog({
               </div>
               {activeOrder.paymentStatus && (
                 <div className="mt-1 text-xs text-muted">
-                  Статус: <span className="font-medium text-ink">{activeOrder.paymentStatus}</span>
+                  {t("orders.detail.paymentStatus")}{" "}
+                  <span className="font-medium text-ink">{activeOrder.paymentStatus}</span>
                 </div>
               )}
             </div>
@@ -183,7 +184,7 @@ export function OrderDetailDialog({
                 </div>
                 {activeOrder.promoDiscountValue && (
                   <div className="mt-1 text-xs text-muted">
-                    Скидка: {activeOrder.promoDiscountValue}{" "}
+                    {t("orders.detail.promoDiscount")} {activeOrder.promoDiscountValue}{" "}
                     {activeOrder.promoDiscountType === "PERCENTAGE" ? "%" : "m"}
                   </div>
                 )}
@@ -213,7 +214,7 @@ export function OrderDetailDialog({
             <div className="mt-2 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
               {items.length === 0 ? (
                 <div className="p-4 text-center text-xs text-muted">
-                  Нет товаров в заказе
+                  {t("orders.detail.noItems")}
                 </div>
               ) : (
                 items.map((it) => {
@@ -292,18 +293,18 @@ export function OrderDetailDialog({
           {/* Timeline */}
           <div className="space-y-1 text-xs text-muted">
             <div className="flex justify-between">
-              <span>Создан:</span>
+              <span>{t("orders.detail.created")}</span>
               <span>{formatDate(activeOrder.created)}</span>
             </div>
             {activeOrder.confirmedAt && (
               <div className="flex justify-between">
-                <span>Подтверждён:</span>
+                <span>{t("orders.detail.confirmed")}</span>
                 <span>{formatDate(activeOrder.confirmedAt)}</span>
               </div>
             )}
             {activeOrder.cancelledAt && (
               <div className="flex justify-between text-rose-500">
-                <span>Отменён:</span>
+                <span>{t("orders.detail.cancelled")}</span>
                 <span>{formatDate(activeOrder.cancelledAt)}</span>
               </div>
             )}

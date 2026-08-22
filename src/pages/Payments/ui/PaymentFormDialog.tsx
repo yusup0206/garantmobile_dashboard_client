@@ -78,24 +78,24 @@ export function PaymentFormDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className="max-w-lg">
         <Dialog.Title>
-          {paymentType ? "Редактировать способ оплаты" : "Новый способ оплаты"}
+          {paymentType ? t("payments.dialog.edit") : t("payments.dialog.new")}
         </Dialog.Title>
-        <Dialog.Description>Заполните параметры и условия способа оплаты.</Dialog.Description>
+        <Dialog.Description>{t("payments.dialog.desc")}</Dialog.Description>
 
         <form
           onSubmit={handleSubmit((values) => onSubmit(values))}
           className="mt-4 flex max-h-[75vh] flex-col gap-3 overflow-y-auto pr-1"
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Название (RU)" error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
+            <Field label={t("payments.field.titleRu")} error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
               <Input {...register("titleRu")} invalid={!!errors.titleRu} placeholder="Наличный расчет" />
             </Field>
-            <Field label="Название (TK)" error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
+            <Field label={t("payments.field.titleTk")} error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
               <Input {...register("titleTk")} invalid={!!errors.titleTk} placeholder="Nagt töleg" />
             </Field>
           </div>
 
-          <Field label="Описание (RU)">
+          <Field label={t("payments.field.descriptionRu")}>
             <textarea
               {...register("descriptionRu")}
               rows={2}
@@ -104,7 +104,7 @@ export function PaymentFormDialog({
             />
           </Field>
 
-          <Field label="Описание (TK)">
+          <Field label={t("payments.field.descriptionTk")}>
             <textarea
               {...register("descriptionTk")}
               rows={2}
@@ -114,21 +114,21 @@ export function PaymentFormDialog({
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Комиссия / Процент (%)">
+            <Field label={t("payments.field.percent")}>
               <Input type="number" step="any" min={0} {...register("paymentProcent")} invalid={!!errors.paymentProcent} />
             </Field>
-            <Field label="Бонус / Кешбэк (%)">
+            <Field label={t("payments.field.bonus")}>
               <Input type="number" step="any" min={0} {...register("paymentBonus")} invalid={!!errors.paymentBonus} />
             </Field>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ImageUpload
-              label="Иконка"
+              label={t("payments.field.icon")}
               value={icon}
               onChange={(url) => setValue("icon", url, { shouldValidate: true })}
             />
-            <Field label="Порядок сортировки">
+            <Field label={t("payments.field.sortOrder")}>
               <Input type="number" min={0} {...register("sortOrder")} />
             </Field>
           </div>
@@ -142,7 +142,7 @@ export function PaymentFormDialog({
                 className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
               />
               <label htmlFor="isOverpayment" className="text-sm font-medium text-ink cursor-pointer">
-                Переплата (Overpayment)
+                {t("payments.field.isOverpayment")}
               </label>
             </div>
 
@@ -154,7 +154,7 @@ export function PaymentFormDialog({
                 className="h-4 w-4 rounded border-line text-brand focus:ring-brand"
               />
               <label htmlFor="isActive" className="text-sm font-medium text-ink cursor-pointer">
-                Активен
+                {t("payments.field.isActive")}
               </label>
             </div>
           </div>

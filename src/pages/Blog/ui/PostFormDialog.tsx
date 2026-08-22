@@ -100,14 +100,14 @@ export function PostFormDialog({
           className="mt-4 flex max-h-[75vh] flex-col gap-3 overflow-y-auto pr-1"
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Заголовок (RU)" error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
+            <Field label={t("blog.field.titleRu")} error={errors.titleRu?.message ? t(errors.titleRu?.message as TKey) : undefined}>
               <Input
                 {...register("titleRu")}
                 invalid={!!errors.titleRu}
                 placeholder="Обзор смартфона"
               />
             </Field>
-            <Field label="Заголовок (TK)" error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
+            <Field label={t("blog.field.titleTk")} error={errors.titleTk?.message ? t(errors.titleTk?.message as TKey) : undefined}>
               <Input
                 {...register("titleTk")}
                 invalid={!!errors.titleTk}
@@ -117,13 +117,13 @@ export function PostFormDialog({
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Тизер / Краткое (RU)">
+            <Field label={t("blog.field.teaserRu")}>
               <Input
                 {...register("teaserRu")}
                 placeholder="Краткое описание на русском"
               />
             </Field>
-            <Field label="Тизер / Краткое (TK)">
+            <Field label={t("blog.field.teaserTk")}>
               <Input
                 {...register("teaserTk")}
                 placeholder="Gysgaça mazmuny türkmençe"
@@ -131,7 +131,7 @@ export function PostFormDialog({
             </Field>
           </div>
 
-          <Field label="Полный текст (RU)">
+          <Field label={t("blog.field.descriptionRu")}>
             <textarea
               {...register("descriptionRu")}
               rows={3}
@@ -140,7 +140,7 @@ export function PostFormDialog({
             />
           </Field>
 
-          <Field label="Полный текст (TK)">
+          <Field label={t("blog.field.descriptionTk")}>
             <textarea
               {...register("descriptionTk")}
               rows={3}
@@ -151,11 +151,11 @@ export function PostFormDialog({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ImageUpload
-              label="Обложка"
+              label={t("blog.field.cover")}
               value={cover}
               onChange={(url) => setValue("cover", url, { shouldValidate: true })}
             />
-            <Field label="Время чтения (мин)">
+            <Field label={t("blog.field.readingTime")}>
               <Input
                 type="number"
                 min={0}
@@ -165,9 +165,9 @@ export function PostFormDialog({
             </Field>
           </div>
 
-          <Field label="Тег">
+          <Field label={t("blog.field.tag")}>
             <Select {...register("tagId")} disabled={tagsLoading}>
-              <option value="">— Без тега —</option>
+              <option value="">{t("blog.noTag")}</option>
               {tags.map((tag) => (
                 <option key={tag.id} value={tag.id}>
                   {tag.nameRu || tag.nameTk}

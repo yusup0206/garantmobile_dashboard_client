@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { useRoles } from "@/services/roles/useRoles";
+import { useT } from "@/i18n/useT";
 import type {
   AdminUser,
   CreateAdminDto,
@@ -26,6 +27,7 @@ export function AdminFormDialog({
   onSubmit,
   pending,
 }: AdminFormDialogProps) {
+  const t = useT();
   const { data: roles = [] } = useRoles();
 
   const [name, setName] = useState("");
@@ -67,7 +69,7 @@ export function AdminFormDialog({
     setErrorMsg("");
 
     if (selectedRoles.length === 0) {
-      setErrorMsg("Выберите хотя бы одну роль (roleIds)");
+      setErrorMsg(t("admins.err.roles"));
       return;
     }
 
@@ -80,9 +82,7 @@ export function AdminFormDialog({
         /[^A-Za-z0-9]/.test(password);
 
       if (!isStrong) {
-        setErrorMsg(
-          "Пароль недостаточно надежный! Требуется минимум 8 символов: заглавная буква, строчная буква, цифра и спецсимвол (например, @!#$%)",
-        );
+        setErrorMsg(t("admins.err.passwordWeak"));
         return;
       }
     }
@@ -113,10 +113,10 @@ export function AdminFormDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content className="max-w-md">
         <Dialog.Title>
-          {user ? "Редактировать сотрудника" : "Добавить сотрудника (Admin)"}
+          {user ? t("admins.dialog.edit") : t("admins.dialog.new")}
         </Dialog.Title>
         <Dialog.Description>
-          Заполните персональные данные сотрудника и назначьте роли
+          {t("admins.dialog.desc")}
         </Dialog.Description>
 
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
@@ -126,7 +126,7 @@ export function AdminFormDialog({
             </div>
           ) : null}
           <div>
-            <label className="text-xs font-semibold text-ink/70">ФИО / Имя</label>
+            <label className="text-xs font-semibold text-ink/70">{t("admins.field.name")}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -147,7 +147,7 @@ export function AdminFormDialog({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-ink/70">Телефон</label>
+            <label className="text-xs font-semibold text-ink/70">{t("admins.field.phone")}</label>
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -157,7 +157,7 @@ export function AdminFormDialog({
 
           {!user && (
             <div>
-              <label className="text-xs font-semibold text-ink/70">Пароль</label>
+              <label className="text-xs font-semibold text-ink/70">{t("admins.field.password")}</label>
               <Input
                 type="password"
                 value={password}
@@ -169,25 +169,25 @@ export function AdminFormDialog({
           )}
 
           <div>
-            <label className="text-xs font-semibold text-ink/70">Статус</label>
+            <label className="text-xs font-semibold text-ink/70">{t("admins.field.status")}</label>
             <Select
               value={status}
               onChange={(e) => setStatus(e.target.value as AdminStatus)}
               className="h-10 text-sm"
             >
-              <option value="active">Активный (active)</option>
-              <option value="invited">Приглашен (invited)</option>
-              <option value="blocked">Заблокирован (blocked)</option>
+              <option value="active">{t("admins.status.active")}</option>
+              <option value="invited">{t("admins.status.invited")}</option>
+              <option value="blocked">{t("admins.status.blocked")}</option>
             </Select>
           </div>
 
           <div>
             <label className="mb-2 block text-xs font-semibold text-ink/70">
-              Назначенные роли
+              {t("admins.field.roles")}
             </label>
             <div className="flex flex-wrap gap-2 rounded-xl border border-line bg-canvas p-3 max-h-36 overflow-y-auto">
               {roles.length === 0 ? (
-                <span className="text-xs text-muted">Роли не найдены</span>
+                <span className="text-xs text-muted">{t("admins.roles.notFound")}</span>
               ) : (
                 roles.map((r) => {
                   const active = selectedRoles.includes(r.id);
@@ -212,10 +212,10 @@ export function AdminFormDialog({
 
           <div className="mt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Отмена
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={pending}>
-              {pending ? "Сохранение…" : user ? "Сохранить" : "Добавить"}
+              {pending ? t("common.saving") : user ? t("common.save") : t("common.add")}
             </Button>
           </div>
         </form>

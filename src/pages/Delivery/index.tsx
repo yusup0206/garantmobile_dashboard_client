@@ -105,7 +105,7 @@ export default function DeliveryPage() {
         <FilterTabs tabs={FILTER_TABS} value={filter} onChange={setFilter} />
 
         <SearchInput
-          placeholder="Поиск способов доставки…"
+          placeholder={t("delivery.search")}
           value={search}
           onChange={setSearch}
         />
@@ -141,7 +141,7 @@ export default function DeliveryPage() {
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(open) => !open && setDeleting(null)}
-        title="Удалить способ доставки?"
+        title={t("delivery.confirm.title")}
         description={
           deleting
             ? `«${deleting.titleRu || deleting.titleTk}» ${t("common.deleteWarnM")}`
