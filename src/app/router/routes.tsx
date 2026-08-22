@@ -15,20 +15,13 @@ const PaymentsPage = lazy(() => import("@/pages/Payments"));
 const DeliveryPage = lazy(() => import("@/pages/Delivery"));
 const DriversPage = lazy(() => import("@/pages/Drivers"));
 const TradeinPage = lazy(() => import("@/pages/Tradein"));
-const ProductSpecDefinitionsPage = lazy(
-  () => import("@/pages/ProductSpecDefinitions"),
-);
+const ProductSpecDefinitionsPage = lazy(() => import("@/pages/ProductSpecDefinitions"));
 const ProductSpecDefinitionDetailPage = lazy(
-  () =>
-    import(
-      "@/pages/ProductSpecDefinitions/ProductSpecDefinitionDetail"
-    ),
+  () => import("@/pages/ProductSpecDefinitions/ProductSpecDefinitionDetail"),
 );
 const CatalogPage = lazy(() => import("@/pages/Catalog"));
 const ProductsPage = lazy(() => import("@/pages/Products"));
-const ProductDetailPage = lazy(
-  () => import("@/pages/Products/ProductDetailPage"),
-);
+const ProductDetailPage = lazy(() => import("@/pages/Products/ProductDetailPage"));
 const InventoryPage = lazy(() => import("@/pages/Inventory"));
 const CategoriesPage = lazy(() => import("@/pages/Categories"));
 const BrandsPage = lazy(() => import("@/pages/Brands"));
@@ -115,5 +108,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: "*", element: <Navigate to="/dashboard" replace /> },
+  { path: "*", element: <Navigate to="/orders" replace /> },
 ]);

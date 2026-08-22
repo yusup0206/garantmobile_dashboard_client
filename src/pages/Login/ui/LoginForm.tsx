@@ -34,7 +34,7 @@ export function LoginForm() {
     mutationFn: loginRequest,
     onSuccess: (res) => {
       setSession(res.user, res.token);
-      navigate("/dashboard", { replace: true });
+      navigate("/orders", { replace: true });
     },
     onError: (err: Error) => setFormError(err.message),
   });
