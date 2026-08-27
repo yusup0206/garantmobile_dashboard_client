@@ -11,6 +11,7 @@ import {
   Boxes,
   ScrollText,
   FolderTree,
+  Layers,
   BadgeCheck,
   Store,
   Users,
@@ -75,6 +76,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "nav.products", to: "/products", icon: Boxes },
       // { label: "nav.inventory", to: "/inventory", icon: ScrollText },
       { label: "nav.categories", to: "/categories", icon: FolderTree },
+      { label: "nav.innerCategories", to: "/inner-categories", icon: Layers },
       {
         label: "nav.productSpecDefinitions",
         to: "/product-spec-definitions",

@@ -24,6 +24,7 @@ const ProductsPage = lazy(() => import("@/pages/Products"));
 const ProductDetailPage = lazy(() => import("@/pages/Products/ProductDetailPage"));
 const InventoryPage = lazy(() => import("@/pages/Inventory"));
 const CategoriesPage = lazy(() => import("@/pages/Categories"));
+const InnerCategoriesPage = lazy(() => import("@/pages/InnerCategories"));
 const BrandsPage = lazy(() => import("@/pages/Brands"));
 const UnitsPage = lazy(() => import("@/pages/Units"));
 const CustomersPage = lazy(() => import("@/pages/Customers"));
@@ -86,6 +87,10 @@ export const router = createBrowserRouter([
           },
           { path: "/inventory", element: withSuspense(<InventoryPage />) },
           { path: "/categories", element: withSuspense(<CategoriesPage />) },
+          {
+            path: "/inner-categories",
+            element: withSuspense(<InnerCategoriesPage />),
+          },
           { path: "/brands", element: withSuspense(<BrandsPage />) },
           { path: "/units", element: withSuspense(<UnitsPage />) },
           { path: "/customers", element: withSuspense(<CustomersPage />) },
