@@ -61,7 +61,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "nav.group.sales",
     items: [
       { label: "nav.orders", to: "/orders", icon: ShoppingCart },
-      // { label: "nav.preorders", to: "/preorders", icon: ClipboardList },
+      { label: "nav.preorders", to: "/preorders", icon: ClipboardList },
       { label: "nav.payments", to: "/payments", icon: CreditCard },
       { label: "nav.delivery", to: "/delivery", icon: Truck },
       // { label: "nav.drivers", to: "/drivers", icon: Bike },

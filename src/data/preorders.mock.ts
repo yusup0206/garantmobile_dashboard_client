@@ -10,6 +10,7 @@ export const PREORDER_STATUS: Record<PreorderStatusKey, StatusMeta> = {
   prepay: { labelKey: "status.preorder.prepay", fg: "#a86a1f", bg: "#fbf1e2", dot: "#e0a144" },
   ready: { labelKey: "status.preorder.ready", fg: "#1f6b49", bg: "#e9f4ee", dot: "#2f8b63" },
   done: { labelKey: "status.preorder.done", fg: "#6d7c74", bg: "#eef2f0", dot: "#9aa8a1" },
+  rejected: { labelKey: "status.preorder.rejected", fg: "#b42318", bg: "#fef3f2", dot: "#f04438" },
 };
 
 export const PREORDERS: Preorder[] = [
