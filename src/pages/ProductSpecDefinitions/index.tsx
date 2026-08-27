@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useT } from "@/i18n/useT";
 import { useLangStore } from "@/store/i18n.store";
-import { ChevronRight, Edit2, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronRight, Edit2, Plus, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingState } from "@/components/common/LoadingState";
@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Card } from "@/components/ui/Card";
 import {
   useProductSpecDefinitions,
@@ -22,6 +23,7 @@ import type {
   ProductSpecDefinition,
   ProductSpecDefinitionInput,
 } from "@/services/productSpecDefinitions/productSpecDefinitions.types";
+import { useInnerCategories } from "@/services/innerCategories/useInnerCategories";
 
 import { ProductSpecDefinitionFormDialog } from "./ui/ProductSpecDefinitionFormDialog";
 
@@ -32,12 +34,20 @@ export default function ProductSpecDefinitionsPage() {
   const t = useT();
   const lang = useLangStore((s) => s.lang);
   const [search, setSearch] = useState("");
+  const [innerCategoryId, setInnerCategoryId] = useState("");
 
   const nameOf = (item: ProductSpecDefinition) =>
     (lang as string) === "tk" ? item.nameTk || item.nameRu : item.nameRu || item.nameTk;
 
+  const { data: innerCatsData } = useInnerCategories({ pageSize: 200 });
+  const innerCategories = useMemo(
+    () => innerCatsData?.innerCategories ?? [],
+    [innerCatsData?.innerCategories],
+  );
+
   const { data, isLoading, isError, refetch } = useProductSpecDefinitions({
     search,
+    innerCategoryId: innerCategoryId || undefined,
   });
   const createMutation = useCreateProductSpecDefinition();
   const updateMutation = useUpdateProductSpecDefinition();
@@ -88,14 +98,28 @@ export default function ProductSpecDefinitionsPage() {
         }
       />
 
-      <Card className="p-4 flex flex-col sm:flex-row items-center justify-end gap-4">
-        <div className="w-full sm:w-72">
+      <Card className="p-4 flex flex-col sm:flex-row items-center gap-4">
+        <div className="w-full sm:flex-1">
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("spec.search")}
             className="h-10 text-sm"
           />
+        </div>
+        <div className="w-full sm:w-64">
+          <Select
+            value={innerCategoryId}
+            onChange={(e) => setInnerCategoryId(e.target.value)}
+            className="h-10 text-sm"
+          >
+            <option value="">{t("spec.filterByInnerCategory")}</option>
+            {innerCategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </Select>
         </div>
       </Card>
 

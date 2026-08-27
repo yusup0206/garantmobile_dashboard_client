@@ -13,6 +13,7 @@ export type GetProductSpecDefinitionsParams = {
   page?: number;
   pageSize?: number;
   search?: string;
+  innerCategoryId?: string;
 };
 
 export type GetProductSpecDefinitionsResponse = {

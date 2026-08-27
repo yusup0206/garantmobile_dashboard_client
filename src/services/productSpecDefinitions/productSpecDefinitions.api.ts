@@ -29,6 +29,7 @@ export async function getProductSpecDefinitions(
     if (params?.page) query.set("page", String(params.page));
     if (params?.pageSize) query.set("pageSize", String(params.pageSize));
     if (params?.search) query.set("search", params.search);
+    if (params?.innerCategoryId) query.set("innerCategoryId", params.innerCategoryId);
     const queryString = query.toString();
     const endpoint = `/product-spec-definitions/all${queryString ? `?${queryString}` : ""}`;
     const res = await apiClient<
@@ -45,8 +46,7 @@ export async function getProductSpecDefinitions(
     const s = params.search.toLowerCase();
     filtered = filtered.filter(
       (item) =>
-        item.nameRu.toLowerCase().includes(s) ||
-        item.nameTk.toLowerCase().includes(s),
+        item.nameRu.toLowerCase().includes(s) || item.nameTk.toLowerCase().includes(s),
     );
   }
   return mockDelay({
@@ -128,12 +128,13 @@ export async function deleteProductSpecDefinition(
   id: string,
 ): Promise<{ deleted: boolean }> {
   if (isApiEnabled()) {
-    const res = await apiClient<
-      ApiResponse<{ deleted: boolean }> | { deleted: boolean }
-    >(`/product-spec-definitions/delete/${id}`, {
-      method: "DELETE",
-      token: authToken(),
-    });
+    const res = await apiClient<ApiResponse<{ deleted: boolean }> | { deleted: boolean }>(
+      `/product-spec-definitions/delete/${id}`,
+      {
+        method: "DELETE",
+        token: authToken(),
+      },
+    );
     if ("data" in res && res.data) {
       return res.data;
     }
