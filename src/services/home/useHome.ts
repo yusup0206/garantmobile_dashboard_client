@@ -1,68 +1,68 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  discardHomeDraft,
-  getHomeDraft,
-  getHomeDraftStatus,
-  getHomeLayout,
-  publishHomeDraft,
-  saveHomeDraft,
-  saveHomeLayout,
+  createHomeBlock,
+  deleteHomeBlock,
+  getHomeBlockById,
+  getHomeBlocks,
+  reorderHomeBlocks,
+  updateHomeBlock,
 } from "./home.api";
-import type { HomeBlock } from "./home.types";
+import type {
+  CreateHomeBlockInput,
+  GetHomeBlocksParams,
+  UpdateHomeBlockInput,
+} from "./home.types";
 
 export const homeKeys = {
-  all: ["home-layout"] as const,
-  layout: ["home-layout", "layout"] as const,
-  draft: ["home-layout", "draft"] as const,
-  draftStatus: ["home-layout", "draft-status"] as const,
+  all: ["home-blocks"] as const,
+  list: (params?: GetHomeBlocksParams) => ["home-blocks", "list", params] as const,
+  detail: (id?: string) => ["home-blocks", "detail", id] as const,
 };
 
-export function useHomeLayout() {
-  return useQuery({ queryKey: homeKeys.layout, queryFn: getHomeLayout });
-}
-
-export function useSaveHomeLayout() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (blocks: HomeBlock[]) => saveHomeLayout(blocks),
-    onSuccess: () => qc.invalidateQueries({ queryKey: homeKeys.all }),
-  });
-}
-
-// --- Draft workflow ----------------------------------------------------------
-
-/** The editor works on the draft (which falls back to the live layout). */
-export function useHomeDraft() {
-  return useQuery({ queryKey: homeKeys.draft, queryFn: getHomeDraft });
-}
-
-export function useHomeDraftStatus() {
+export function useHomeBlocks(params?: GetHomeBlocksParams) {
   return useQuery({
-    queryKey: homeKeys.draftStatus,
-    queryFn: getHomeDraftStatus,
+    queryKey: homeKeys.list(params),
+    queryFn: () => getHomeBlocks(params),
   });
 }
 
-export function useSaveHomeDraft() {
+export function useHomeBlockDetail(id?: string) {
+  return useQuery({
+    queryKey: homeKeys.detail(id),
+    queryFn: () => getHomeBlockById(id!),
+    enabled: Boolean(id),
+  });
+}
+
+export function useCreateHomeBlock() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (blocks: HomeBlock[]) => saveHomeDraft(blocks),
+    mutationFn: (input: CreateHomeBlockInput) => createHomeBlock(input),
     onSuccess: () => qc.invalidateQueries({ queryKey: homeKeys.all }),
   });
 }
 
-export function usePublishHome() {
+export function useUpdateHomeBlock() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => publishHomeDraft(),
+    mutationFn: ({ id, input }: { id: string; input: UpdateHomeBlockInput }) =>
+      updateHomeBlock(id, input),
     onSuccess: () => qc.invalidateQueries({ queryKey: homeKeys.all }),
   });
 }
 
-export function useDiscardHomeDraft() {
+export function useReorderHomeBlocks() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => discardHomeDraft(),
+    mutationFn: (blockIds: string[]) => reorderHomeBlocks(blockIds),
+    onSuccess: () => qc.invalidateQueries({ queryKey: homeKeys.all }),
+  });
+}
+
+export function useDeleteHomeBlock() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteHomeBlock(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: homeKeys.all }),
   });
 }

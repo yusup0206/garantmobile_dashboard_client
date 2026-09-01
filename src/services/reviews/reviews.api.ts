@@ -9,6 +9,12 @@ import type {
 
 const BASE = "/reviews";
 
+/** Unwrap standard { statusCode, success, data: ... } backend response envelope */
+function unwrap<T>(res: unknown): T {
+  const r = res as Record<string, unknown>;
+  return (r && "data" in r && r.data !== undefined ? r.data : r) as T;
+}
+
 export async function getReviews(
   params?: GetReviewsParams,
 ): Promise<GetReviewsResponse> {
@@ -20,18 +26,22 @@ export async function getReviews(
   if (params?.customerId) qs.set("customerId", params.customerId);
   const query = qs.toString();
   const url = query ? `${BASE}?${query}` : BASE;
-  return apiClient<GetReviewsResponse>(url, { token: authToken() });
+  const res = await apiClient<unknown>(url, { token: authToken() });
+  const data = unwrap<GetReviewsResponse>(res);
+  return {
+    count: data?.count ?? (data?.reviews ? data.reviews.length : 0),
+    reviews: data?.reviews ?? [],
+  };
 }
 
 export async function updateReviewStatus(
   id: string,
   status: ReviewStatusKey,
 ): Promise<Review> {
-  return apiClient<Review>(`${BASE}/${id}/status`, {
+  const res = await apiClient<unknown>(`${BASE}/${id}/status`, {
     method: "PUT",
     token: authToken(),
     body: JSON.stringify({ status }),
   });
+  return unwrap<Review>(res);
 }
-
-

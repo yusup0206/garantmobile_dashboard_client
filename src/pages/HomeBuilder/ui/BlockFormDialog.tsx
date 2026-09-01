@@ -1,21 +1,31 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useT } from "@/i18n/useT";
-import type { TKey } from "@/i18n/dict";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import type { Category } from "@/services/categories/categories.types";
-import { type HomeBlock, type HomeBlockKind } from "@/services/home/home.types";
-import { ALL_KINDS, KIND_LABEL, newBlock } from "../lib/home.helpers";
+import {
+  type HomeBlock,
+  type HomeBlockKind,
+  type CreateHomeBlockInput,
+  type UpdateHomeBlockInput,
+} from "@/services/home/home.types";
+import {
+  ALL_KINDS,
+  KIND_LABEL,
+  PRODUCT_SOURCES,
+  defaultItemsLimit,
+  newBlockInput,
+} from "../lib/home.helpers";
 
 type BlockFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** When set, edits this block; otherwise creates a new one. */
   block: HomeBlock | null;
   categories: Category[];
-  onSubmit: (block: HomeBlock) => void;
+  onSubmit: (values: CreateHomeBlockInput | UpdateHomeBlockInput) => void;
+  isSaving?: boolean;
 };
 
 export function BlockFormDialog({
@@ -24,41 +34,71 @@ export function BlockFormDialog({
   block,
   categories,
   onSubmit,
+  isSaving,
 }: BlockFormDialogProps) {
   const t = useT();
-  const [draft, setDraft] = useState<HomeBlock>(() => newBlock("product_rail", 0));
   const isEdit = block !== null;
+
+  const [kind, setKind] = useState<HomeBlockKind>("products");
+  const [titleRu, setTitleRu] = useState("");
+  const [titleTk, setTitleTk] = useState("");
+  const [subtitleRu, setSubtitleRu] = useState("");
+  const [subtitleTk, setSubtitleTk] = useState("");
+  const [itemsLimit, setItemsLimit] = useState<number | undefined>(8);
+  const [productSource, setProductSource] = useState<string>("newest");
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [status, setStatus] = useState<"active" | "hidden">("active");
 
   useEffect(() => {
     if (!open) return;
-    setDraft(block ? { ...block } : newBlock("product_rail", 0));
+    if (block) {
+      setKind(block.kind);
+      setTitleRu(block.titleRu || "");
+      setTitleTk(block.titleTk || "");
+      setSubtitleRu(block.subtitleRu || "");
+      setSubtitleTk(block.subtitleTk || "");
+      setItemsLimit(block.itemsLimit ?? undefined);
+      setProductSource(block.productSource || "newest");
+      setCategoryId(block.categoryId ? String(block.categoryId) : "");
+      setStatus(block.status || "active");
+    } else {
+      const initial = newBlockInput("products");
+      setKind(initial.kind);
+      setTitleRu("");
+      setTitleTk("");
+      setSubtitleRu("");
+      setSubtitleTk("");
+      setItemsLimit(initial.itemsLimit);
+      setProductSource("newest");
+      setCategoryId("");
+      setStatus("active");
+    }
   }, [open, block]);
 
-  function setLoc(field: "title" | "subtitle", lang: "ru" | "tm", value: string) {
-    setDraft((d) => ({ ...d, [field]: { ...d[field], [lang]: value } }));
-  }
-
-  function setProp(key: string, value: unknown) {
-    setDraft((d) => ({ ...d, props: { ...d.props, [key]: value } }));
-  }
-
-  function changeKind(kind: HomeBlockKind) {
-    setDraft((d) => ({
-      ...newBlock(kind, d.order),
-      id: d.id,
-      title: d.title,
-      subtitle: d.subtitle,
-    }));
-  }
-
-  function changeCategory(idRaw: string) {
-    if (!idRaw) {
-      setDraft((d) => ({ ...d, categoryId: null, categorySlug: null }));
-      return;
+  function handleKindChange(nextKind: HomeBlockKind) {
+    setKind(nextKind);
+    if (!isEdit) {
+      setItemsLimit(defaultItemsLimit(nextKind));
+      if (nextKind === "products" && !productSource) {
+        setProductSource("newest");
+      }
     }
-    const id = Number(idRaw);
-    const found = categories.find((c) => c.id === id);
-    setDraft((d) => ({ ...d, categoryId: id, categorySlug: found?.slug ?? null }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const payload = {
+      ...(isEdit ? {} : { kind }),
+      titleRu,
+      titleTk,
+      subtitleRu: subtitleRu || undefined,
+      subtitleTk: subtitleTk || undefined,
+      itemsLimit: itemsLimit ? Number(itemsLimit) : undefined,
+      productSource: kind === "products" ? productSource : undefined,
+      categoryId: (kind === "categories" || (kind === "products" && productSource === "category")) && categoryId ? categoryId : undefined,
+      status,
+    };
+    onSubmit(payload);
   }
 
   return (
@@ -70,225 +110,126 @@ export function BlockFormDialog({
         <Dialog.Description>{t("home.dialog.desc")}</Dialog.Description>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit(draft);
-          }}
-          className="mt-4 flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1"
+          onSubmit={handleSubmit}
+          className="mt-4 flex max-h-[70vh] flex-col gap-3 overflow-y-auto pr-1"
         >
           <Field label={t("home.form.kind")}>
             <Select
-              value={draft.kind}
+              value={kind}
               disabled={isEdit}
-              onChange={(v) => changeKind(v as HomeBlockKind)}
+              onChange={(v) => handleKindChange(v as HomeBlockKind)}
               options={ALL_KINDS.map((k) => ({ value: k, label: t(KIND_LABEL[k]) }))}
             />
           </Field>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label={t("home.form.nameRu")}>
               <Input
-                value={draft.title.ru}
-                onChange={(e) => setLoc("title", "ru", e.target.value)}
+                required
+                value={titleRu}
+                onChange={(e) => setTitleRu(e.target.value)}
                 placeholder={t("home.form.namePlaceholder")}
               />
             </Field>
             <Field label={t("home.form.nameTm")}>
               <Input
-                value={draft.title.tm}
-                onChange={(e) => setLoc("title", "tm", e.target.value)}
+                required
+                value={titleTk}
+                onChange={(e) => setTitleTk(e.target.value)}
               />
             </Field>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label={t("home.form.subtitleRu")}>
               <Input
-                value={draft.subtitle.ru}
-                onChange={(e) => setLoc("subtitle", "ru", e.target.value)}
+                value={subtitleRu}
+                onChange={(e) => setSubtitleRu(e.target.value)}
               />
             </Field>
             <Field label={t("home.form.subtitleTm")}>
               <Input
-                value={draft.subtitle.tm}
-                onChange={(e) => setLoc("subtitle", "tm", e.target.value)}
+                value={subtitleTk}
+                onChange={(e) => setSubtitleTk(e.target.value)}
               />
             </Field>
           </div>
 
-          <Field label={t("home.form.category")}>
-            <Select
-              value={draft.categoryId ? String(draft.categoryId) : ""}
-              onChange={changeCategory}
-              options={[
-                { value: "", label: t("home.form.categoryNone") },
-                ...categories.map((c) => ({ value: String(c.id), label: c.nameRu || c.nameTk })),
-              ]}
-            />
-          </Field>
+          {/* Additional fields per kind */}
+          {kind === "products" && (
+            <Field label={t("home.form.source")}>
+              <Select
+                value={productSource}
+                onChange={(v) => setProductSource(v)}
+                options={PRODUCT_SOURCES.map((s) => ({
+                  value: s.value,
+                  label: t(s.labelKey),
+                }))}
+              />
+            </Field>
+          )}
 
-          <PropsEditor kind={draft.kind} props={draft.props} setProp={setProp} />
+          {(kind === "categories" || (kind === "products" && productSource === "category")) && (
+            <Field label={t("home.form.category")}>
+              <Select
+                value={categoryId}
+                onChange={(v) => setCategoryId(v)}
+                options={[
+                  { value: "", label: t("home.form.categoryNone") },
+                  ...categories.map((c) => ({
+                    value: String(c.id),
+                    label: c.nameRu || c.nameTk || String(c.id),
+                  })),
+                ]}
+              />
+            </Field>
+          )}
 
-          <label className="mt-1 flex items-center gap-2.5 text-sm font-semibold text-ink">
-            <input
-              type="checkbox"
-              checked={draft.visible}
-              onChange={(e) => setDraft((d) => ({ ...d, visible: e.target.checked }))}
-              className="h-4 w-4 rounded border-line accent-brand"
-            />
-            {t("home.form.visible")}
-          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label={t("home.form.limit")}>
+              <Input
+                type="number"
+                min={1}
+                max={50}
+                value={itemsLimit ?? ""}
+                onChange={(e) => setItemsLimit(e.target.value ? Number(e.target.value) : undefined)}
+              />
+            </Field>
 
-          <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Field label={t("form.status")}>
+              <Select
+                value={status}
+                onChange={(v) => setStatus(v as "active" | "hidden")}
+                options={[
+                  { value: "active", label: t("status.hero.on") },
+                  { value: "hidden", label: t("status.hero.off") },
+                ]}
+              />
+            </Field>
+          </div>
+
+          <div className="mt-4 flex justify-end gap-2 border-t border-line pt-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSaving}
+            >
               {t("common.cancel")}
             </Button>
-            <Button type="submit">{isEdit ? t("common.save") : t("common.add")}</Button>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving
+                ? t("common.saving")
+                : isEdit
+                  ? t("common.save")
+                  : t("common.add")}
+            </Button>
           </div>
         </form>
       </Dialog.Content>
     </Dialog.Root>
   );
 }
-
-/** Per-kind props editor — только осмысленные поля для каждого вида. */
-function PropsEditor({
-  kind,
-  props,
-  setProp,
-}: {
-  kind: HomeBlockKind;
-  props: Record<string, unknown>;
-  setProp: (key: string, value: unknown) => void;
-}) {
-  const t = useT();
-  const num = (key: string) =>
-    typeof props[key] === "number" ? (props[key] as number) : undefined;
-  const str = (key: string) =>
-    typeof props[key] === "string" ? (props[key] as string) : "";
-
-  if (kind === "product_rail") {
-    const source = str("source") || "new";
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t("home.form.source")}>
-          <Select
-            value={source}
-            onChange={(v) => setProp("source", v)}
-            options={[
-              "new",
-              "sale",
-              "top_rated",
-              "category",
-              "badge",
-              "manual",
-              "recent",
-            ].map((s) => ({ value: s, label: t(("home.source." + s) as TKey) }))}
-          />
-        </Field>
-        <NumberField
-          label={t("home.form.limit")}
-          value={num("limit")}
-          onChange={(v) => setProp("limit", v)}
-        />
-        {source === "category" ? (
-          <Field label={t("home.form.categorySlug")}>
-            <Input
-              value={str("categorySlug")}
-              onChange={(e) => setProp("categorySlug", e.target.value)}
-              placeholder="accessories"
-            />
-          </Field>
-        ) : null}
-        <Toggle
-          label={t("home.form.boxed")}
-          checked={props.boxed === true}
-          onChange={(v) => setProp("boxed", v)}
-        />
-      </div>
-    );
-  }
-  if (kind === "sale_week") {
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t("home.form.endsAt")}>
-          <Input
-            type="datetime-local"
-            value={str("endsAt")}
-            onChange={(e) => setProp("endsAt", e.target.value || null)}
-          />
-        </Field>
-        <NumberField
-          label={t("home.form.limit")}
-          value={num("limit")}
-          onChange={(v) => setProp("limit", v)}
-        />
-      </div>
-    );
-  }
-  if (kind === "banners") {
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t("home.form.placement")}>
-          <Select
-            value={str("placement") || "home"}
-            onChange={(v) => setProp("placement", v)}
-            options={["home", "category", "checkout"].map((p) => ({
-              value: p,
-              label: p,
-            }))}
-          />
-        </Field>
-        <NumberField
-          label={t("home.form.limit")}
-          value={num("limit")}
-          onChange={(v) => setProp("limit", v)}
-        />
-      </div>
-    );
-  }
-  if (kind === "benefits") {
-    return (
-      <Field label={t("home.form.variant")}>
-        <Select
-          value={str("variant") || "grid"}
-          onChange={(v) => setProp("variant", v)}
-          options={["grid", "row"].map((v) => ({ value: v, label: v }))}
-        />
-      </Field>
-    );
-  }
-  if (kind === "brands") {
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t("home.form.variant")}>
-          <Select
-            value={str("variant") || "logos"}
-            onChange={(v) => setProp("variant", v)}
-            options={["logos", "chips"].map((v) => ({ value: v, label: v }))}
-          />
-        </Field>
-        <NumberField
-          label={t("home.form.limit")}
-          value={num("limit")}
-          onChange={(v) => setProp("limit", v)}
-        />
-      </div>
-    );
-  }
-  if (kind === "blog_teasers" || kind === "category_grid" || kind === "preorder_promo") {
-    return (
-      <NumberField
-        label={t("home.form.limit")}
-        value={num("limit")}
-        onChange={(v) => setProp("limit", v)}
-      />
-    );
-  }
-  return null;
-}
-
-// --- small controls (repo has no Select/Textarea) ---------------------------
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -326,48 +267,5 @@ function Select({
         </option>
       ))}
     </select>
-  );
-}
-
-function NumberField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: number | undefined;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <Field label={label}>
-      <Input
-        type="number"
-        min={0}
-        value={value ?? ""}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </Field>
-  );
-}
-
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (value: boolean) => void;
-}) {
-  return (
-    <label className="flex items-center gap-2 self-end pb-3 text-sm font-semibold text-ink">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 rounded border-line accent-brand"
-      />
-      {label}
-    </label>
   );
 }

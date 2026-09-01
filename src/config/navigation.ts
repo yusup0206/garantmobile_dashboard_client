@@ -97,7 +97,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "nav.group.marketing",
     items: [
-      // { label: "nav.home", to: "/home-builder", icon: LayoutTemplate },
+      { label: "nav.home", to: "/home-builder", icon: LayoutTemplate },
       // { label: "nav.hero", to: "/hero-slides", icon: Images },
       // { label: "nav.marketing", to: "/marketing", icon: Megaphone },
       { label: "nav.promocodes", to: "/promocodes", icon: TicketPercent },
