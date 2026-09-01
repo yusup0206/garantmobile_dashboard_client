@@ -1,33 +1,37 @@
-import { apiClient, mockDelay } from "@/services/api/apiClient";
-import { isApiEnabled } from "@/config/env";
+import { apiClient } from "@/services/api/apiClient";
 import { authToken } from "@/services/api/authToken";
-import { REVIEWS } from "@/data/reviews.mock";
-import type { Review, ReviewStatusKey } from "./reviews.types";
+import type {
+  GetReviewsParams,
+  GetReviewsResponse,
+  Review,
+  ReviewStatusKey,
+} from "./reviews.types";
 
-/**
- * Reviews API service. Uses apiClient when VITE_API_BASE_URL is configured,
- * otherwise falls back to in-memory mock data.
- */
-let store: Review[] = REVIEWS.map((r) => ({ ...r }));
+const BASE = "/reviews";
 
-export function getReviews(): Promise<Review[]> {
-  if (isApiEnabled()) {
-    return apiClient<Review[]>("/reviews", { token: authToken() });
-  }
-  return mockDelay(store.map((r) => ({ ...r })));
+export async function getReviews(
+  params?: GetReviewsParams,
+): Promise<GetReviewsResponse> {
+  const qs = new URLSearchParams();
+  if (params?.page) qs.set("page", String(params.page));
+  if (params?.pageSize) qs.set("pageSize", String(params.pageSize));
+  if (params?.status) qs.set("status", params.status);
+  if (params?.productId) qs.set("productId", params.productId);
+  if (params?.customerId) qs.set("customerId", params.customerId);
+  const query = qs.toString();
+  const url = query ? `${BASE}?${query}` : BASE;
+  return apiClient<GetReviewsResponse>(url, { token: authToken() });
 }
 
-export function updateReviewStatus(id: number, st: ReviewStatusKey): Promise<Review> {
-  if (isApiEnabled()) {
-    return apiClient<Review>(`/reviews/${id}/status`, {
-      method: "PATCH",
-      token: authToken(),
-      body: JSON.stringify({ status: st }),
-    });
-  }
-  store = store.map((r) => (r.id === id ? { ...r, st } : r));
-  const updated = store.find((r) => r.id === id);
-  if (!updated) throw new Error("error.notFound");
-  return mockDelay({ ...updated });
+export async function updateReviewStatus(
+  id: string,
+  status: ReviewStatusKey,
+): Promise<Review> {
+  return apiClient<Review>(`${BASE}/${id}/status`, {
+    method: "PUT",
+    token: authToken(),
+    body: JSON.stringify({ status }),
+  });
 }
+
 

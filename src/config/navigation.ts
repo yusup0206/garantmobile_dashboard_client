@@ -90,7 +90,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "nav.group.customers",
     items: [
       { label: "nav.customers", to: "/customers", icon: Users },
-      // { label: "nav.reviews", to: "/reviews", icon: Star },
+      { label: "nav.reviews", to: "/reviews", icon: Star },
       // { label: "nav.chat", to: "/chat", icon: MessageSquare },
     ],
   },
